@@ -1,18 +1,18 @@
 version: '3'
 
-  networks:
-    dating-net:
-      external:
-        name: chat-api-network
+networks:
+  dating-net:
+    external:
+      name: chat-api-network
 
 services:
- 
 
   pay-nginx:
+    container_name: pay-nginx
     build: docker/nginx
     stdin_open: true
     depends_on:
-      - crud-php-fpm
+      - pay-php-fpm
     ports:
       - "1010:1000"
     volumes: # Передает кофигурацию для веб-сервера
@@ -25,8 +25,8 @@ services:
     container_name: pay-php-fpm
     build: docker/php_fpm
     env_file: .env
-    depends_on:
-      - mysql
+    #depends_on:
+    #  - db
     environment:
       APP_DEBUG: ${APP_DEBUG}
       DB_HOST: crud_mysql
