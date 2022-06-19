@@ -1,0 +1,43 @@
+version: '3'
+
+  networks:
+    dating-net:
+      external:
+        name: chat-api-network
+
+services:
+ 
+
+  pay-nginx:
+    build: docker/nginx
+    stdin_open: true
+    depends_on:
+      - crud-php-fpm
+    ports:
+      - "1010:1000"
+    volumes: # Передает кофигурацию для веб-сервера
+      - ./docker/nginx/vhost.conf:/etc/nginx/conf.d/default.conf
+      - ./src:/var/www
+    networks:
+      - dating-net
+
+  pay-php-fpm:
+    container_name: pay-php-fpm
+    build: docker/php_fpm
+    env_file: .env
+    depends_on:
+      - mysql
+    environment:
+      APP_DEBUG: ${APP_DEBUG}
+      DB_HOST: crud_mysql
+      DB_PORT: ${DB_PORT} #Порт подключения к базе данных
+      DB_DATABASE: ${DB_DATABASE} #Имя базы данных
+      DB_USERNAME: ${DB_USERNAME} #Имя пользователя для подключения к базе данных
+      DB_PASSWORD: ${DB_PASSWORD} #Пароль для подключения к базе данных
+    stdin_open: true
+    volumes:
+      - ./src:/var/www
+    networks:
+      - dating-net
+
+
