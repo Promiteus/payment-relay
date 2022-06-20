@@ -2,6 +2,7 @@
 
 namespace App\Services\Qiwi;
 
+use App\dto\PayResponse;
 use App\Services\Qiwi\Contracts\BillInterface;
 use Illuminate\Http\JsonResponse;
 use Qiwi\Api\BillPaymentsException;
@@ -34,17 +35,14 @@ class PaymentService
                 BillService::COMMENT => $body[BillService::COMMENT],
                 BillService::EXPIRATION_DATE => $this->bill->getBillPayment()->getLifetimeByDay(1),
                 BillService::EMAIL => $body[BillService::EMAIL],
-                //BillService::ACCOUNT => $body[BillService::ACCOUNT] ?: '',
             ];
 
-            //dd($body[BillService::BILL_ID]);
             $response = $this->bill->getBillPayment()->createBill($body[BillService::BILL_ID], $params);
-        } catch (BillPaymentsException $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+        } catch (BillPaymentsException | \Exception $e) {
+            return response()->json((new PayResponse([], $e->getMessage()))->toArray(), 400);
         }
 
-       // dd($response);
-        return response()->json($response, 200);
+        return response()->json((new PayResponse($response, ''))->toArray(), 200);
     }
 
     /**
@@ -58,10 +56,10 @@ class PaymentService
             }
             $response = $this->bill->getBillPayment()->getBillInfo($billId);
         } catch (BillPaymentsException | \Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json((new PayResponse([], $e->getMessage()))->toArray(), 400);
         }
 
-        return response()->json($response, 200);
+        return response()->json((new PayResponse($response, ''))->toArray(), 200);
     }
 
     /**
@@ -75,10 +73,10 @@ class PaymentService
             }
             $response = $this->bill->getBillPayment()->cancelBill($billId);
         } catch (BillPaymentsException | \Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json((new PayResponse([], $e->getMessage()))->toArray(), 400);
         }
 
-        return response()->json($response, 200);
+        return response()->json((new PayResponse($response, ''))->toArray(), 200);
     }
 
     /**
