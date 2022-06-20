@@ -23,13 +23,24 @@ class BillService implements BillInterface
 
     public const MSG_EMPTY_BILL_ID = 'BillId is empty!';
 
+    protected BillPayments $billPayments;
+
+    /**
+     * BillService constructor.
+     * @param BillPayments $billPayments
+     * @throws \ErrorException
+     */
+    public function __construct(BillPayments $billPayments)
+    {
+        $this->billPayments = new BillPayments(config('services.qiwi.secret'));
+    }
+
     /**
      * @return BillPayments
-     * @throws \ErrorException
      */
     public function getBillPayment(): BillPayments
     {
-        return new BillPayments(config('services.qiwi.secret'));
+        return $this->billPayments;
     }
 
     /**

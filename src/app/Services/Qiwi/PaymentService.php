@@ -42,6 +42,7 @@ class PaymentService
             return response()->json(['error' => $e->getMessage()], 400);
         }
 
+       // dd($response);
         return response()->json($response, 200);
     }
 
