@@ -21,6 +21,8 @@ class BillService implements BillInterface
     public const EMAIL = 'email';
     public const ACCOUNT = 'account';
 
+    public const MSG_EMPTY_BILL_ID = 'BillId is empty!';
+
     /**
      * @return BillPayments
      * @throws \ErrorException
