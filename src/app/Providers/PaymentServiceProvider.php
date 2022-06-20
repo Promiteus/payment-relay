@@ -4,6 +4,7 @@
 namespace App\Providers;
 
 
+use App\Services\Qiwi\BillService;
 use App\Services\Qiwi\Contracts\BillInterface;
 use Illuminate\Support\ServiceProvider;
 use Qiwi\Api\BillPayments;
@@ -18,7 +19,7 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(BillInterface::class, new BillPayments(config('services.qiwi.secret')));
+        $this->app->singleton(BillInterface::class, BillService::class);
     }
 
     /**

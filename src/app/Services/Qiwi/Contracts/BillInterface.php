@@ -11,4 +11,5 @@ use Qiwi\Api\BillPayments;
 interface BillInterface
 {
     public function getBillPayment(): BillPayments;
+    public function getPublicKey(): string;
 }
