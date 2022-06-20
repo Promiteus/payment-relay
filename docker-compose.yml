@@ -29,7 +29,7 @@ services:
     #  - db
     environment:
       APP_DEBUG: ${APP_DEBUG}
-      DB_HOST: crud_mysql
+      DB_HOST: db
       DB_PORT: ${DB_PORT} #Порт подключения к базе данных
       DB_DATABASE: ${DB_DATABASE} #Имя базы данных
       DB_USERNAME: ${DB_USERNAME} #Имя пользователя для подключения к базе данных
