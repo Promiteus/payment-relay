@@ -47,4 +47,14 @@ class PaymentController extends Controller
     final public function info(string $billId): JsonResponse {
         return $this->paymentService->getBillInfo($billId);
     }
+
+    /**
+     * Получить уведомление от сервера QIWI о статусе оплаты
+     * @param Request $request
+     * @return JsonResponse
+     */
+    final public function notify(Request $request): JsonResponse {
+        $body = $this->getJsonBody($request);
+        return $this->paymentService->billStatusNotify($body);
+    }
 }

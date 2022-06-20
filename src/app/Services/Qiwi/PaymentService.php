@@ -74,4 +74,12 @@ class PaymentService
 
         return response()->json($response, 200);
     }
+
+    /**
+     * @param array $body
+     * @return JsonResponse
+     */
+    final public function billStatusNotify(array $body): JsonResponse {
+        return response()->json([], 200);
+    }
 }
