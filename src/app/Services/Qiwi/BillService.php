@@ -5,7 +5,9 @@ namespace App\Services\Qiwi;
 
 
 use App\Services\Qiwi\Contracts\BillInterface;
+use Illuminate\Support\Facades\Log;
 use Qiwi\Api\BillPayments;
+
 
 /**
  * Class BillService
@@ -32,6 +34,7 @@ class BillService implements BillInterface
      */
     public function __construct(BillPayments $billPayments)
     {
+
         $this->billPayments = new BillPayments(config('services.qiwi.secret'));
     }
 
