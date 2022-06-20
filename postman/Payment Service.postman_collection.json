@@ -1,0 +1,167 @@
+{
+	"info": {
+		"_postman_id": "0b487b41-b0fb-4d0e-ab2d-bcf0e1082ba7",
+		"name": "Payment Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Управление счетами",
+			"item": [
+				{
+					"name": "POST create bill",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"billId\": \"34456-554434\",\n   \"amount\": \"1.00\",    \n   \"currency\": \"RUB\",        \n   \"comment\": \"Text comment\",  \n   \"expirationDateTime\": \"2020-06-21T09:02:00+03:00\",  \n   \"email\": \"rom3889@yandex.ru\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1010/api/qiwi/bill",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1010",
+							"path": [
+								"api",
+								"qiwi",
+								"bill"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET bill info",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1010/api/qiwi/info/34456-55443",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1010",
+							"path": [
+								"api",
+								"qiwi",
+								"info",
+								"34456-55443"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST cancel bill",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1010/api/qiwi/cancel/34456-55443",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1010",
+							"path": [
+								"api",
+								"qiwi",
+								"cancel",
+								"34456-55443"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Уведомления",
+			"item": [
+				{
+					"name": "POST notify bill status",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"billId\": \"34456-55443\",\n   \"amount\": \"1.00\",    \n   \"currency\": \"RUB\",        \n   \"comment\": \"Text comment\",  \n   \"expirationDateTime\": \"2020-06-21T09:02:00+03:00\",  \n   \"phone\": \"+79241071905\",\n   \"email\": \"test@example.com\",\n   \"account\": \"454678\"   \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1010/api/bill/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1010",
+							"path": [
+								"api",
+								"bill",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
