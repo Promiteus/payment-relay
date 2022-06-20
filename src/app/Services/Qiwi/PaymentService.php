@@ -12,11 +12,15 @@ use Qiwi\Api\BillPaymentsException;
  */
 class PaymentService
 {
+    private BillInterface $bill;
+
     /**
      * PaymentService constructor.
      * @param BillInterface $bill
      */
-    public function __construct(private BillInterface $bill) {}
+    public function __construct(BillInterface $bill) {
+        $this->bill = $bill;
+    }
 
     /**
      * @param array $body

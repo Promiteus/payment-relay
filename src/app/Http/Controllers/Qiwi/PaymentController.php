@@ -14,11 +14,14 @@ use Illuminate\Http\Request;
  */
 class PaymentController extends Controller
 {
+    private PaymentService $paymentService;
     /**
      * PaymentController constructor.
      * @param PaymentService $paymentService
      */
-    public function __construct(private PaymentService $paymentService) {}
+    public function __construct(PaymentService $paymentService) {
+        $this->paymentService = $paymentService;
+    }
 
     /**
      * Выставить счет

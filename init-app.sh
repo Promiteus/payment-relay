@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 echo 'Updating environment variables for docker...'
 cp src/.env .env
+sudo chmod -R 777 ./src/storage
 echo 'Clearing cache...'
 docker exec -it  pay-php-fpm bash -c "php artisan cache:clear"
 echo 'Clearing config...'

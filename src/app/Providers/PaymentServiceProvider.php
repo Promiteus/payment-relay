@@ -7,7 +7,6 @@ namespace App\Providers;
 use App\Services\Qiwi\BillService;
 use App\Services\Qiwi\Contracts\BillInterface;
 use Illuminate\Support\ServiceProvider;
-use Qiwi\Api\BillPayments;
 
 class PaymentServiceProvider extends ServiceProvider
 {

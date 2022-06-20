@@ -19,12 +19,12 @@ use App\Http\Controllers\Qiwi\PaymentController;
     return $request->user();
 });*/
 
-Route::group(function() {
-   Route::prefix('qiwi')->group(function() {
+
+Route::prefix('qiwi')->group(function() {
        Route::post('/bill', PaymentController::class.'@create');
        Route::post('/cancel/{billId}', PaymentController::class.'@cancel');
        Route::get('/info/{billId}', PaymentController::class.'@info');
-   });
-
-   Route::post('bill/status', PaymentController::class.'@notify');
 });
+
+Route::post('bill/status', PaymentController::class.'@notify');
+
