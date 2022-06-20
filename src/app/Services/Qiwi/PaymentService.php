@@ -32,11 +32,12 @@ class PaymentService
                 BillService::AMOUNT => $body[BillService::AMOUNT],
                 BillService::CURRENCY => 'RUB',
                 BillService::COMMENT => $body[BillService::COMMENT],
-                BillService::EXPIRATION_DATE => now()->addDay()->toString(),
+                BillService::EXPIRATION_DATE => $this->bill->getBillPayment()->getLifetimeByDay(1),
                 BillService::EMAIL => $body[BillService::EMAIL],
-                BillService::ACCOUNT => $body[BillService::ACCOUNT],
+                //BillService::ACCOUNT => $body[BillService::ACCOUNT] ?: '',
             ];
 
+            //dd($body[BillService::BILL_ID]);
             $response = $this->bill->getBillPayment()->createBill($body[BillService::BILL_ID], $params);
         } catch (BillPaymentsException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
