@@ -35,10 +35,11 @@ class InvoiceRepository
      * @param string $userId
      * @return array
      */
-    final public function getLastUserInvoice(string $userId): array {
+    final public function getLastUserInvoice(string $userId, string $status): array {
         try {
            $invoice = $this->invoice->newQuery()
                 ->where(Invoice::USER_ID, '=', $userId)
+                ->where(Invoice::STATUS, '=', $status)
                 ->orderBy(Invoice::CREATED_AT, 'desc')
                 ->firstOrFail();
            return $invoice->toArray();

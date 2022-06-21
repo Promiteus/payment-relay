@@ -4,7 +4,7 @@
 namespace App\Http\Controllers\Qiwi;
 
 use App\Http\Controllers\Controller;
-use App\Services\Qiwi\PaymentService;
+use App\Services\Qiwi\RequestPaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,12 +14,12 @@ use Illuminate\Http\Request;
  */
 class PaymentController extends Controller
 {
-    private PaymentService $paymentService;
+    private RequestPaymentService $paymentService;
     /**
      * PaymentController constructor.
-     * @param PaymentService $paymentService
+     * @param RequestPaymentService $paymentService
      */
-    public function __construct(PaymentService $paymentService) {
+    public function __construct(RequestPaymentService $paymentService) {
         $this->paymentService = $paymentService;
     }
 

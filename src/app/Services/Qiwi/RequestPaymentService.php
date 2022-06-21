@@ -8,15 +8,15 @@ use Illuminate\Http\JsonResponse;
 use Qiwi\Api\BillPaymentsException;
 
 /**
- * Class PaymentService
+ * Class RequestPaymentService
  * @package App\Services\Qiwi
  */
-class PaymentService
+class RequestPaymentService
 {
     private BillInterface $bill;
 
     /**
-     * PaymentService constructor.
+     * RequestPaymentService constructor.
      * @param BillInterface $bill
      */
     public function __construct(BillInterface $bill) {

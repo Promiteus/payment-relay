@@ -16,7 +16,7 @@ class Invoice extends Model
     public const CURRENCY = 'currency';
     public const PRICE = 'price';
     public const COMMENT = 'comment';
-    //public const  =
+    public const PURCHASE_CODE = 'purchase_code';
 
     public const TABLE_NAME = 'invoice';
 
