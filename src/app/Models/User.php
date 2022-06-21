@@ -54,4 +54,11 @@ class User extends Authenticatable
     ];
 
     protected $table = self::TABLE_NAME;
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    final public function invoices() {
+        return $this->hasMany(Invoice::class);
+    }
 }

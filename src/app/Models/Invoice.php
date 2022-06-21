@@ -16,6 +16,7 @@ class Invoice extends Model
     public const CURRENCY = 'currency';
     public const PRICE = 'price';
     public const COMMENT = 'comment';
+    //public const  =
 
     public const TABLE_NAME = 'invoice';
 
@@ -30,4 +31,11 @@ class Invoice extends Model
      * @var string
      */
     protected $table = self::TABLE_NAME;
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    final public function user() {
+        return $this->belongsTo(User::class);
+    }
 }
