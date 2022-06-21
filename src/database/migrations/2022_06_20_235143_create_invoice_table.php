@@ -19,8 +19,8 @@ class CreateInvoiceTable extends Migration
     {
         if (!Schema::hasTable(Invoice::TABLE_NAME)) {
             Schema::create(Invoice::TABLE_NAME, function (Blueprint $table) {
-                $table->uuid(Invoice::ID)->primary();
-                $table->string(Invoice::USER_ID, 200);
+                $table->string(Invoice::ID, 255)->primary();
+                $table->string(Invoice::USER_ID, 255);
                 $table->string(Invoice::STATUS, 10);
                 $table->string(Invoice::CURRENCY, 10);
                 $table->double(Invoice::PRICE)->default(1);

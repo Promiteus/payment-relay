@@ -20,7 +20,7 @@ class Invoice extends Model
     public const TABLE_NAME = 'invoice';
 
     /**
-     * @var string[]
+     * @var array<int, string>
      */
     protected $fillable = [
         self::ID, self::USER_ID, self::STATUS, self::CURRENCY, self::PRICE, self::COMMENT,

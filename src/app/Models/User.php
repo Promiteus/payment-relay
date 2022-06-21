@@ -2,15 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * Class User
+ * @package App\Models
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    public const TABLE_NAME = 'users';
+
+    public const DISABLES = 'disabled';
+    public const ID = 'id';
+    public const EMAIL = 'email';
+    public const PASSWORD = 'password';
+    public const REG_DATE = 'reg_date';
+    public const USER_NAME = 'user_name';
+    public const VERIFIED_EMAIL = 'verified_email';
+    public const CODE = 'code';
+    public const REMEMBER_TOKEN = 'remember_token';
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +33,14 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        self::ID,
+        self::DISABLES,
+        self::EMAIL,
+        self::PASSWORD,
+        self::REG_DATE,
+        self::USER_NAME,
+        self::VERIFIED_EMAIL,
+        self::CODE
     ];
 
     /**
@@ -29,16 +49,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        self::PASSWORD,
+        self::REMEMBER_TOKEN,
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    protected $table = self::TABLE_NAME;
 }
