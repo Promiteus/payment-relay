@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Handlers\Qiwi;
+use App\dto\OrderResponse;
 use App\dto\PayResponse;
-use App\Repository\InvoiceRepository;
 
 /**
  * Class PaymentHandlerBase
@@ -11,19 +11,28 @@ use App\Repository\InvoiceRepository;
 abstract class PaymentHandlerBase
 {
     public const STATUSES = ['WAITING', 'PAID', 'REJECTED'];
+    public const BILL_ID = 'billId';
+    public const PURCHASE_CODES = 'purchaseCodes';
+    public const USER_ID = 'userId';
+
+    public const MSG_EMPTY_ORDER_PARAMS = 'There are no order params!';
 
     /**
-     * $body = [
+     * $order = [
      *    'userId' => '1',
      *    'purchaseCodes' => ['90-011', '89-017'],
+     *    'billId' => '3920a84-33291'
      * ]
      *
      * Обработать заказ и вернуть данные для перехода на форму оплаты
-     * @param $body
+     * @param array $order
      * @return PayResponse
      */
-    final public function handleBill($body): PayResponse {
-       // $this->findLastInvoice()
+    final public function handleBill(array $order): PayResponse {
+       if ((!$order) || (empty($order))) {
+           return new PayResponse([], self::MSG_EMPTY_ORDER_PARAMS);
+       }
+
 
     }
 
