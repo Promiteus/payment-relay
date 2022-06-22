@@ -1,11 +1,8 @@
 <?php
 
-
 namespace App\Services\Qiwi;
 
-
 use App\Services\Qiwi\Contracts\BillInterface;
-use Illuminate\Support\Facades\Log;
 use Qiwi\Api\BillPayments;
 
 

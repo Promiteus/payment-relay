@@ -18,6 +18,24 @@ class PayResponse
     private string $error = '';
 
     /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError(): string
+    {
+        return $this->error;
+    }
+
+
+
+    /**
      * PayResponse constructor.
      * @param array $data
      * @param string $error
