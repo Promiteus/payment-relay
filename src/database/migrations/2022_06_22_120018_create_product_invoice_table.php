@@ -17,7 +17,7 @@ class CreateProductInvoiceTable extends Migration
     public function up()
     {
         if (Schema::hasTable(Invoice::TABLE_NAME) && Schema::hasTable(Product::TABLE_NAME)) {
-            Schema::create('product_invoice', function (Blueprint $table) {
+            Schema::create(ProductInvoice::TABLE_NAME, function (Blueprint $table) {
                 $table->string('id', 255)->primary();
                 $table->string('product_id', 255);
                 $table->string('invoice_id', 255);
@@ -42,6 +42,6 @@ class CreateProductInvoiceTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_invoice');
+        Schema::dropIfExists(ProductInvoice::TABLE_NAME);
     }
 }
