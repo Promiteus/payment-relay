@@ -43,6 +43,13 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
            if (!empty($invoice)) {
                $billStatus = $this->requestBillStatus($order[self::BILL_ID]);
 
+               if ($billStatus === 'WAITING') {
+
+               } else if ($billStatus === 'PAID') {
+
+               } else {
+
+               }
            }
        }
     }
