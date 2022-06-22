@@ -23,7 +23,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      *    'totalPrice' => 100.0,
      * ]
      *
-     * Обработать заказ и вернуть данные для перехода на форму оплаты
+     * Обработать заказ, выставить счет и вернуть данные для перехода на форму оплаты счета
      * @param array $order
      * @return PayResponse
      */
@@ -43,7 +43,8 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
            if (!empty($invoice)) {
 
-               /*Запросить у сервиса QIWI статус счета и вернуть ['status' => 'value', 'billId' => 'billValue', 'payUrl' => 'urlValue']*/
+               /*Запросить у сервиса QIWI статус счета и вернуть
+               ['status' => 'value', 'billId' => 'billValue', 'payUrl' => 'urlValue']*/
                $billStatus = $this->requestBillStatus($order[Common::BILL_ID]);
 
                $updateResult = $this->updateInvoice($billStatus, $order[Common::USER_ID]);
@@ -52,15 +53,11 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                    return new PayResponse($billStatus, '');
                }
 
-               if (($billStatus[Invoice::STATUS] === Common::PAID_STATUS) ||
-                   ($billStatus[Invoice::STATUS] === Common::EXPIRED_STATUS) ||
-                   ($billStatus[Invoice::STATUS] === Common::REJECTED_STATUS)) {
-
-                   return $this->createOrder($order);
-               }
-
+               /*Создать полностью новый счет*/
+               return $this->createOrder($order);
            }
 
+           /*Создать полностью новый счет*/
            return $this->createOrder($order);
        }
     }
