@@ -20,11 +20,6 @@ class CreateProductTable extends Migration
             $table->string(Product::NAME, 100);
             $table->string(Product::CODE, 100);
             $table->text(Product::DESCRIPTION);
-            $table->string(Product::INVOICE_ID, 255);
-            $table->foreign(Product::INVOICE_ID)
-                ->references(Invoice::ID)
-                ->on(Invoice::TABLE_NAME)
-                ->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -46,10 +46,9 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                /*Запросить у сервиса QIWI статус счета и вернуть ['status' => 'value', 'billId' => 'billValue', 'payUrl' => 'urlValue']*/
                $billStatus = $this->requestBillStatus($order[Common::BILL_ID]);
 
+               $updateResult = $this->updateInvoice($billStatus, $order[Common::USER_ID]);
+
                if ($billStatus[Invoice::STATUS] === Common::WAITING_STATUS) {
-
-                   $updateResult = $this->updateInvoice($billStatus, $order[Common::USER_ID]);
-
                    return new PayResponse($billStatus, '');
                }
 
