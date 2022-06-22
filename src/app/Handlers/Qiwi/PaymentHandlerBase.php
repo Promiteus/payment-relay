@@ -15,7 +15,10 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
     /**
      * $order = [
      *    'userId' => '1',
-     *    'purchaseCodes' => ['90-011', '89-017'],
+     *    'products' => [
+     *         items => [
+     *          ['code' => '90-444', 'count' => 1],
+     *     ],
      *    'billId' => '3920a84-33291',
      *    'totalPrice' => 100.0,
      * ]
@@ -29,7 +32,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
            return new PayResponse([], Common::MSG_EMPTY_ORDER_PARAMS);
        }
 
-       if ((($order[Common::BILL_ID] === '') && empty($order[Common::PURCHASE_CODES])) || ($order[Common::USER_ID] === '')) {
+       if ((($order[Common::BILL_ID] === '') && empty($order[Common::PRODUCTS][Common::ITEMS])) || ($order[Common::USER_ID] === '')) {
            return new PayResponse([], Common::MSG_EMPTY_BOTH_ORDER_PARAMS);
        }
 
@@ -48,29 +51,36 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                    $updateResult = $this->updateInvoice($billStatus, $order[Common::USER_ID]);
 
                    return new PayResponse($billStatus, '');
-
                }
 
                if (($billStatus[Invoice::STATUS] === Common::PAID_STATUS) ||
                    ($billStatus[Invoice::STATUS] === Common::EXPIRED_STATUS) ||
                    ($billStatus[Invoice::STATUS] === Common::REJECTED_STATUS)) {
 
-                   /*Создать новый счет на сервере QIWI*/
-                   $payResponse = $this->requestCreateBill($order);
-
-                   if ($payResponse->getError() === '') {
-                       /*Создать новый счет*/
-                       return $this->createInvoice($payResponse->getData(), $order[Common::USER_ID]);
-                   }
-
-                   return new PayResponse([], $payResponse->getError());
-
+                   return $this->createOrder($order);
                }
 
-           } else {
-
            }
+
+           return $this->createOrder($order);
        }
+    }
+
+    /**
+     * Создать полностью новый счет
+     * @param array $order
+     * @return PayResponse
+     */
+    private function createOrder(array $order): PayResponse {
+        /*Создать новый счет на сервере QIWI*/
+        $payResponse = $this->requestCreateBill($order);
+
+        if ($payResponse->getError() === '') {
+            /*Создать новый счет в БД*/
+            return $this->createInvoice($payResponse->getData(), $order[Common::USER_ID]);
+        }
+
+        return new PayResponse([], $payResponse->getError());
     }
 
     /**
