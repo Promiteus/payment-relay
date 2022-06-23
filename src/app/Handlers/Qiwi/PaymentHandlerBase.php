@@ -17,7 +17,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      *    'userId' => '1',
      *    'products' => [
      *         items => [
-     *          ['code' => '90-444', 'count' => 1],
+     *          ['code' => '90-444', 'count' => 1, 'name' => 'товар 1'],
      *     ],
      *    'billId' => '3920a84-33291',
      *    'totalPrice' => 100.0,
@@ -47,14 +47,22 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                ['status' => 'value', 'billId' => 'billValue', 'payUrl' => 'urlValue']*/
                $billStatus = $this->requestBillStatus($order[Common::BILL_ID]);
 
-               $updateResult = $this->updateInvoice($billStatus, $order[Common::USER_ID]);
+               if ($billStatus[Invoice::STATUS] !== '') {
+                   $updatedInvoice = $this->updateInvoice($billStatus, $billStatus[Invoice::STATUS], $order[Common::USER_ID]);
 
-               if ($billStatus[Invoice::STATUS] === Common::WAITING_STATUS) {
-                   return new PayResponse($billStatus, '');
+                   if ($updatedInvoice) {
+                       if ($billStatus[Invoice::STATUS] === Common::WAITING_STATUS) {
+                           return new PayResponse($billStatus, '');
+                       }
+
+                       /*Создать полностью новый счет*/
+                       return $this->createOrder($order);
+                   }
+
+                   return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
                }
 
-               /*Создать полностью новый счет*/
-               return $this->createOrder($order);
+               return new PayResponse([], Common::MSG_CANT_GET_INVOICE_STATUS_FROM_SERVER);
            }
 
            /*Создать полностью новый счет*/
@@ -97,10 +105,11 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
     /**
      * Обновить заказ в базе для текущего пользователя
      * @param array $invoice
+     * @param string $status
      * @param string $userId
-     * @return array
+     * @return bool
      */
-    abstract public function updateInvoice(array $invoice, string $userId): array;
+    abstract public function updateInvoice(array $invoice, string $status, string $userId): bool;
 
     /**
      * Создать новый заказ в базе для текущего пользователя
