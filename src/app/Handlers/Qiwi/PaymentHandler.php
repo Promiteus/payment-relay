@@ -3,19 +3,44 @@
 
 namespace App\Handlers\Qiwi;
 
+use App\dto\PayResponse;
+use App\Repository\InvoiceRepository;
+use App\Services\Constants\Common;
+use App\Services\Qiwi\RequestPaymentService;
+
 /**
  * Class PaymentHandler
  * @package App\Handlers\Qiwi
  */
 class PaymentHandler extends PaymentHandlerBase
 {
+    /**
+     * @var RequestPaymentService
+     */
+    private RequestPaymentService $requestPaymentService;
+    /**
+     * @var InvoiceRepository
+     */
+    private InvoiceRepository $invoiceRepository;
+
+    public function __construct(RequestPaymentService $requestPaymentService, InvoiceRepository $invoiceRepository) {
+        $this->requestPaymentService = $requestPaymentService;
+        $this->invoiceRepository = $invoiceRepository;
+    }
 
     /**
-     * @inheritDoc
+     * @param string $userId
+     * @param string $billId
+     * @return array
+     * @throws \Exception
      */
-    public function findLastInvoice(string $userId, string $billId): array
+    final public function findInvoice(string $userId, string $billId): array
     {
-        // TODO: Implement findLastInvoice() method.
+       if (!$userId || ($userId === '') || !$billId || ($billId === '')) {
+           throw new \Exception(sprintf(Common::MSG_NOT_ALL_PARAMETERS_FOR_METHOD, __METHOD__));
+       }
+
+       return $this->invoiceRepository->getUserInvoiceByBillId($userId, $billId);
     }
 
 
@@ -48,7 +73,7 @@ class PaymentHandler extends PaymentHandlerBase
     /**
      * @inheritDoc
      */
-    public function requestBillStatus(string $billId): string
+    public function requestBillStatus(string $billId): array
     {
         // TODO: Implement requestBillStatus() method.
     }
@@ -56,16 +81,18 @@ class PaymentHandler extends PaymentHandlerBase
     /**
      * @inheritDoc
      */
-    public function updateInvoice(array $invoice, string $userId): bool
+    public function updateInvoice(array $invoice, string $status, string $userId): bool
     {
         // TODO: Implement updateInvoice() method.
     }
 
+
     /**
-     * @inheritDoc
+     * @param array $params
+     * @return PayResponse
      */
-    public function createInvoice(array $invoice, string $userId): array
+    public function requestCreateBill(array $params): PayResponse
     {
-        // TODO: Implement createInvoice() method.
+        // TODO: Implement requestCreateBill() method.
     }
 }

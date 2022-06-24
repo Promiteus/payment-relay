@@ -38,35 +38,39 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
        if ($order[Common::BILL_ID] !== '') {
 
-           /*Получить последний счет из БД для пользователя user_id*/
-           $invoice = $this->findLastInvoice($order[Common::USER_ID], $order[Common::BILL_ID]);
+           try {
+               /*Получить последний счет из БД для пользователя user_id*/
+               $invoice = $this->findLastInvoice($order[Common::USER_ID], $order[Common::BILL_ID]);
 
-           if (!empty($invoice)) {
+               if (!empty($invoice)) {
 
-               /*Запросить у сервиса QIWI статус счета и вернуть
-               ['status' => 'value', 'billId' => 'billValue', 'payUrl' => 'urlValue']*/
-               $billStatus = $this->requestBillStatus($order[Common::BILL_ID]);
+                   /*Запросить у сервиса QIWI статус счета и вернуть
+                   ['status' => 'value', 'billId' => 'billValue', 'payUrl' => 'urlValue']*/
+                   $billStatus = $this->requestBillStatus($order[Common::BILL_ID]);
 
-               if ($billStatus[Invoice::STATUS] !== '') {
-                   $updatedInvoice = $this->updateInvoice($billStatus, $billStatus[Invoice::STATUS], $order[Common::USER_ID]);
+                   if ($billStatus[Invoice::STATUS] !== '') {
+                       $updatedInvoice = $this->updateInvoice($billStatus, $billStatus[Invoice::STATUS], $order[Common::USER_ID]);
 
-                   if ($updatedInvoice) {
-                       if ($billStatus[Invoice::STATUS] === Common::WAITING_STATUS) {
-                           return new PayResponse($billStatus, '');
+                       if ($updatedInvoice) {
+                           if ($billStatus[Invoice::STATUS] === Common::WAITING_STATUS) {
+                               return new PayResponse($billStatus, '');
+                           }
+
+                           /*Создать полностью новый счет*/
+                           return $this->createOrder($order);
                        }
 
-                       /*Создать полностью новый счет*/
-                       return $this->createOrder($order);
+                       return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
                    }
 
-                   return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
+                   return new PayResponse([], Common::MSG_CANT_GET_INVOICE_STATUS_FROM_SERVER);
                }
 
-               return new PayResponse([], Common::MSG_CANT_GET_INVOICE_STATUS_FROM_SERVER);
-           }
+               /*Создать полностью новый счет*/
+               return $this->createOrder($order);
+           } catch (\Exception $e) {
 
-           /*Создать полностью новый счет*/
-           return $this->createOrder($order);
+           }
        }
     }
 
@@ -93,7 +97,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      * @param string $billId
      * @return array
      */
-    abstract public function findLastInvoice(string $userId, string $billId): array;
+    abstract public function findInvoice(string $userId, string $billId): array;
 
     /**
      * Запросить статус покупки у платежного сервера
@@ -111,13 +115,6 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      */
     abstract public function updateInvoice(array $invoice, string $status, string $userId): bool;
 
-    /**
-     * Создать новый заказ в базе для текущего пользователя
-     * @param array $invoice
-     * @param string $userId
-     * @return PayResponse
-     */
-    abstract public function createInvoice(array $invoice, string $userId): PayResponse;
 
     /**
      * @param array $params
