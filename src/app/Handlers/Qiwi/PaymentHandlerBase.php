@@ -26,7 +26,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      * @param array $order
      * @return PayResponse
      */
-    public function handleBill(array $order): PayResponse {
+    final public function handleBill(array $order): PayResponse {
        if ((!$order) || (empty($order))) {
            return new PayResponse([], Common::MSG_EMPTY_ORDER_PARAMS);
        }

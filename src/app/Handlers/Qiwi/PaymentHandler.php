@@ -116,8 +116,25 @@ class PaymentHandler extends PaymentHandlerBase
         return $this->requestPaymentService->createBill($params);
     }
 
-    public function createInvoice(array $invoice, string $userId): PayResponse
+    /**
+     * @param array $invoice
+     * @param string $userId
+     * @return PayResponse
+     * @throws \Exception
+     */
+    final public function createInvoice(array $invoice, string $userId): PayResponse
     {
-        // TODO: Implement createInvoice() method.
+        $data = [
+            Invoice::ID => $invoice[Common::BILL_ID],
+            Invoice::STATUS => $invoice[Invoice::STATUS]->value,
+            Invoice::USER_ID => $userId,
+            Invoice::PRICE => 0,
+            Invoice::COMMENT => $invoice[Invoice::COMMENT],
+            Invoice::CURRENCY => $invoice[Invoice::CURRENCY],
+        ];
+        $result = $this->invoiceRepository->addInvoice($data);
+        if (!$result) {
+            throw new \Exception(Common::MSG_CANT_CREATE_INVOICE);
+        }
     }
 }
