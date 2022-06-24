@@ -27,4 +27,10 @@ class Product extends Model
         self::DESCRIPTION,
         self::ID
     ];
+
+    final public function invoices() {
+        return $this->belongsToMany(Invoice::class);
+    }
+
+
 }

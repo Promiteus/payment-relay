@@ -23,4 +23,12 @@ class ProductInvoice extends Model
         self::PRODUCT_ID,
         self::ID
     ];
+
+    public function product() {
+        return $this->belongsTo(Product::class, self::PRODUCT_ID);
+    }
+
+    public function invoice() {
+        return $this->belongsTo(Invoice::class, self::INVOICE_ID);
+    }
 }
