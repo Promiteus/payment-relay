@@ -17,6 +17,7 @@ class AlterTableProductsAddPriceField extends Migration
         if (Schema::hasTable(Product::TABLE_NAME)) {
             Schema::table(Product::TABLE_NAME, function (Blueprint $table) {
                 $table->double(Product::PRICE)->default(0);
+                $table->string(Product::DESCRIPTION)->nullable()->change();
             });
         }
     }
