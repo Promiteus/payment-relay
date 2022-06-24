@@ -47,19 +47,19 @@ class RequestPaymentService
 
     /**
      * @param string $billId
-     * @return JsonResponse
+     * @return PayResponse
      */
-    final public function getBillInfo(string $billId): JsonResponse {
+    final public function getBillInfo(string $billId): PayResponse {
         try {
             if ((!$billId) || ($billId === '')) {
                 throw new \Exception(BillService::MSG_EMPTY_BILL_ID);
             }
             $response = $this->bill->getBillPayment()->getBillInfo($billId);
         } catch (BillPaymentsException | \Exception $e) {
-            return response()->json((new PayResponse([], $e->getMessage()))->toArray(), 400);
+            return new PayResponse([], $e->getMessage());
         }
 
-        return response()->json((new PayResponse($response, ''))->toArray(), 200);
+        return new PayResponse($response, '');
     }
 
     /**

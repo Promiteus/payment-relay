@@ -4,6 +4,7 @@
 namespace App\Handlers\Qiwi;
 
 use App\dto\PayResponse;
+use App\Models\Invoice;
 use App\Repository\InvoiceRepository;
 use App\Services\Constants\Common;
 use App\Services\Qiwi\RequestPaymentService;
@@ -73,9 +74,17 @@ class PaymentHandler extends PaymentHandlerBase
     /**
      * @inheritDoc
      */
-    public function requestBillStatus(string $billId): array
+    final public function requestBillStatus(string $billId): array
     {
-        // TODO: Implement requestBillStatus() method.
+        $response = $this->requestPaymentService->getBillInfo($billId);
+        if ($response->getError() !== '') {
+            throw new \Exception($response->getError());
+        }
+        return [
+            Invoice::STATUS => $response[Invoice::STATUS]->value,
+            Common::BILL_ID => $billId,
+            Common::PAY_URL => $response[Common::PAY_URL],
+        ];
     }
 
     /**
@@ -94,5 +103,10 @@ class PaymentHandler extends PaymentHandlerBase
     public function requestCreateBill(array $params): PayResponse
     {
         // TODO: Implement requestCreateBill() method.
+    }
+
+    public function createInvoice(array $invoice, string $userId): PayResponse
+    {
+        // TODO: Implement createInvoice() method.
     }
 }

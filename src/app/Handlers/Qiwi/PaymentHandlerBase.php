@@ -40,7 +40,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
            try {
                /*Получить последний счет из БД для пользователя user_id*/
-               $invoice = $this->findLastInvoice($order[Common::USER_ID], $order[Common::BILL_ID]);
+               $invoice = $this->findInvoice($order[Common::USER_ID], $order[Common::BILL_ID]);
 
                if (!empty($invoice)) {
 
@@ -69,7 +69,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                /*Создать полностью новый счет*/
                return $this->createOrder($order);
            } catch (\Exception $e) {
-
+               return new PayResponse([], $e->getMessage());
            }
        }
     }
@@ -121,4 +121,12 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      * @return PayResponse
      */
     abstract public function requestCreateBill(array $params): PayResponse;
+
+    /**
+     * @param array $invoice
+     * @param string $userId
+     * @return PayResponse
+     */
+    abstract public function createInvoice(array $invoice, string $userId): PayResponse;
+
 }

@@ -14,6 +14,8 @@ class Common
     public const COUNT = 'count';
     public const ITEMS = 'items';
     public const USER_ID = 'userId';
+    public const PAY_URL = 'payUrl';
+    public const VALUE = 'value';
 
     public const MSG_EMPTY_ORDER_PARAMS = 'There are no order params!';
     public const MSG_EMPTY_BOTH_ORDER_PARAMS = 'Both order params are empty!';
