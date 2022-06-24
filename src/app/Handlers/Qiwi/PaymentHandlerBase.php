@@ -108,12 +108,11 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
     /**
      * Обновить заказ в базе для текущего пользователя
-     * @param array $invoice
+     * @param string $billId
      * @param string $status
-     * @param string $userId
      * @return bool
      */
-    abstract public function updateInvoice(array $invoice, string $status, string $userId): bool;
+    abstract public function updateInvoice(string $billId, string $status): bool;
 
 
     /**

@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Repository\InvoiceRepository;
 use App\Services\Constants\Common;
 use App\Services\Qiwi\RequestPaymentService;
+use JetBrains\PhpStorm\ArrayShape;
 
 /**
  * Class PaymentHandler
@@ -72,8 +73,11 @@ class PaymentHandler extends PaymentHandlerBase
      */
 
     /**
-     * @inheritDoc
+     * @param string $billId
+     * @return array
+     * @throws \Exception
      */
+    #[ArrayShape([Invoice::STATUS => "mixed", Common::BILL_ID => "string", Common::PAY_URL => "mixed"])]
     final public function requestBillStatus(string $billId): array
     {
         $response = $this->requestPaymentService->getBillInfo($billId);
@@ -88,11 +92,16 @@ class PaymentHandler extends PaymentHandlerBase
     }
 
     /**
-     * @inheritDoc
+     * @param string $billId
+     * @param string $status
+     * @return bool
      */
-    public function updateInvoice(array $invoice, string $status, string $userId): bool
+    final public function updateInvoice(string $billId, string $status): bool
     {
-        // TODO: Implement updateInvoice() method.
+        if (($billId === '') || ($status === '')) {
+            return false;
+        }
+        return $this->invoiceRepository->updateInvoice($billId, $status);
     }
 
 
