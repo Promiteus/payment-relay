@@ -24,10 +24,16 @@ class ProductInvoice extends Model
         self::ID
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function product() {
         return $this->belongsTo(Product::class, self::PRODUCT_ID);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function invoice() {
         return $this->belongsTo(Invoice::class, self::INVOICE_ID);
     }

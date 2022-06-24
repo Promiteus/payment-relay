@@ -28,6 +28,9 @@ class Product extends Model
         self::ID
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     final public function invoices() {
         return $this->belongsToMany(Invoice::class);
     }
