@@ -30,7 +30,7 @@ class PaymentController extends Controller
      */
     final public function create(Request $request): JsonResponse {
         $body = $this->getJsonBody($request);
-        return $this->paymentService->createBill($body);
+       // return $this->paymentService->createBill($body);
     }
 
     /**

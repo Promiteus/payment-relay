@@ -27,7 +27,7 @@ class RequestPaymentService
      * @param array $body
      * @return JsonResponse
      */
-    final public function createBill(array $body): JsonResponse  {
+    final public function createBill(array $body): PayResponse  {
         try {
             $params = [
                 BillService::AMOUNT => $body[BillService::AMOUNT],
@@ -39,10 +39,10 @@ class RequestPaymentService
 
             $response = $this->bill->getBillPayment()->createBill($body[BillService::BILL_ID], $params);
         } catch (BillPaymentsException | \Exception $e) {
-            return response()->json((new PayResponse([], $e->getMessage()))->toArray(), 400);
+            return new PayResponse([], $e->getMessage());
         }
 
-        return response()->json((new PayResponse($response, ''))->toArray(), 200);
+        return new PayResponse($response, '');
     }
 
     /**

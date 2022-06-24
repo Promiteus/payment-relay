@@ -9,6 +9,7 @@ use App\Repository\InvoiceRepository;
 use App\Services\Constants\Common;
 use App\Services\Qiwi\RequestPaymentService;
 use JetBrains\PhpStorm\ArrayShape;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class PaymentHandler
@@ -109,9 +110,10 @@ class PaymentHandler extends PaymentHandlerBase
      * @param array $params
      * @return PayResponse
      */
-    public function requestCreateBill(array $params): PayResponse
+    final public function requestCreateBill(array $params): PayResponse
     {
-        // TODO: Implement requestCreateBill() method.
+        $params[Common::BILL_ID] = Uuid::uuid4();
+        return $this->requestPaymentService->createBill($params);
     }
 
     public function createInvoice(array $invoice, string $userId): PayResponse

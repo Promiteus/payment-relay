@@ -16,7 +16,6 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      * $order = [
      *    'userId' => '1',
      *    'products' => [
-     *         items => [
      *          ['code' => '90-444', 'count' => 1, 'name' => 'товар 1'],
      *     ],
      *    'billId' => '3920a84-33291',
@@ -49,7 +48,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                    $billStatus = $this->requestBillStatus($order[Common::BILL_ID]);
 
                    if ($billStatus[Invoice::STATUS] !== '') {
-                       $updatedInvoice = $this->updateInvoice($billStatus, $billStatus[Invoice::STATUS], $order[Common::USER_ID]);
+                       $updatedInvoice = $this->updateInvoice($order[Common::BILL_ID], $billStatus[Invoice::STATUS]);
 
                        if ($updatedInvoice) {
                            if ($billStatus[Invoice::STATUS] === Common::WAITING_STATUS) {
