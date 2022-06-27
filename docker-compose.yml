@@ -41,22 +41,22 @@ services:
       - dating-net
 
 
-  #db:
-    #image: postgres
-    #container_name: postgresdb_dating
-    #environment:
-    #    - POSTGRES_USER=sa
-    #    - POSTGRES_PASSWORD=postgres
-    #    - POSTGRES_DB=testdb
-    #    - PGDATA=/var/lib/postgresql/data/pgdata
-    #ports:
-    #    - 5000:5432
-    #volumes:
-    #    - pgdata:/var/lib/postgresql/data
-    #healthcheck:
-    #    test: [ "CMD-SHELL", "pg_isready -U sa -d testdb" ]
-    #    interval: 10s
-    #    timeout: 5s
-    #    retries: 5
-    #networks:
-    #    - dating-net
+  db:
+    image: postgres
+    container_name: postgresdb_dating
+    environment:
+        - POSTGRES_USER=sa
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=testdb
+        - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+        - 5000:5432
+    volumes:
+        - pgdata:/var/lib/postgresql/data
+    healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U sa -d testdb" ]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+    networks:
+        - dating-net
