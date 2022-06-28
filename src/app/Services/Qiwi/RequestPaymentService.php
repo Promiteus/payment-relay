@@ -25,7 +25,7 @@ class RequestPaymentService
 
     /**
      * @param array $body
-     * @return JsonResponse
+     * @return PayResponse
      */
     final public function createBill(array $body): PayResponse  {
         try {
@@ -50,6 +50,7 @@ class RequestPaymentService
      * @return PayResponse
      */
     final public function getBillInfo(string $billId): PayResponse {
+        $response = [];
         try {
             if ((!$billId) || ($billId === '')) {
                 throw new \Exception(BillService::MSG_EMPTY_BILL_ID);

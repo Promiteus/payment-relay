@@ -19,15 +19,7 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(BillInterface::class, BillService::class);
 
-        $this->app->singleton(ProductInvoiceService::class, ProductInvoiceService::class);
-
-        $this->app->singleton(PaymentHandlerBase::class, function () {
-            return new PaymentHandler(
-                new RequestPaymentService(app()->make(BillInterface::class)),
-                app()->make(ProductInvoiceService::class));
-        });
     }
 
     /**
@@ -37,7 +29,19 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->app->singleton(BillInterface::class, BillService::class);
+
+        $this->app->singleton(ProductInvoiceService::class, ProductInvoiceService::class);
+
+        $this->app->singleton(RequestPaymentService::class, function() {
+            return new RequestPaymentService(app()->make(BillInterface::class));
+        });
+
+        $this->app->singleton(PaymentHandler::class, function () {
+            return new PaymentHandler(
+                app()->make(RequestPaymentService::class),
+                app()->make(ProductInvoiceService::class));
+        });
     }
 
 }

@@ -48,7 +48,7 @@ class PaymentController extends Controller
      * @return JsonResponse
      */
     final public function info(string $billId): JsonResponse {
-        return response()->json( $this->paymentService->getBillInfo($billId), 200);
+        return response()->json( $this->paymentService->getBillInfo($billId)->toArray(), 200);
     }
 
     /**
