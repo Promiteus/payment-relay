@@ -172,7 +172,7 @@ class PaymentHandler extends PaymentHandlerBase
                 ProductInvoice::UPDATED_AT => Carbon::now(),
                 ProductInvoice::CREATED_AT => Carbon::now(),
             ];
-        });
+        })->toArray();
 
         $result = $this->productInvoiceRepository
             ->add($productInvoiceData)
