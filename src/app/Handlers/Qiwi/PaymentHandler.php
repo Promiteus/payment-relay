@@ -44,11 +44,11 @@ class PaymentHandler extends PaymentHandlerBase
         RequestPaymentService $requestPaymentService,
         InvoiceRepository $invoiceRepository,
         ProductInvoiceRepository $productInvoiceRepository,
-        ProductInvoice $productInvoice
+        ProductRepository $productRepository
     ) {
         $this->requestPaymentService = $requestPaymentService;
         $this->invoiceRepository = $invoiceRepository;
-        $this->productRepository = $productInvoice;
+        $this->productRepository = $productRepository;
         $this->productInvoiceRepository = $productInvoiceRepository;
     }
 

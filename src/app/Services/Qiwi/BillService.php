@@ -26,19 +26,17 @@ class BillService implements BillInterface
 
     /**
      * BillService constructor.
-     * @param BillPayments $billPayments
      * @throws \ErrorException
      */
-    public function __construct(BillPayments $billPayments)
+    public function __construct()
     {
-
         $this->billPayments = new BillPayments(config('services.qiwi.secret'));
     }
 
     /**
      * @return BillPayments
      */
-    public function getBillPayment(): BillPayments
+    final public function getBillPayment(): BillPayments
     {
         return $this->billPayments;
     }
@@ -46,7 +44,7 @@ class BillService implements BillInterface
     /**
      * @return string
      */
-    public function getPublicKey(): string {
+    final public function getPublicKey(): string {
         return config('services.qiwi.public');
     }
 }

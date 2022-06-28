@@ -24,8 +24,9 @@ class ProductRepository
 
     /**
      * @param array $codes
+     * @return array
      */
-    final public function getProductsByCodes(array $codes) {
+    final public function getProductsByCodes(array $codes): array {
         $this->product->newQuery()->where(Product::CODE, 'in', $codes)->get()->toArray();
     }
 }
