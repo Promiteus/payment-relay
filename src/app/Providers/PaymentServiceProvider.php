@@ -9,6 +9,7 @@ use App\Handlers\Qiwi\PaymentHandlerBase;
 use App\Repository\InvoiceRepository;
 use App\Repository\ProductInvoiceRepository;
 use App\Repository\ProductRepository;
+use App\Services\ProductInvoiceService;
 use App\Services\Qiwi\BillService;
 use App\Services\Qiwi\Contracts\BillInterface;
 use App\Services\Qiwi\RequestPaymentService;
@@ -25,9 +26,7 @@ class PaymentServiceProvider extends ServiceProvider
 
         $this->app->singleton(PaymentHandlerBase::class, new PaymentHandler(
             new RequestPaymentService(app()->make(BillInterface::class)),
-            app()->make(InvoiceRepository::class),
-            app()->make(ProductInvoiceRepository::class),
-            app()->make(ProductRepository::class)
+            app()->make(ProductInvoiceService::class)
         ));
     }
 

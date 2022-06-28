@@ -96,6 +96,20 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
         return new PayResponse([], $payResponse->getError());
     }
 
+
+    /**
+     * Запросить статус покупки у платежного сервера
+     * @param string $billId
+     * @return array
+     */
+    abstract public function requestBillStatus(string $billId): array;
+
+    /**
+     * @param array $params
+     * @return PayResponse
+     */
+    abstract public function requestCreateBill(array $params): PayResponse;
+
     /**
      * Найти последний выставленный счет по коду заказа
      * @param string $userId
@@ -104,12 +118,6 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      */
     abstract public function findInvoice(string $userId, string $billId): array;
 
-    /**
-     * Запросить статус покупки у платежного сервера
-     * @param string $billId
-     * @return array
-     */
-    abstract public function requestBillStatus(string $billId): array;
 
     /**
      * Обновить заказ в базе для текущего пользователя
@@ -120,11 +128,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
     abstract public function updateInvoice(string $billId, string $status): bool;
 
 
-    /**
-     * @param array $params
-     * @return PayResponse
-     */
-    abstract public function requestCreateBill(array $params): PayResponse;
+
 
     /**
      * @param array $invoice
