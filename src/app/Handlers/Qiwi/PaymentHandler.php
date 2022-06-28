@@ -13,6 +13,7 @@ use App\Repository\ProductRepository;
 use App\Services\Constants\Common;
 use App\Services\Qiwi\RequestPaymentService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Uuid\Uuid;
 
@@ -157,11 +158,15 @@ class PaymentHandler extends PaymentHandlerBase
             throw new \Exception(Common::MSG_EMPTY_PRODUCTS);
         }
 
+        /*Транзакция заполнения таблиц product_invoice и invoice*/
+        DB::beginTransaction();
+
         $productIds = $this->productRepository->getProductsByCodes(collect($order[Common::PRODUCTS])->map(function ($item) {
             return $item[Product::CODE];
         })->toArray());
 
         if (empty($productIds)) {
+            DB::rollBack();
             throw new \Exception(Common::MSG_PRODUCTS_WITH_SUCH_CODES_NOT_FOUND);
         }
 
@@ -181,8 +186,11 @@ class PaymentHandler extends PaymentHandlerBase
             ->insert($inv);
 
         if (!$result) {
+            DB::rollBack();
             throw new \Exception(Common::MSG_CANT_CREATE_INVOICE);
         }
+
+        DB::commit();
 
         return $inv;
     }
