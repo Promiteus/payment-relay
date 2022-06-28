@@ -40,7 +40,7 @@ class PayResponse
      * @param array $data
      * @param string $error
      */
-    public function __construct(array $data, string $error) {
+    public function __construct(array $data, string $error = '') {
         $this->data = $data;
         $this->error = $error;
     }

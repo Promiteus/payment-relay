@@ -139,11 +139,20 @@ class PaymentHandler extends PaymentHandlerBase
     /**
      * @param array $invoice
      * @param array $order
-     * @return PayResponse
+     * @return array
      * @throws \Exception
      */
-    final public function createInvoice(array $invoice, array $order): PayResponse
+    final public function createInvoice(array $invoice, array $order): array
     {
+        $inv = [
+            Invoice::ID => $invoice[Common::BILL_ID],
+            Invoice::STATUS => $invoice[Invoice::STATUS]->value,
+            Invoice::USER_ID => $order[Common::USER_ID],
+            Invoice::PRICE => 0,
+            Invoice::COMMENT => $invoice[Invoice::COMMENT],
+            Invoice::CURRENCY => $invoice[Invoice::CURRENCY],
+        ];
+
         if (empty($order[Common::PRODUCTS])) {
             throw new \Exception(Common::MSG_EMPTY_PRODUCTS);
         }
@@ -165,19 +174,16 @@ class PaymentHandler extends PaymentHandlerBase
             ];
         });
 
-        $inv = [
-            Invoice::ID => $invoice[Common::BILL_ID],
-            Invoice::STATUS => $invoice[Invoice::STATUS]->value,
-            Invoice::USER_ID => $order[Common::USER_ID],
-            Invoice::PRICE => 0,
-            Invoice::COMMENT => $invoice[Invoice::COMMENT],
-            Invoice::CURRENCY => $invoice[Invoice::CURRENCY],
-        ];
-        $result = $this->invoiceRepository->addInvoice($inv);
+        $result = $this->productInvoiceRepository
+            ->add($productInvoiceData)
+            ->invoice()
+            ->newQuery()
+            ->insert($inv);
+
         if (!$result) {
             throw new \Exception(Common::MSG_CANT_CREATE_INVOICE);
         }
 
-        return new PayResponse($inv, '');
+        return $inv;
     }
 }
