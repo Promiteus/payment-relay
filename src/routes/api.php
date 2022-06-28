@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Qiwi\PaymentController;
 
@@ -27,4 +27,6 @@ Route::prefix('qiwi')->group(function() {
 });
 
 Route::post('bill/status', PaymentController::class.'@notify');
+
+Route::get('products', ProductController::class.'@getAll');
 
