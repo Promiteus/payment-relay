@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Repository;
+namespace App\Repositories;
 
 use App\Models\Product;
 
@@ -27,6 +27,6 @@ class ProductRepository
      * @return array
      */
     final public function getProductsByCodes(array $codes): array {
-        $this->product->newQuery()->where(Product::CODE, 'in', $codes)->get()->toArray();
+       return $this->product->newQuery()->where(Product::CODE, 'in', $codes)->get()->toArray();
     }
 }

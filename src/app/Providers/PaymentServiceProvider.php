@@ -6,9 +6,6 @@ namespace App\Providers;
 
 use App\Handlers\Qiwi\PaymentHandler;
 use App\Handlers\Qiwi\PaymentHandlerBase;
-use App\Repository\InvoiceRepository;
-use App\Repository\ProductInvoiceRepository;
-use App\Repository\ProductRepository;
 use App\Services\ProductInvoiceService;
 use App\Services\Qiwi\BillService;
 use App\Services\Qiwi\Contracts\BillInterface;
@@ -24,10 +21,13 @@ class PaymentServiceProvider extends ServiceProvider
     {
         $this->app->singleton(BillInterface::class, BillService::class);
 
-        $this->app->singleton(PaymentHandlerBase::class, new PaymentHandler(
-            new RequestPaymentService(app()->make(BillInterface::class)),
-            app()->make(ProductInvoiceService::class)
-        ));
+        $this->app->singleton(ProductInvoiceService::class, ProductInvoiceService::class);
+
+        $this->app->singleton(PaymentHandlerBase::class, function () {
+            return new PaymentHandler(
+                new RequestPaymentService(app()->make(BillInterface::class)),
+                app()->make(ProductInvoiceService::class));
+        });
     }
 
     /**

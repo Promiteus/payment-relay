@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repositories;
 
 use App\Models\Invoice;
-use App\Models\ProductInvoice;
-use Illuminate\Support\Facades\DB;
+
 
 /**
  * Class InvoiceRepository

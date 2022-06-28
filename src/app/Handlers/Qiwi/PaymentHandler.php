@@ -26,7 +26,11 @@ class PaymentHandler extends PaymentHandlerBase
      */
     private ProductInvoiceService $productInvoiceService;
 
-
+    /**
+     * PaymentHandler constructor.
+     * @param RequestPaymentService $requestPaymentService
+     * @param ProductInvoiceService $productInvoiceService
+     */
     public function __construct(
         RequestPaymentService $requestPaymentService,
         ProductInvoiceService $productInvoiceService

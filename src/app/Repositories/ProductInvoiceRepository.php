@@ -1,10 +1,9 @@
 <?php
 
 
-namespace App\Repository;
+namespace App\Repositories;
 
 use App\Models\ProductInvoice;
-use Carbon\Carbon;
 
 /**
  * Class ProductInvoiceRepository
@@ -27,6 +26,6 @@ class ProductInvoiceRepository
      * @return ProductInvoice
      */
     final public function add(array $productInvoice): ProductInvoice {
-        $this->productInvoice->newModelQuery()->create($productInvoice);
+       return $this->productInvoice->newModelQuery()->create($productInvoice);
     }
 }
