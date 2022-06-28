@@ -23,4 +23,6 @@ class Common
     public const MSG_CANT_GET_INVOICE_STATUS_FROM_SERVER = 'Can\'t get invoice status from payment service!';
     public const MSG_NOT_ALL_PARAMETERS_FOR_METHOD = 'Method \'%s\' have got not all params!';
     public const MSG_CANT_CREATE_INVOICE = 'Can\'t create invoice!';
+    public const MSG_EMPTY_PRODUCTS = 'Product list is empty!';
+    public const MSG_PRODUCTS_WITH_SUCH_CODES_NOT_FOUND = 'Products with such codes have not found!!';
 }

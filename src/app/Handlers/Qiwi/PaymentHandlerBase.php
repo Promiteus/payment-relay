@@ -16,7 +16,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      * $order = [
      *    'userId' => '1',
      *    'products' => [
-     *          ['code' => '90-444', 'count' => 1, 'name' => 'товар 1'],
+     *          ['code' => '90-444', 'count' => 1, 'name' => 'товар 1', 'price' => 100.0],
      *     ],
      *    'billId' => '3920a84-33291',
      *    'totalPrice' => 100.0,
@@ -84,7 +84,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
         if ($payResponse->getError() === '') {
             /*Создать новый счет в БД*/
-            return $this->createInvoice($payResponse->getData(), $order[Common::USER_ID]);
+            return $this->createInvoice($payResponse->getData(), $order);
         }
 
         return new PayResponse([], $payResponse->getError());
@@ -122,9 +122,9 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
     /**
      * @param array $invoice
-     * @param string $userId
+     * @param string $order
      * @return PayResponse
      */
-    abstract public function createInvoice(array $invoice, string $userId): PayResponse;
+    abstract public function createInvoice(array $invoice, array $order): PayResponse;
 
 }

@@ -5,9 +5,14 @@ namespace App\Handlers\Qiwi;
 
 use App\dto\PayResponse;
 use App\Models\Invoice;
+use App\Models\Product;
+use App\Models\ProductInvoice;
 use App\Repository\InvoiceRepository;
+use App\Repository\ProductInvoiceRepository;
+use App\Repository\ProductRepository;
 use App\Services\Constants\Common;
 use App\Services\Qiwi\RequestPaymentService;
+use Carbon\Carbon;
 use JetBrains\PhpStorm\ArrayShape;
 use Ramsey\Uuid\Uuid;
 
@@ -25,10 +30,25 @@ class PaymentHandler extends PaymentHandlerBase
      * @var InvoiceRepository
      */
     private InvoiceRepository $invoiceRepository;
+    /**
+     * @var ProductInvoiceRepository
+     */
+    private ProductInvoiceRepository $productInvoiceRepository;
+    /**
+     * @var ProductRepository
+     */
+    private ProductRepository $productRepository;
 
-    public function __construct(RequestPaymentService $requestPaymentService, InvoiceRepository $invoiceRepository) {
+    public function __construct(
+        RequestPaymentService $requestPaymentService,
+        InvoiceRepository $invoiceRepository,
+        ProductInvoiceRepository $productInvoiceRepository,
+        ProductInvoice $productInvoice
+    ) {
         $this->requestPaymentService = $requestPaymentService;
         $this->invoiceRepository = $invoiceRepository;
+        $this->productRepository = $productInvoice;
+        $this->productInvoiceRepository = $productInvoiceRepository;
     }
 
     /**
@@ -118,23 +138,46 @@ class PaymentHandler extends PaymentHandlerBase
 
     /**
      * @param array $invoice
-     * @param string $userId
+     * @param array $order
      * @return PayResponse
      * @throws \Exception
      */
-    final public function createInvoice(array $invoice, string $userId): PayResponse
+    final public function createInvoice(array $invoice, array $order): PayResponse
     {
-        $data = [
+        if (empty($order[Common::PRODUCTS])) {
+            throw new \Exception(Common::MSG_EMPTY_PRODUCTS);
+        }
+
+        $productIds = $this->productRepository->getProductsByCodes(collect($order[Common::PRODUCTS])->map(function ($item) {
+            return $item[Product::CODE];
+        })->toArray());
+
+        if (empty($productIds)) {
+            throw new \Exception(Common::MSG_PRODUCTS_WITH_SUCH_CODES_NOT_FOUND);
+        }
+
+        $productInvoiceData = collect($productIds)->map(function ($productId) use ($invoice) {
+            return [
+                ProductInvoice::INVOICE_ID => $invoice[Common::BILL_ID],
+                ProductInvoice::PRODUCT_ID => $productId,
+                ProductInvoice::UPDATED_AT => Carbon::now(),
+                ProductInvoice::CREATED_AT => Carbon::now(),
+            ];
+        });
+
+        $inv = [
             Invoice::ID => $invoice[Common::BILL_ID],
             Invoice::STATUS => $invoice[Invoice::STATUS]->value,
-            Invoice::USER_ID => $userId,
+            Invoice::USER_ID => $order[Common::USER_ID],
             Invoice::PRICE => 0,
             Invoice::COMMENT => $invoice[Invoice::COMMENT],
             Invoice::CURRENCY => $invoice[Invoice::CURRENCY],
         ];
-        $result = $this->invoiceRepository->addInvoice($data);
+        $result = $this->invoiceRepository->addInvoice($inv);
         if (!$result) {
             throw new \Exception(Common::MSG_CANT_CREATE_INVOICE);
         }
+
+        return new PayResponse($inv, '');
     }
 }

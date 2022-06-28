@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Models\Invoice;
+use App\Models\ProductInvoice;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class InvoiceRepository
