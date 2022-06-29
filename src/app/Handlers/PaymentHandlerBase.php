@@ -128,8 +128,6 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
     abstract public function updateInvoice(string $billId, string $status): bool;
 
 
-
-
     /**
      * @param array $invoice
      * @param array $order
