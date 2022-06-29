@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Handlers\Qiwi\Contracts;
+namespace App\Handlers\Contracts;
 
 use App\dto\PayResponse;
 

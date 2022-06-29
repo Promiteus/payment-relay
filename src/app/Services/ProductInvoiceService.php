@@ -77,11 +77,11 @@ class ProductInvoiceService
     {
         $inv = [
             Invoice::ID => $invoice[Common::BILL_ID],
-            Invoice::STATUS => $invoice[Invoice::STATUS]->value,
+            Invoice::STATUS => $invoice[Invoice::STATUS][Common::VALUE],
             Invoice::USER_ID => $order[Common::USER_ID],
-            Invoice::PRICE => 0,
+            Invoice::PRICE => $invoice[Common::AMOUNT][Common::VALUE],
             Invoice::COMMENT => $invoice[Invoice::COMMENT],
-            Invoice::CURRENCY => $invoice[Invoice::CURRENCY],
+            Invoice::CURRENCY => $invoice[Common::AMOUNT][Invoice::CURRENCY],
         ];
 
         if (empty($order[Common::PRODUCTS])) {

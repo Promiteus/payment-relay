@@ -16,6 +16,14 @@ class Common
     public const USER_ID = 'userId';
     public const PAY_URL = 'payUrl';
     public const VALUE = 'value';
+    public const AMOUNT = 'amount';
+    public const CURRENCY = 'currency';
+    public const COMMENT = 'comment';
+    public const EXPIRATION_DATE = 'expirationDateTime';
+    public const EMAIL = 'email';
+    public const ACCOUNT = 'account';
+
+    public const MSG_EMPTY_BILL_ID = 'BillId is empty!';
 
     public const MSG_EMPTY_ORDER_PARAMS = 'There are no order params!';
     public const MSG_EMPTY_BOTH_ORDER_PARAMS = 'Both order params are empty!';

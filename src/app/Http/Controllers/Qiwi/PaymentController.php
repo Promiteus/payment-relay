@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Qiwi;
 
 use App\Http\Controllers\Controller;
 use App\Services\Qiwi\RequestPaymentService;
+use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -30,7 +31,7 @@ class PaymentController extends Controller
      */
     final public function create(Request $request): JsonResponse {
         $body = $this->getJsonBody($request);
-       // return $this->paymentService->createBill($body);
+        return response()->json( $this->paymentService->createBill($body)->toArray(), 200);
     }
 
     /**

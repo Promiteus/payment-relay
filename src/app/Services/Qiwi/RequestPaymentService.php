@@ -3,6 +3,7 @@
 namespace App\Services\Qiwi;
 
 use App\dto\PayResponse;
+use App\Services\Constants\Common;
 use App\Services\Qiwi\Contracts\BillInterface;
 use Illuminate\Http\JsonResponse;
 use Qiwi\Api\BillPaymentsException;
@@ -30,14 +31,14 @@ class RequestPaymentService
     final public function createBill(array $body): PayResponse  {
         try {
             $params = [
-                BillService::AMOUNT => $body[BillService::AMOUNT],
-                BillService::CURRENCY => 'RUB',
-                BillService::COMMENT => $body[BillService::COMMENT],
-                BillService::EXPIRATION_DATE => $this->bill->getBillPayment()->getLifetimeByDay(1),
-                BillService::EMAIL => $body[BillService::EMAIL],
+                Common::AMOUNT => $body[Common::AMOUNT],
+                Common::CURRENCY => 'RUB',
+                Common::COMMENT => $body[Common::COMMENT],
+                Common::EXPIRATION_DATE => $this->bill->getBillPayment()->getLifetimeByDay(1),
+                Common::EMAIL => $body[Common::EMAIL],
             ];
 
-            $response = $this->bill->getBillPayment()->createBill($body[BillService::BILL_ID], $params);
+            $response = $this->bill->getBillPayment()->createBill($body[Common::BILL_ID], $params);
         } catch (BillPaymentsException | \Exception $e) {
             return new PayResponse([], $e->getMessage());
         }
@@ -53,7 +54,7 @@ class RequestPaymentService
         $response = [];
         try {
             if ((!$billId) || ($billId === '')) {
-                throw new \Exception(BillService::MSG_EMPTY_BILL_ID);
+                throw new \Exception(Common::MSG_EMPTY_BILL_ID);
             }
             $response = $this->bill->getBillPayment()->getBillInfo($billId);
         } catch (BillPaymentsException | \Exception $e) {
@@ -70,7 +71,7 @@ class RequestPaymentService
     final public function cancelBill(string $billId): JsonResponse {
         try {
             if ((!$billId) || ($billId === '')) {
-                throw new \Exception(BillService::MSG_EMPTY_BILL_ID);
+                throw new \Exception(Common::MSG_EMPTY_BILL_ID);
             }
             $response = $this->bill->getBillPayment()->cancelBill($billId);
         } catch (BillPaymentsException | \Exception $e) {
