@@ -22,6 +22,8 @@ class Product extends Model
 
     protected $table = self::TABLE_NAME;
 
+    protected $keyType = 'string';
+
     protected $fillable = [
         self::PRICE,
         self::NAME,

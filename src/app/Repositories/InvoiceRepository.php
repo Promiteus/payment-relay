@@ -22,14 +22,13 @@ class InvoiceRepository
 
     /**
      * @param string $id
-     * @return array
+     * @return Invoice
      */
-    final public function getInvoiceById(string $id): array {
+    final public function getInvoiceById(string $id): Invoice {
         return $this->invoice
-            ->newQuery()
+            ->newModelQuery()
             ->where(Invoice::USER_ID, '=', $id)
-            ->get()
-            ->toArray();
+            ->getModel();
     }
 
     /**
@@ -57,6 +56,16 @@ class InvoiceRepository
         $data = $this->invoice->newQuery()->create($invoice);
         return $data->count() > 0;
     }
+
+    /**
+     * @param array $invoice
+     * @return Invoice
+     */
+    final public function createInvoice(array $invoice): Invoice {
+        return $this->invoice->newModelQuery()->create($invoice);
+    }
+
+
 
     /**
      * @param string $id

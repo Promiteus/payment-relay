@@ -32,6 +32,8 @@ class Invoice extends Model
      */
     protected $table = self::TABLE_NAME;
 
+    protected $keyType = 'string';
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -49,7 +51,7 @@ class Invoice extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    final public function productInvoice() {
+    final public function productInvoices() {
         return $this->hasMany(ProductInvoice::class);
     }
 }

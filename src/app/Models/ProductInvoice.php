@@ -24,6 +24,8 @@ class ProductInvoice extends Model
         self::ID
     ];
 
+    protected $keyType = 'string';
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

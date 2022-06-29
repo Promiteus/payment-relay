@@ -96,7 +96,6 @@ class ProductInvoiceService
             return $item[Product::CODE];
         })->toArray();
 
-        //dd($products);
 
         $productIds = $this->productRepository->getProductsByCodes($products);
 
@@ -115,14 +114,9 @@ class ProductInvoiceService
             ];
         })->toArray();
 
-        dd($productInvoiceData);
+       // dd($productInvoiceData);
 
-
-        $result = $this->productInvoiceRepository
-            ->add($productInvoiceData)
-            ->invoice()
-            ->newQuery()
-            ->insert($inv);
+        $result = $this->invoiceRepository->createInvoice($inv)->productInvoices()->insert($productInvoiceData);
 
         if (!$result) {
             DB::rollBack();

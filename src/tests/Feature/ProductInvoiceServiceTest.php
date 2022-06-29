@@ -4,7 +4,11 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use App\Models\Product;
+use App\Models\ProductInvoice;
 use App\Services\Constants\Common;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Tests\TestCase;
 
@@ -36,7 +40,6 @@ class ProductInvoiceServiceTest extends TestCase
     }
 
 
-
     public function testEmptyFindInvoice()
     {
         $this->seed();
@@ -48,8 +51,22 @@ class ProductInvoiceServiceTest extends TestCase
     }
 
 
+    /*Очистить все сегодншние записи*/
+    private function clearTodayRecords() {
+        Invoice::query()->where('created_at', 'LIKE', '%'.Carbon::now()->toDateString().'%')->delete();
+        ProductInvoice::query()->where('created_at', 'LIKE', '%'.Carbon::now()->toDateString().'%')->delete();
+    }
+
+
+    /**
+     * Создать счет
+     * @throws \Exception
+     */
     public function testCreateInvoice() {
         $this->seed();
+
+        $this->clearTodayRecords();
+
 
         $products = Product::all()->take(3);
 
@@ -70,13 +87,13 @@ class ProductInvoiceServiceTest extends TestCase
         $this->output->writeln("Общая стоимость товаров: ".$totalPrice);
 
         $invoice = [
-            Common::BILL_ID => '34456-55443',
+            Common::BILL_ID => Uuid::uuid4()->toString(),
             Common::AMOUNT => [
                 Common::CURRENCY => 'RUB',
                 Common::VALUE => $totalPrice,
             ],
             Invoice::STATUS => [
-                Common::VALUE => Common::EXPIRED_STATUS,
+                Common::VALUE => Common::WAITING_STATUS,
             ],
             Common::COMMENT => 'any comment',
         ];
