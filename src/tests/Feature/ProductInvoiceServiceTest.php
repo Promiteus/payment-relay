@@ -6,7 +6,6 @@ use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
 use App\Services\Constants\Common;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -30,6 +29,7 @@ class ProductInvoiceServiceTest extends TestCase
      * @param string|null $name
      * @param array $data
      * @param string $dataName
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
@@ -99,7 +99,7 @@ class ProductInvoiceServiceTest extends TestCase
         ];
 
         $order = [
-            Common::USER_ID => '200',
+            Common::USER_ID => '201',
             Common::PRODUCTS => $productsBody,
             Common::BILL_ID => '34456-55443',
             Common::TOTAL_PRICE => 100.0,
