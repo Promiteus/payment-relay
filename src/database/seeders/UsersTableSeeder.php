@@ -10,6 +10,7 @@ use Ramsey\Uuid\Uuid;
 
 class UsersTableSeeder extends Seeder
 {
+    public const TEST_USER_ID = 300;
     /**
      * Run the database seeds.
      *
@@ -17,7 +18,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table(User::TABLE_NAME)->where(User::ID, '=', '300')->delete();
+        DB::table(User::TABLE_NAME)->where(User::ID, '=', self::TEST_USER_ID)->delete();
         $id = Uuid::uuid4()->toString();
 
         DB::table(User::TABLE_NAME)->insert([
@@ -32,6 +33,6 @@ class UsersTableSeeder extends Seeder
             User::USER_NAME => 'dr.romanm@yandex.ru',
         ]);
 
-        DB::table(User::TABLE_NAME)->where(User::ID, '=', $id)->update([User::ID => '300']);
+        DB::table(User::TABLE_NAME)->where(User::ID, '=', $id)->update([User::ID => self::TEST_USER_ID]);
     }
 }

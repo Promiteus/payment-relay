@@ -76,6 +76,17 @@ class ProductInvoiceService
      */
     final public function createInvoice(array $invoice, array $order): array
     {
+        if (empty($invoice) || empty($order)) {
+            throw new \Exception(Common::MSG_NOT_ENOUGH_PARAMS);
+        }
+
+        if (empty($order[Common::PRODUCTS])) {
+            throw new \Exception(Common::MSG_EMPTY_PRODUCTS);
+        }
+
+        /*Транзакция заполнения таблиц product_invoice и invoice*/
+        DB::beginTransaction();
+
         $inv = [
             Invoice::ID => $invoice[Common::BILL_ID],
             Invoice::STATUS => $invoice[Invoice::STATUS][Common::VALUE],
@@ -84,13 +95,6 @@ class ProductInvoiceService
             Invoice::COMMENT => $invoice[Invoice::COMMENT],
             Invoice::CURRENCY => $invoice[Common::AMOUNT][Invoice::CURRENCY],
         ];
-
-        if (empty($order[Common::PRODUCTS])) {
-            throw new \Exception(Common::MSG_EMPTY_PRODUCTS);
-        }
-
-        /*Транзакция заполнения таблиц product_invoice и invoice*/
-        DB::beginTransaction();
 
         $products = collect($order[Common::PRODUCTS])->map(function ($item) {
             return $item[Product::CODE];
