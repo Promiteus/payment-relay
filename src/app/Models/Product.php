@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Product
+ * @property string $id
  * @package App\Models
  */
+
 class Product extends Model
 {
     public const TABLE_NAME = 'products';
@@ -20,6 +22,8 @@ class Product extends Model
 
     protected $table = self::TABLE_NAME;
 
+    protected $keyType = 'string';
+
     protected $fillable = [
         self::PRICE,
         self::NAME,
@@ -27,6 +31,7 @@ class Product extends Model
         self::DESCRIPTION,
         self::ID
     ];
+
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

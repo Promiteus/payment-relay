@@ -12,15 +12,6 @@ use Qiwi\Api\BillPayments;
  */
 class BillService implements BillInterface
 {
-    public const BILL_ID = 'billId';
-    public const AMOUNT = 'amount';
-    public const CURRENCY = 'currency';
-    public const COMMENT = 'comment';
-    public const EXPIRATION_DATE = 'expirationDateTime';
-    public const EMAIL = 'email';
-    public const ACCOUNT = 'account';
-
-    public const MSG_EMPTY_BILL_ID = 'BillId is empty!';
 
     protected BillPayments $billPayments;
 

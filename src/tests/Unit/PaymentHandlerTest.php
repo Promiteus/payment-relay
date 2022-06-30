@@ -2,8 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Services\ProductInvoiceService;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class PaymentHandlerTest extends TestCase
 {

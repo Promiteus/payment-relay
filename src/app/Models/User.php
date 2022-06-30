@@ -43,6 +43,8 @@ class User extends Authenticatable
         self::CODE
     ];
 
+    protected $keyType = 'string';
+
     /**
      * The attributes that should be hidden for serialization.
      *

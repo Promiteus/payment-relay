@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Handlers\Qiwi;
+namespace App\Handlers;
 use App\dto\PayResponse;
-use App\Handlers\Qiwi\Contracts\PaymentHandlerInterface;
+use App\Handlers\Contracts\PaymentHandlerInterface;
 use App\Models\Invoice;
 use App\Services\Constants\Common;
 
@@ -126,8 +126,6 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      * @return bool
      */
     abstract public function updateInvoice(string $billId, string $status): bool;
-
-
 
 
     /**

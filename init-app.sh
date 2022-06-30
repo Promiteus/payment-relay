@@ -10,3 +10,5 @@ echo 'Installing new dependencies...'
 docker exec -it  pay-php-fpm bash -c "composer install"
 echo 'Creating new migrations...'
 docker exec -it  pay-php-fpm bash -c "php artisan migrate"
+echo 'Config local mode for database'
+docker exec -it pay-php-fpm bash -c "php artisan config:cache --env=local"

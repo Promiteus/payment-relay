@@ -11,6 +11,7 @@ use App\Repositories\ProductRepository;
 use App\Services\Constants\Common;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class ProductInvoiceService
@@ -77,11 +78,11 @@ class ProductInvoiceService
     {
         $inv = [
             Invoice::ID => $invoice[Common::BILL_ID],
-            Invoice::STATUS => $invoice[Invoice::STATUS]->value,
+            Invoice::STATUS => $invoice[Invoice::STATUS][Common::VALUE],
             Invoice::USER_ID => $order[Common::USER_ID],
-            Invoice::PRICE => 0,
+            Invoice::PRICE => $invoice[Common::AMOUNT][Common::VALUE],
             Invoice::COMMENT => $invoice[Invoice::COMMENT],
-            Invoice::CURRENCY => $invoice[Invoice::CURRENCY],
+            Invoice::CURRENCY => $invoice[Common::AMOUNT][Invoice::CURRENCY],
         ];
 
         if (empty($order[Common::PRODUCTS])) {
@@ -91,29 +92,31 @@ class ProductInvoiceService
         /*Транзакция заполнения таблиц product_invoice и invoice*/
         DB::beginTransaction();
 
-        $productIds = $this->productRepository->getProductsByCodes(collect($order[Common::PRODUCTS])->map(function ($item) {
+        $products = collect($order[Common::PRODUCTS])->map(function ($item) {
             return $item[Product::CODE];
-        })->toArray());
+        })->toArray();
+
+
+        $productIds = $this->productRepository->getProductsByCodes($products);
 
         if (empty($productIds)) {
             DB::rollBack();
-            throw new \Exception(Common::MSG_PRODUCTS_WITH_SUCH_CODES_NOT_FOUND);
+            throw new \Exception(Common::MSG_EMPTY_PRODUCTS);
         }
 
         $productInvoiceData = collect($productIds)->map(function ($productId) use ($invoice) {
             return [
+                ProductInvoice::ID => Uuid::uuid4()->toString(),
                 ProductInvoice::INVOICE_ID => $invoice[Common::BILL_ID],
-                ProductInvoice::PRODUCT_ID => $productId,
-                ProductInvoice::UPDATED_AT => Carbon::now(),
-                ProductInvoice::CREATED_AT => Carbon::now(),
+                ProductInvoice::PRODUCT_ID => $productId[Product::ID],
+                ProductInvoice::UPDATED_AT => Carbon::now()->toString(),
+                ProductInvoice::CREATED_AT => Carbon::now()->toString(),
             ];
         })->toArray();
 
-        $result = $this->productInvoiceRepository
-            ->add($productInvoiceData)
-            ->invoice()
-            ->newQuery()
-            ->insert($inv);
+       // dd($productInvoiceData);
+
+        $result = $this->invoiceRepository->createInvoice($inv)->productInvoices()->insert($productInvoiceData);
 
         if (!$result) {
             DB::rollBack();
