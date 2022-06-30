@@ -240,12 +240,12 @@ class ProductInvoiceServiceTest extends TestCase
         /*Счет должен быть один*/
         $invoice = Invoice::query()->where(Invoice::ID, '=', $this->billId)->get();
         $this->console('Количество счетов: '.$invoice->count());
-        $this->assertTrue($invoice->count() === 1);
+        $this->assertSame($invoice->count(), 1);
 
         /*Записей по счету billId в таблице product_invoice должно быть три*/
         $productInvoice = ProductInvoice::query()->where(ProductInvoice::INVOICE_ID, '=', $this->billId)->get();
         $this->console('Количество записей в '.ProductInvoice::TABLE_NAME.': '.$productInvoice->count());
-        $this->assertTrue($productInvoice->count() === 3);
+        $this->assertSame($productInvoice->count(), 3);
 
         if (($productInvoice->count() === 3) && ($invoice->count() === 1)) {
             $this->okMsg();
