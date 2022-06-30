@@ -9,16 +9,11 @@ use App\Services\Constants\Common;
 use Database\Seeders\UsersTableSeeder;
 use Illuminate\Support\Carbon;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Tests\TestCase;
 
 class ProductInvoiceServiceTest extends TestCase
 {
-    //use RefreshDatabase;
-    /**
-     * @var ConsoleOutput
-     */
-    private ConsoleOutput $output;
+
     /**
      * @var ProductInvoiceService
      */
@@ -36,7 +31,6 @@ class ProductInvoiceServiceTest extends TestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $this->output = new ConsoleOutput();
         $this->productInvoiceService = app()->make(ProductInvoiceService::class);
     }
 
@@ -45,10 +39,16 @@ class ProductInvoiceServiceTest extends TestCase
     {
         $this->seed();
 
+        $this->console("\nПоиск несуществующего счета ...");
+
         $result =  $this->productInvoiceService->findInvoice('5', '5');
 
-        $this->output->writeln("invoices: ".count($result));
+        $this->console("invoices: ".count($result));
         $this->assertEquals(0, count($result));
+
+        if (!count($result)) {
+            $this->okMsg();
+        }
     }
 
 
@@ -58,12 +58,15 @@ class ProductInvoiceServiceTest extends TestCase
         ProductInvoice::query()->where('created_at', 'LIKE', '%'.Carbon::now()->toDateString().'%')->delete();
     }
 
-    /**
-     * @param string $billId
-     * @throws \Exception
-     */
-    private function createInvoice(string $billId): void {
-        $this->output->writeln('Созданеи нового счета...');
+
+    public function testCreateInvoice(): void {
+        $this->seed();
+
+        $this->clearTodayRecords();
+
+        $billId = Uuid::uuid4()->toString();
+
+        $this->console("\nСозданеи нового счета...");
 
         $products = Product::all()->take(3);
 
@@ -78,12 +81,8 @@ class ProductInvoiceServiceTest extends TestCase
 
 
         $totalPrice = $products->map(function($product) {
-            $this->output->writeln("Цена товара ".$product[Product::NAME].": ".$product[Product::PRICE]);
             return $product[Product::PRICE];
         })->sum();
-
-        $this->output->writeln("Получено товаров: ".count($productsBody));
-        $this->output->writeln("Общая стоимость товаров: ".$totalPrice);
 
 
         $invoice = [
@@ -112,24 +111,27 @@ class ProductInvoiceServiceTest extends TestCase
 
         /*Счет должен быть один*/
         $invoice = Invoice::query()->where(Invoice::ID, '=', $billId)->get();
-        $this->output->writeln('Количество счетов: '.$invoice->count());
+        $this->console('Количество счетов: '.$invoice->count());
         $this->assertTrue($invoice->count() === 1);
 
         /*Записей по счету billId в таблице product_invoice должно быть три*/
         $productInvoice = ProductInvoice::query()->where(ProductInvoice::INVOICE_ID, '=', $billId)->get();
-        $this->output->writeln('Количество записей в '.ProductInvoice::TABLE_NAME.': '.$productInvoice->count());
+        $this->console('Количество записей в '.ProductInvoice::TABLE_NAME.': '.$productInvoice->count());
         $this->assertTrue($productInvoice->count() === 3);
+
+        if (($productInvoice->count() === 3) && ($invoice->count() === 1)) {
+            $this->okMsg();
+        }
     }
 
-    /**
-     * @param string $billId
-     * @throws \Exception
-     */
-    private function testCreateInvoiceEmptyInv(string $billId): void {
-        $this->expectExceptionMessage(Common::MSG_NOT_ENOUGH_PARAMS);
-        $this->expectException(\Exception::class);
+    public function testCreateInvoiceEmptyInv(): void {
+        $this->seed();
 
-        $this->output->writeln('Созданеи нового счета без параметров счета...');
+        $this->clearTodayRecords();
+
+        $billId = Uuid::uuid4()->toString();
+
+        $this->console("\nСозданеи нового счета без параметров счета...");
 
         $products = Product::all()->take(3);
 
@@ -160,20 +162,25 @@ class ProductInvoiceServiceTest extends TestCase
 
 
         /*Создать запись в таблицах invoice и product_invoice*/
-        $result = $this->productInvoiceService->createInvoice($invoice, $order);
+        try {
+            $this->productInvoiceService->createInvoice($invoice, $order);
+        } catch (\Exception $e) {
+            $this->okMsg($e->getMessage());
+            $this->assertTrue($e->getMessage() !== '');
+        }
     }
 
 
 
-    /**
-     * @param string $billId
-     * @throws \Exception
-     */
-    private function testCreateInvoiceEmptyOrder(string $billId): void {
-        $this->expectExceptionMessage(Common::MSG_NOT_ENOUGH_PARAMS);
-        $this->expectException(\Exception::class);
+    public function testCreateInvoiceEmptyOrder(): void {
+        $this->seed();
 
-        $this->output->writeln('Созданеи нового счета без параметров товара...');
+        $this->clearTodayRecords();
+
+        $billId = Uuid::uuid4()->toString();
+
+
+        $this->console("\nСозданеи нового счета без параметров товара...");
 
         $products = Product::all()->take(3);
 
@@ -208,27 +215,12 @@ class ProductInvoiceServiceTest extends TestCase
         $order = [];
 
 
-        /*Создать запись в таблицах invoice и product_invoice*/
-        $result = $this->productInvoiceService->createInvoice($invoice, $order);
+        try {
+            $this->productInvoiceService->createInvoice($invoice, $order);
+        } catch (\Exception $e) {
+            $this->okMsg($e->getMessage());
+            $this->assertTrue($e->getMessage() !== '');
+        }
     }
 
-
-
-    /**
-     * Создать счет
-     * @throws \Exception
-     */
-    public function testCreateInvoice(): void {
-        $this->seed();
-
-        $this->clearTodayRecords();
-
-        $billId = Uuid::uuid4()->toString();
-
-        $this->createInvoice($billId);
-
-        $this->testCreateInvoiceEmptyInv($billId);
-
-        $this->testCreateInvoiceEmptyOrder($billId);
-    }
 }
