@@ -3,6 +3,7 @@
 
 namespace App\Handlers\Qiwi;
 
+use App\dto\BillStatusResponse;
 use App\dto\PayResponse;
 use App\Handlers\PaymentHandlerBase;
 use App\Models\Invoice;
@@ -74,18 +75,14 @@ class PaymentHandler extends PaymentHandlerBase
      * @return array
      * @throws \Exception
      */
-    #[ArrayShape([Invoice::STATUS => "mixed", Common::BILL_ID => "string", Common::PAY_URL => "mixed"])]
     final public function requestBillStatus(string $billId): array
     {
         $response = $this->requestPaymentService->getBillInfo($billId);
         if ($response->getError() !== '') {
             throw new \Exception($response->getError());
         }
-        return [
-            Invoice::STATUS => $response[Invoice::STATUS]->value,
-            Common::BILL_ID => $billId,
-            Common::PAY_URL => $response[Common::PAY_URL],
-        ];
+
+        return (new BillStatusResponse($response[Invoice::STATUS][Common::VALUE], $billId, $response[Common::PAY_URL]))->toArray();
     }
 
 
