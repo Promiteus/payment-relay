@@ -64,8 +64,6 @@ class ProductInvoiceServiceTest extends TestCase
     }
 
 
-
-
     private function testFindInvoice(string $billId): void {
         $this->console("\nПоиск действующего счета ...");
 
@@ -77,6 +75,20 @@ class ProductInvoiceServiceTest extends TestCase
             $this->okMsg();
         }
     }
+
+
+    private function testUpdateInvoice(string $billId): void {
+        $this->console("\nОбновление статуса действующего счета ...");
+
+        $result =  $this->productInvoiceService->updateInvoice($billId, Common::REJECTED_STATUS);
+
+        $this->assertTrue($result);
+
+        if ($result) {
+            $this->okMsg();
+        }
+    }
+
 
     public function testCreateInvoiceEmptyInv(): void {
         $this->seed();
@@ -240,6 +252,8 @@ class ProductInvoiceServiceTest extends TestCase
         }
 
         $this->testFindInvoice($this->billId);
+
+        $this->testUpdateInvoice($this->billId);
     }
 
 }
