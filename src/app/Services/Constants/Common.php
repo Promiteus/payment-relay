@@ -23,6 +23,7 @@ class Common
     public const EMAIL = 'email';
     public const ACCOUNT = 'account';
     public const TOTAL_PRICE = 'totalPrice';
+    public const CUSTOM_FIELDS = 'customFields';
 
     public const MSG_EMPTY_BILL_ID = 'BillId is empty!';
 

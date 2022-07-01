@@ -2,6 +2,7 @@
 
 namespace App\Handlers\Contracts;
 
+use App\dto\OrderBody;
 use App\dto\PayResponse;
 
 /**
@@ -9,5 +10,5 @@ use App\dto\PayResponse;
  */
 interface PaymentHandlerInterface
 {
-    public function handleBill(array $order): PayResponse;
+    public function handleBill(OrderBody $order): PayResponse;
 }
