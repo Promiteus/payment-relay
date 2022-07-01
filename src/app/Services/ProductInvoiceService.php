@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\dto\OrderBody;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
@@ -70,17 +71,17 @@ class ProductInvoiceService
 
     /**
      * @param array $invoice
-     * @param array $order
+     * @param OrderBody $order
      * @return array
      * @throws \Exception
      */
-    final public function createInvoice(array $invoice, array $order): array
+    final public function createInvoice(array $invoice, OrderBody $order): array
     {
-        if (empty($invoice) || empty($order)) {
+        if (empty($invoice)) {
             throw new \Exception(Common::MSG_NOT_ENOUGH_PARAMS);
         }
 
-        if (empty($order[Common::PRODUCTS])) {
+        if (empty($order->getProducts())) {
             throw new \Exception(Common::MSG_EMPTY_PRODUCTS);
         }
 
@@ -90,14 +91,14 @@ class ProductInvoiceService
         $inv = [
             Invoice::ID => $invoice[Common::BILL_ID],
             Invoice::STATUS => $invoice[Invoice::STATUS][Common::VALUE],
-            Invoice::USER_ID => $order[Common::USER_ID],
+            Invoice::USER_ID => $order->getUserId(),
             Invoice::PRICE => $invoice[Common::AMOUNT][Common::VALUE],
             Invoice::COMMENT => $invoice[Invoice::COMMENT],
             Invoice::CURRENCY => $invoice[Common::AMOUNT][Invoice::CURRENCY],
         ];
 
-        $products = collect($order[Common::PRODUCTS])->map(function ($item) {
-            return $item[Product::CODE];
+        $products = collect($order->getProducts())->map(function ($item) {
+            return $item->getCode();
         })->toArray();
 
 
@@ -117,8 +118,6 @@ class ProductInvoiceService
                 ProductInvoice::CREATED_AT => Carbon::now()->toString(),
             ];
         })->toArray();
-
-       // dd($productInvoiceData);
 
         $result = $this->invoiceRepository->createInvoice($inv)->productInvoices()->insert($productInvoiceData);
 

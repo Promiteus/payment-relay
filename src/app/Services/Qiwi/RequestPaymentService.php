@@ -36,6 +36,9 @@ class RequestPaymentService
                 Common::COMMENT => $body[Common::COMMENT],
                 Common::EXPIRATION_DATE => $this->bill->getBillPayment()->getLifetimeByDay(1),
                 Common::EMAIL => $body[Common::EMAIL],
+                Common::CUSTOM_FIELDS => [
+                    'test' => 0
+                ]
             ];
 
             $response = $this->bill->getBillPayment()->createBill($body[Common::BILL_ID], $params);
