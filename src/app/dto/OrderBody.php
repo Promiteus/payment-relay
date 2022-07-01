@@ -21,10 +21,6 @@ class OrderBody
     /**
      * @var string
      */
-    private string $payUrl;
-    /**
-     * @var string
-     */
     private string $userId;
 
     /**
@@ -54,14 +50,6 @@ class OrderBody
     /**
      * @return string
      */
-    public function getPayUrl(): string
-    {
-        return $this->payUrl;
-    }
-
-    /**
-     * @return string
-     */
     public function getUserId(): string
     {
         return $this->userId;
@@ -71,7 +59,6 @@ class OrderBody
 
     public function __construct(string $billId, array $products, float $totalPrice, string $payUrl, string $userId) {
         $this->billId = $billId;
-        $this->payUrl = $payUrl;
         $this->products = $products;
         $this->totalPrice = $totalPrice;
         $this->userId = $userId;
@@ -85,7 +72,6 @@ class OrderBody
             Common::BILL_ID => $this->billId,
             Common::PRODUCTS => $this->products,
             Common::TOTAL_PRICE => $this->totalPrice,
-            Common::PAY_URL => $this->payUrl,
             Common::USER_ID => $this->userId,
         ];
     }
