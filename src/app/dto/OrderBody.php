@@ -11,7 +11,7 @@ class OrderBody
      */
     private string $billId;
     /**
-     * @var array
+     * @var ProductItem[]
      */
     private array $products;
     /**
@@ -23,7 +23,9 @@ class OrderBody
      */
     private string $userId;
 
-
+    /**
+     * OrderBody constructor.
+     */
     public function __construct()
     {
         $this->billId = '';
@@ -41,14 +43,12 @@ class OrderBody
     }
 
     /**
-     * @return array
+     * @return ProductItem[]
      */
     public function getProducts(): array
     {
         return $this->products;
     }
-
-
 
     /**
      * @return float
@@ -90,7 +90,7 @@ class OrderBody
         return [
             Common::BILL_ID => $this->billId,
             Common::AMOUNT => $this->totalPrice,
-            Common::PRODUCTS => $this->products,
+            Common::PRODUCTS => collect($this->products)->toArray(),
             Common::USER_ID => $this->userId,
         ];
     }

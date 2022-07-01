@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\dto\OrderBody;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
@@ -129,7 +130,7 @@ class ProductInvoiceServiceTest extends TestCase
 
         /*Создать запись в таблицах invoice и product_invoice*/
         try {
-            $this->productInvoiceService->createInvoice($invoice, $order);
+            $this->productInvoiceService->createInvoice($invoice, (new OrderBody())->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
@@ -182,7 +183,7 @@ class ProductInvoiceServiceTest extends TestCase
 
 
         try {
-            $this->productInvoiceService->createInvoice($invoice, $order);
+            $this->productInvoiceService->createInvoice($invoice, (new OrderBody())->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
@@ -233,7 +234,7 @@ class ProductInvoiceServiceTest extends TestCase
         ];
 
         /*Создать запись в таблицах invoice и product_invoice*/
-        $result = $this->productInvoiceService->createInvoice($invoice, $order);
+        $result = $this->productInvoiceService->createInvoice($invoice, (new OrderBody())->fromBodySet($order));
 
         $this->assertTrue(count($result) > 0);
 

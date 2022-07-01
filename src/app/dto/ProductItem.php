@@ -3,6 +3,7 @@
 
 namespace App\dto;
 
+use App\Models\Invoice;
 use App\Services\Constants\Common;
 
 /**
@@ -30,6 +31,39 @@ class ProductItem
     private float $price;
 
     /**
+     * @return string
+     */
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCount(): int
+    {
+        return $this->count;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+
+    /**
      * ProductItem constructor.
      */
     public function __construct()
@@ -48,7 +82,7 @@ class ProductItem
         $this->count = $body[Common::COUNT] ?: $this->count;
         $this->code = $body[Common::CODE] ?: $this->code;
         $this->name = $body[Common::NAME] ?: $this->name;
-        $this->price = $body[Common::AMOUNT] ?: $this->price;
+        $this->price = $body[Invoice::PRICE] ?: $this->price;
 
         return $this;
     }
@@ -58,7 +92,7 @@ class ProductItem
      */
     public function toArray(): array {
         return [
-            Common::AMOUNT => $this->price,
+            Invoice::PRICE => $this->price,
             Common::NAME => $this->name,
             Common::CODE => $this->code,
             Common::COUNT => $this->count,
