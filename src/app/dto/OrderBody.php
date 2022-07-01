@@ -22,45 +22,15 @@ class OrderBody
      * @var string
      */
     private string $userId;
-    /**
-     * @var string
-     */
-    private string $comment;
-    /**
-     * @var string
-     */
-    private string $currency;
-    /**
-     * @var string
-     */
-    private string $email;
+
 
     public function __construct()
     {
         $this->billId = '';
         $this->totalPrice = 0;
-        $this->comment = '';
         $this->userId = '';
         $this->products = [];
-        $this->email = '';
     }
-
-    /**
-     * @return string
-     */
-    public function getComment(): string
-    {
-        return $this->comment;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
 
     /**
      * @return string
@@ -78,13 +48,6 @@ class OrderBody
         return $this->products;
     }
 
-    /**
-     * @return string
-     */
-    public function getCurrency(): string
-    {
-        return $this->currency;
-    }
 
 
     /**
@@ -105,15 +68,12 @@ class OrderBody
 
     public function fromBodySet(array $body): OrderBody {
         $this->billId = $body[Common::BILL_ID] ?: $this->billId;
-        $this->totalPrice = $body[Common::AMOUNT] ?: $this->totalPrice;
-        $this->currency = $body[Common::CURRENCY] ?: $this->currency;
-        $this->comment = $body[Common::COMMENT] ?: $this->comment;
-        $this->email = $body[Common::EMAIL] ?: $this->email;
+        $this->totalPrice = $body[Common::TOTAL_PRICE] ?: $this->totalPrice;
 
-        $userIdBody = $body[Common::CUSTOM_FIELDS][Common::USER_ID];
+        $userIdBody = $body[Common::USER_ID];
         $this->userId = $userIdBody ?: $this->userId;
 
-        $productsArray = $body[Common::CUSTOM_FIELDS][Common::PRODUCTS];
+        $productsArray = $body[Common::PRODUCTS];
         if ((count($productsArray) !== 0) && (is_array($productsArray))) {
             $this->products = collect($productsArray)->map(function ($item) {
                 return (new ProductItem())->fromBodySet($item);
@@ -130,14 +90,8 @@ class OrderBody
         return [
             Common::BILL_ID => $this->billId,
             Common::AMOUNT => $this->totalPrice,
-            Common::CURRENCY => 'RUB',
-            Common::COMMENT => '',
-            Common::EXPIRATION_DATE => $this->bill->getBillPayment()->getLifetimeByDay(1),
-            Common::EMAIL => '',
-            Common::CUSTOM_FIELDS => [
-                Common::PRODUCTS => $this->products,
-                Common::USER_ID => $this->userId,
-            ]
+            Common::PRODUCTS => $this->products,
+            Common::USER_ID => $this->userId,
         ];
     }
 }

@@ -118,8 +118,6 @@ class ProductInvoiceService
             ];
         })->toArray();
 
-       // dd($productInvoiceData);
-
         $result = $this->invoiceRepository->createInvoice($inv)->productInvoices()->insert($productInvoiceData);
 
         if (!$result) {
