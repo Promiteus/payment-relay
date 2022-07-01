@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Handlers;
+use App\dto\OrderBody;
 use App\dto\PayResponse;
 use App\Handlers\Contracts\PaymentHandlerInterface;
 use App\Models\Invoice;
@@ -23,32 +24,32 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      * ]
      *
      * Обработать заказ, выставить счет и вернуть данные для перехода на форму оплаты счета
-     * @param array $order
+     * @param OrderBody $order
      * @return PayResponse
      */
-    final public function handleBill(array $order): PayResponse {
-       if ((!$order) || (empty($order))) {
+    final public function handleBill(OrderBody $order): PayResponse {
+       if (!$order) {
            return new PayResponse([], Common::MSG_EMPTY_ORDER_PARAMS);
        }
 
-       if ((($order[Common::BILL_ID] === '') && empty($order[Common::PRODUCTS][Common::ITEMS])) || ($order[Common::USER_ID] === '')) {
+       if ((($order->getBillId() === '') && empty($order->getProducts())) || ($order->getUserId() === '')) {
            return new PayResponse([], Common::MSG_EMPTY_BOTH_ORDER_PARAMS);
        }
 
-       if ($order[Common::BILL_ID] !== '') {
+       if ($order->getBillId() !== '') {
 
            try {
                /*Получить последний счет из БД для пользователя user_id*/
-               $invoice = $this->findInvoice($order[Common::USER_ID], $order[Common::BILL_ID]);
+               $invoice = $this->findInvoice($order->getUserId(), $order->getBillId());
 
                if (!empty($invoice)) {
 
                    /*Запросить у сервиса QIWI статус счета и вернуть
                    ['status' => 'value', 'billId' => 'billValue', 'payUrl' => 'urlValue']*/
-                   $billStatus = $this->requestBillStatus($order[Common::BILL_ID]);
+                   $billStatus = $this->requestBillStatus($order->getBillId());
 
                    if ($billStatus[Invoice::STATUS] !== '') {
-                       $updatedInvoice = $this->updateInvoice($order[Common::BILL_ID], $billStatus[Invoice::STATUS]);
+                       $updatedInvoice = $this->updateInvoice($order->getBillId(), $billStatus[Invoice::STATUS]);
 
                        if ($updatedInvoice) {
                            if ($billStatus[Invoice::STATUS] === Common::WAITING_STATUS) {
@@ -75,18 +76,18 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
     /**
      * Создать полностью новый счет
-     * @param array $order
+     * @param OrderBody $order
      * @return PayResponse
      */
-    private function createOrder(array $order): PayResponse {
+    private function createOrder(OrderBody $order): PayResponse {
         /*Создать новый счет на сервере QIWI*/
-        $payResponse = $this->requestCreateBill($order);
+        $payResponse = $this->requestCreateBill($order->toArray());
 
         if ($payResponse->getError() === '') {
             /*Создать новый счет в БД*/
 
             try {
-                $result = $this->createInvoice($payResponse->getData(), $order);
+                $result = $this->createInvoice($payResponse->getData(), $order->toArray());
                 return new PayResponse($result);
             } catch (\Exception $e) {
                 return new PayResponse([], $e->getMessage());

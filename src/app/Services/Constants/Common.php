@@ -11,6 +11,7 @@ class Common
     public const BILL_ID = 'billId';
     public const PRODUCTS = 'products';
     public const CODE = 'code';
+    public const NAME = 'name';
     public const COUNT = 'count';
     public const ITEMS = 'items';
     public const USER_ID = 'userId';
@@ -23,6 +24,7 @@ class Common
     public const EMAIL = 'email';
     public const ACCOUNT = 'account';
     public const TOTAL_PRICE = 'totalPrice';
+    public const CUSTOM_FIELDS = 'customFields';
 
     public const MSG_EMPTY_BILL_ID = 'BillId is empty!';
 
