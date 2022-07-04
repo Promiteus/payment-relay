@@ -24,6 +24,9 @@ class BillStatusResponse
 
     private function __construct()
     {
+    }
+
+    public function init() {
         $this->payUrl = '';
         $this->status = '';
         $this->billId = '';
@@ -41,6 +44,7 @@ class BillStatusResponse
     }
 
     final public function fromBodySet(array $body): BillStatusResponse {
+        $this->init();
 
         $this->payUrl = array_key_exists(Common::PAY_URL, $body) ? $body[Common::PAY_URL] : $this->payUrl;
         $this->status = array_key_exists(Invoice::STATUS, $body) ? $body[Invoice::STATUS][Common::VALUE] : $this->status;
