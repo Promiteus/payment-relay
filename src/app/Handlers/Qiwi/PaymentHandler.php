@@ -86,11 +86,7 @@ class PaymentHandler extends PaymentHandlerBase
         }
         $this->updateInvoice($billId, $response->getData()[Invoice::STATUS][Common::VALUE]);
 
-        return (new BillStatusResponse(
-            $response->getData()[Invoice::STATUS][Common::VALUE],
-            $billId,
-            $response->getData()[Common::PAY_URL])
-        )->toArray();
+        return BillStatusResponse::getInstance()->fromBodySet($response->getData())->toArray();
     }
 
 
