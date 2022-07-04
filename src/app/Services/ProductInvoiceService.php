@@ -120,6 +120,8 @@ class ProductInvoiceService
             ];
         })->toArray();
 
+
+
         $result = $this->invoiceRepository->createInvoice($inv)->productInvoices()->insert($productInvoiceData);
 
         if (!$result) {
