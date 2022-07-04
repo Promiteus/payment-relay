@@ -8,12 +8,11 @@ use App\Handlers\PaymentHandlerBase;
 use App\Handlers\Qiwi\PaymentHandler;
 use App\Http\Controllers\Controller;
 use App\Services\Qiwi\RequestPaymentService;
-use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Class PaymentController
+ * Class PaymentControllerTest
  * @package App\Http\Controllers
  */
 class PaymentController extends Controller
@@ -22,7 +21,7 @@ class PaymentController extends Controller
     private PaymentHandlerBase $paymentHandler;
 
     /**
-     * PaymentController constructor.
+     * PaymentControllerTest constructor.
      * @param RequestPaymentService $paymentService
      * @param PaymentHandler $paymentHandler
      */
@@ -38,7 +37,9 @@ class PaymentController extends Controller
      */
     final public function create(Request $request): JsonResponse {
         $order = $this->getJsonBody($request);
-        return response()->json($this->paymentHandler->handleBill(OrderBody::getInstance()->fromBodySet($order))->toArray(), 200);
+        return response()
+            ->json($this->paymentHandler->handleBill(OrderBody::getInstance()->fromBodySet($order))
+            ->toArray(), 200);
     }
 
     /**
