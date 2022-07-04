@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\dto\InvoiceBody;
 use App\dto\OrderBody;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
 use App\Services\Constants\Common;
+use App\Services\Qiwi\BillService;
 use Database\Seeders\UsersTableSeeder;
 use Illuminate\Support\Carbon;
 use Ramsey\Uuid\Uuid;
@@ -23,6 +25,7 @@ class ProductInvoiceServiceTest extends TestCase
      * @var ProductInvoiceService
      */
     private ProductInvoiceService $productInvoiceService;
+    private BillService $billService;
 
 
     /**
@@ -37,6 +40,7 @@ class ProductInvoiceServiceTest extends TestCase
         parent::__construct($name, $data, $dataName);
 
         $this->productInvoiceService = app()->make(ProductInvoiceService::class);
+        $this->billService = app()->make(BillService::class, ['testKey' => 'abcd']);
         $this->billId = Uuid::uuid4()->toString();
     }
 
@@ -65,30 +69,7 @@ class ProductInvoiceServiceTest extends TestCase
     }
 
 
-    private function testFindInvoice(string $billId): void {
-        $this->console("\nПоиск действующего счета ...");
 
-        $result =  $this->productInvoiceService->findInvoice(UsersTableSeeder::TEST_USER_ID, $billId);
-
-        $this->assertTrue(count($result) > 0);
-
-        if (count($result)) {
-            $this->okMsg();
-        }
-    }
-
-
-    private function testUpdateInvoice(string $billId): void {
-        $this->console("\nОбновление статуса действующего счета ...");
-
-        $result =  $this->productInvoiceService->updateInvoice($billId, Common::REJECTED_STATUS);
-
-        $this->assertTrue($result);
-
-        if ($result) {
-            $this->okMsg();
-        }
-    }
 
 
     public function testCreateInvoiceEmptyInv(): void {
@@ -125,12 +106,15 @@ class ProductInvoiceServiceTest extends TestCase
             Common::PRODUCTS => $productsBody,
             Common::BILL_ID => $billId,
             Common::TOTAL_PRICE => 100.0,
+            Common::COMMENT => '',
+            Common::EMAIL => 'dr.romanm@yandex.ru'
         ];
 
 
         /*Создать запись в таблицах invoice и product_invoice*/
         try {
-            $this->productInvoiceService->createInvoice($invoice, (new OrderBody())->fromBodySet($order));
+            $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
+            $this->productInvoiceService->createInvoice(InvoiceBody::getInstance($expDate)->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
@@ -183,7 +167,8 @@ class ProductInvoiceServiceTest extends TestCase
 
 
         try {
-            $this->productInvoiceService->createInvoice($invoice, (new OrderBody())->fromBodySet($order));
+            $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
+            $this->productInvoiceService->createInvoice(InvoiceBody::getInstance($expDate)->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
@@ -229,12 +214,15 @@ class ProductInvoiceServiceTest extends TestCase
         $order = [
             Common::USER_ID => UsersTableSeeder::TEST_USER_ID,
             Common::PRODUCTS => $productsBody,
-            Common::BILL_ID => $this->billId,
+            Common::BILL_ID =>  $this->billId,
             Common::TOTAL_PRICE => 100.0,
+            Common::COMMENT => '',
+            Common::EMAIL => 'dr.romanm@yandex.ru'
         ];
 
         /*Создать запись в таблицах invoice и product_invoice*/
-        $result = $this->productInvoiceService->createInvoice($invoice, (new OrderBody())->fromBodySet($order));
+        $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
+        $result = $this->productInvoiceService->createInvoice(InvoiceBody::getInstance($expDate)->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
 
         $this->assertTrue(count($result) > 0);
 
@@ -252,9 +240,36 @@ class ProductInvoiceServiceTest extends TestCase
             $this->okMsg();
         }
 
+        /*Попытаться найти счет с указанным billId*/
         $this->testFindInvoice($this->billId);
 
+        /*Попытаться обновить статус счета с указанным billId*/
         $this->testUpdateInvoice($this->billId);
+    }
+
+    private function testFindInvoice(string $billId): void {
+        $this->console("\nПоиск действующего счета ...");
+
+        $result =  $this->productInvoiceService->findInvoice(UsersTableSeeder::TEST_USER_ID, $billId);
+
+        $this->assertTrue(count($result) > 0);
+
+        if (count($result)) {
+            $this->okMsg();
+        }
+    }
+
+
+    private function testUpdateInvoice(string $billId): void {
+        $this->console("\nОбновление статуса действующего счета ...");
+
+        $result =  $this->productInvoiceService->updateInvoice($billId, Common::REJECTED_STATUS);
+
+        $this->assertTrue($result);
+
+        if ($result) {
+            $this->okMsg();
+        }
     }
 
 }

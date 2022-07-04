@@ -17,11 +17,13 @@ class BillService implements BillInterface
 
     /**
      * BillService constructor.
+     * @param string $testKey
      * @throws \ErrorException
      */
-    public function __construct()
+    public function __construct(string $testKey = '')
     {
-        $this->billPayments = new BillPayments(config('services.qiwi.secret'));
+        $apiKey = $testKey !== '' ? $testKey : config('services.qiwi.secret');
+        $this->billPayments = new BillPayments($apiKey);
     }
 
     /**

@@ -17,6 +17,15 @@ class RequestPaymentService
     private BillInterface $bill;
 
     /**
+     * @return BillInterface
+     */
+    public function getBill(): BillInterface
+    {
+        return $this->bill;
+    }
+
+
+    /**
      * RequestPaymentService constructor.
      * @param BillInterface $bill
      */

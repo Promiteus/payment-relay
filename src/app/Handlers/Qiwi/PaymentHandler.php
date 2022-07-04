@@ -4,6 +4,8 @@
 namespace App\Handlers\Qiwi;
 
 use App\dto\BillStatusResponse;
+use App\dto\InvoiceBody;
+use App\dto\OrderBody;
 use App\dto\PayResponse;
 use App\Handlers\PaymentHandlerBase;
 use App\Models\Invoice;
@@ -31,11 +33,13 @@ class PaymentHandler extends PaymentHandlerBase
      * PaymentHandler constructor.
      * @param RequestPaymentService $requestPaymentService
      * @param ProductInvoiceService $productInvoiceService
+     * @throws \Exception
      */
     public function __construct(
         RequestPaymentService $requestPaymentService,
         ProductInvoiceService $productInvoiceService
     ) {
+        parent::__construct($requestPaymentService->getBill()->getBillPayment()->getLifetimeByDay(1));
         $this->requestPaymentService = $requestPaymentService;
         $this->productInvoiceService = $productInvoiceService;
     }
@@ -80,8 +84,9 @@ class PaymentHandler extends PaymentHandlerBase
         if ($response->getError() !== '') {
             throw new \Exception($response->getError());
         }
+        $this->updateInvoice($billId, $response->getData()[Invoice::STATUS][Common::VALUE]);
 
-        return (new BillStatusResponse($response[Invoice::STATUS][Common::VALUE], $billId, $response[Common::PAY_URL]))->toArray();
+        return BillStatusResponse::getInstance()->fromBodySet($response->getData())->toArray();
     }
 
 
@@ -91,7 +96,7 @@ class PaymentHandler extends PaymentHandlerBase
      */
     final public function requestCreateBill(array $params): PayResponse
     {
-        $params[Common::BILL_ID] = Uuid::uuid4();
+        $params[Common::BILL_ID] = Uuid::uuid4()->toString();
         return $this->requestPaymentService->createBill($params);
     }
 
@@ -144,12 +149,12 @@ class PaymentHandler extends PaymentHandlerBase
    },*/
 
     /**
-     * @param array $invoice
-     * @param array $order
+     * @param InvoiceBody $invoice
+     * @param OrderBody $order
      * @return array
      * @throws \Exception
      */
-    final public function createInvoice(array $invoice, array $order): array
+    final public function createInvoice(InvoiceBody $invoice, OrderBody $order): array
     {
         return $this->productInvoiceService->createInvoice($invoice, $order);
     }

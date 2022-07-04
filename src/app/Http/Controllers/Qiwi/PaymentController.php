@@ -3,6 +3,9 @@
 
 namespace App\Http\Controllers\Qiwi;
 
+use App\dto\OrderBody;
+use App\Handlers\PaymentHandlerBase;
+use App\Handlers\Qiwi\PaymentHandler;
 use App\Http\Controllers\Controller;
 use App\Services\Qiwi\RequestPaymentService;
 use http\Env\Response;
@@ -16,12 +19,16 @@ use Illuminate\Http\Request;
 class PaymentController extends Controller
 {
     private RequestPaymentService $paymentService;
+    private PaymentHandlerBase $paymentHandler;
+
     /**
      * PaymentController constructor.
      * @param RequestPaymentService $paymentService
+     * @param PaymentHandler $paymentHandler
      */
-    public function __construct(RequestPaymentService $paymentService) {
+    public function __construct(RequestPaymentService $paymentService, PaymentHandler $paymentHandler) {
         $this->paymentService = $paymentService;
+        $this->paymentHandler = $paymentHandler;
     }
 
     /**
@@ -30,8 +37,8 @@ class PaymentController extends Controller
      * @return JsonResponse
      */
     final public function create(Request $request): JsonResponse {
-        $body = $this->getJsonBody($request);
-        return response()->json( $this->paymentService->createBill($body)->toArray(), 200);
+        $order = $this->getJsonBody($request);
+        return response()->json($this->paymentHandler->handleBill(OrderBody::getInstance()->fromBodySet($order))->toArray(), 200);
     }
 
     /**
