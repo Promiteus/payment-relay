@@ -28,26 +28,32 @@ class InvoiceBody
     /**
      * @var string
      */
-    private string $email;
-    /**
-     * @var string
-     */
     private string $status;
     /**
      * @var string
      */
     private string $expirationDays;
 
-    public function __construct(string $expirationDays)
+    private static $instance = null;
+
+    private function __construct(string $expirationDays = '')
     {
         $this->status = '';
-        $this->email = '';
         $this->currency = 'RUB';
         $this->comment = '';
         $this->amount = 0;
         $this->billId = '';
         $this->expirationDays = $expirationDays;
+
     }
+
+     public static function getInstance(string $expirationDays = ''): InvoiceBody {
+         if (is_null(self::$instance)) {
+             self::$instance = new InvoiceBody($expirationDays);
+         }
+
+         return self::$instance;
+     }
 
     /**
      * @return string
@@ -119,12 +125,14 @@ class InvoiceBody
         ];
      * */
 
-    public function fromBodySet(array $body) {
+    public function fromBodySet(array $body): InvoiceBody {
         $this->comment = $body[Common::COMMENT] ?: $this->comment;
-        $this->email = $body[Common::EMAIL] ?: $this->email;
         $this->billId = $body[Common::BILL_ID] ?: $this->billId;
-        $this->amount = $body[Common::AMOUNT] ?: $this->amount;
-        $this->status = $body[Invoice::STATUS] ?: $this->status;
+        $this->amount = $body[Common::AMOUNT][Common::VALUE] ?: $this->amount;
+        $this->status = $body[Invoice::STATUS][Common::VALUE] ?: $this->status;
+        $this->currency = $body[Common::AMOUNT][Common::CURRENCY] ?: $this->currency;
+
+        return $this;
     }
 
     /**
@@ -137,7 +145,6 @@ class InvoiceBody
             Common::CURRENCY => $this->currency,
             Common::COMMENT => $this->comment,
             Common::EXPIRATION_DATE => $this->expirationDays,
-            Common::EMAIL => $this->email,
         ];
     }
 }

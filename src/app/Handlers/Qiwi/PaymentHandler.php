@@ -4,6 +4,8 @@
 namespace App\Handlers\Qiwi;
 
 use App\dto\BillStatusResponse;
+use App\dto\InvoiceBody;
+use App\dto\OrderBody;
 use App\dto\PayResponse;
 use App\Handlers\PaymentHandlerBase;
 use App\Models\Invoice;
@@ -144,12 +146,12 @@ class PaymentHandler extends PaymentHandlerBase
    },*/
 
     /**
-     * @param array $invoice
-     * @param array $order
+     * @param InvoiceBody $invoice
+     * @param OrderBody $order
      * @return array
      * @throws \Exception
      */
-    final public function createInvoice(array $invoice, array $order): array
+    final public function createInvoice(InvoiceBody $invoice, OrderBody $order): array
     {
         return $this->productInvoiceService->createInvoice($invoice, $order);
     }

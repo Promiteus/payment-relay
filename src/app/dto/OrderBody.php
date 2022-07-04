@@ -22,16 +22,31 @@ class OrderBody
      * @var string
      */
     private string $userId;
+    /**
+     * @var OrderBody
+     */
+    private static $instance = null;
 
     /**
      * OrderBody constructor.
      */
-    public function __construct()
+    private function __construct()
     {
         $this->billId = '';
         $this->totalPrice = 0;
         $this->userId = '';
         $this->products = [];
+    }
+
+    /**
+     * @return OrderBody
+     */
+    public static function getInstance(): OrderBody {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     /**

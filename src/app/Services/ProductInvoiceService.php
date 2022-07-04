@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\dto\InvoiceBody;
 use App\dto\OrderBody;
 use App\Models\Invoice;
 use App\Models\Product;
@@ -70,14 +71,14 @@ class ProductInvoiceService
     }
 
     /**
-     * @param array $invoice
+     * @param InvoiceBody $invoice
      * @param OrderBody $order
      * @return array
      * @throws \Exception
      */
-    final public function createInvoice(array $invoice, OrderBody $order): array
+    final public function createInvoice(InvoiceBody $invoice, OrderBody $order): array
     {
-        if (empty($invoice)) {
+        if (!$invoice) {
             throw new \Exception(Common::MSG_NOT_ENOUGH_PARAMS);
         }
 
@@ -89,12 +90,12 @@ class ProductInvoiceService
         DB::beginTransaction();
 
         $inv = [
-            Invoice::ID => $invoice[Common::BILL_ID],
-            Invoice::STATUS => $invoice[Invoice::STATUS][Common::VALUE],
+            Invoice::ID => $invoice->getBillId(),
+            Invoice::STATUS => $invoice->getStatus(),
             Invoice::USER_ID => $order->getUserId(),
-            Invoice::PRICE => $invoice[Common::AMOUNT][Common::VALUE],
-            Invoice::COMMENT => $invoice[Invoice::COMMENT],
-            Invoice::CURRENCY => $invoice[Common::AMOUNT][Invoice::CURRENCY],
+            Invoice::PRICE => $invoice->getAmount(),
+            Invoice::COMMENT => $invoice->getComment(),
+            Invoice::CURRENCY => $invoice->getCurrency(),
         ];
 
         $products = collect($order->getProducts())->map(function ($item) {
@@ -112,7 +113,7 @@ class ProductInvoiceService
         $productInvoiceData = collect($productIds)->map(function ($productId) use ($invoice) {
             return [
                 ProductInvoice::ID => Uuid::uuid4()->toString(),
-                ProductInvoice::INVOICE_ID => $invoice[Common::BILL_ID],
+                ProductInvoice::INVOICE_ID => $invoice->getBillId(),
                 ProductInvoice::PRODUCT_ID => $productId[Product::ID],
                 ProductInvoice::UPDATED_AT => Carbon::now()->toString(),
                 ProductInvoice::CREATED_AT => Carbon::now()->toString(),
