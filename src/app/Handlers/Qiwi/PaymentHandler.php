@@ -33,11 +33,13 @@ class PaymentHandler extends PaymentHandlerBase
      * PaymentHandler constructor.
      * @param RequestPaymentService $requestPaymentService
      * @param ProductInvoiceService $productInvoiceService
+     * @throws \Exception
      */
     public function __construct(
         RequestPaymentService $requestPaymentService,
         ProductInvoiceService $productInvoiceService
     ) {
+        parent::__construct($requestPaymentService->getBill()->getBillPayment()->getLifetimeByDay(1));
         $this->requestPaymentService = $requestPaymentService;
         $this->productInvoiceService = $productInvoiceService;
     }

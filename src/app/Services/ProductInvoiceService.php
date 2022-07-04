@@ -47,7 +47,7 @@ class ProductInvoiceService
      * @param string $userId
      * @param string $billId
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     final public function findInvoice(string $userId, string $billId): array {
         if (!$userId || ($userId === '') || !$billId || ($billId === '')) {
