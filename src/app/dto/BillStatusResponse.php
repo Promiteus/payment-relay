@@ -20,15 +20,33 @@ class BillStatusResponse
      */
     private string $payUrl;
 
-    public function __construct(
-        string $status,
-        string $billId,
-        string $payUrl
-    )
+    private static $instance = null;
+
+    private function __construct()
     {
-        $this->payUrl = $payUrl;
-        $this->status = $status;
-        $this->billId = $billId;
+        $this->payUrl = '';
+        $this->status = '';
+        $this->billId = '';
+    }
+
+    /**
+     * @return BillStatusResponse
+     */
+    public static function getInstance(): BillStatusResponse {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    final public function fromBodySet(array $body): BillStatusResponse {
+
+        $this->payUrl = array_key_exists(Common::PAY_URL, $body) ? $body[Common::PAY_URL] : $this->payUrl;
+        $this->status = array_key_exists(Invoice::STATUS, $body) ? $body[Invoice::STATUS][Common::VALUE] : $this->status;
+        $this->billId = array_key_exists(Common::BILL_ID, $body) ? $body[Common::BILL_ID] : $this->billId;
+
+        return $this;
     }
 
     final public function toArray() {

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Handlers;
+use App\dto\InvoiceBody;
 use App\dto\OrderBody;
 use App\dto\PayResponse;
 use App\Handlers\Contracts\PaymentHandlerInterface;
@@ -13,6 +14,13 @@ use App\Services\Constants\Common;
  */
 abstract class PaymentHandlerBase implements PaymentHandlerInterface
 {
+    private string $expirationDate;
+
+    public function __construct(string $expirationDate)
+    {
+        $this->expirationDate = $expirationDate;
+    }
+
     /**
      * $order = [
      *    'userId' => '1',
@@ -42,6 +50,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                /*Получить последний счет из БД для пользователя user_id*/
                $invoice = $this->findInvoice($order->getUserId(), $order->getBillId());
 
+
                if (!empty($invoice)) {
 
                    /*Запросить у сервиса QIWI статус счета и вернуть
@@ -62,6 +71,8 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
                        return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
                    }
+
+
 
                    return new PayResponse([], Common::MSG_CANT_GET_INVOICE_STATUS_FROM_SERVER);
                }
@@ -85,9 +96,13 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
         if ($payResponse->getError() === '') {
             /*Создать новый счет в БД*/
-
             try {
-                $result = $this->createInvoice($payResponse->getData(), $order->toArray());
+
+                $invoiceBody = InvoiceBody::getInstance($this->expirationDate)->fromBodySet($payResponse->getData());
+                $orderBody = OrderBody::getInstance();
+                    //OrderBody::getInstance()->fromBodySet($order->toArray());
+
+                $result = $this->createInvoice($invoiceBody, $orderBody);
                 return new PayResponse($result);
             } catch (\Exception $e) {
                 return new PayResponse([], $e->getMessage());
@@ -130,10 +145,10 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
 
     /**
-     * @param array $invoice
-     * @param array $order
+     * @param InvoiceBody $invoice
+     * @param OrderBody $order
      * @return array
      */
-    abstract public function createInvoice(array $invoice, array $order): array;
+    abstract public function createInvoice(InvoiceBody $invoice, OrderBody $order): array;
 
 }

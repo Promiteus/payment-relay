@@ -11,7 +11,7 @@ class OrderBody
      */
     private string $billId;
     /**
-     * @var array
+     * @var ProductItem[]
      */
     private array $products;
     /**
@@ -23,26 +23,39 @@ class OrderBody
      */
     private string $userId;
     /**
+     * @var OrderBody
+     */
+    private static $instance = null;
+    /**
      * @var string
      */
     private string $comment;
     /**
      * @var string
      */
-    private string $currency;
-    /**
-     * @var string
-     */
     private string $email;
 
-    public function __construct()
+    /**
+     * OrderBody constructor.
+     */
+    private function __construct()
     {
         $this->billId = '';
         $this->totalPrice = 0;
-        $this->comment = '';
         $this->userId = '';
         $this->products = [];
-        $this->email = '';
+        $this->comment = '';
+    }
+
+    /**
+     * @return OrderBody
+     */
+    public static function getInstance(): OrderBody {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     /**
@@ -62,6 +75,7 @@ class OrderBody
     }
 
 
+
     /**
      * @return string
      */
@@ -71,21 +85,12 @@ class OrderBody
     }
 
     /**
-     * @return array
+     * @return ProductItem[]
      */
     public function getProducts(): array
     {
         return $this->products;
     }
-
-    /**
-     * @return string
-     */
-    public function getCurrency(): string
-    {
-        return $this->currency;
-    }
-
 
     /**
      * @return float
@@ -105,20 +110,23 @@ class OrderBody
 
     public function fromBodySet(array $body): OrderBody {
         $this->billId = $body[Common::BILL_ID] ?: $this->billId;
-        $this->totalPrice = $body[Common::AMOUNT] ?: $this->totalPrice;
-        $this->currency = $body[Common::CURRENCY] ?: $this->currency;
+        $this->totalPrice = $body[Common::TOTAL_PRICE] ?: $this->totalPrice;
         $this->comment = $body[Common::COMMENT] ?: $this->comment;
         $this->email = $body[Common::EMAIL] ?: $this->email;
 
-        $userIdBody = $body[Common::CUSTOM_FIELDS][Common::USER_ID];
+        $userIdBody = $body[Common::USER_ID];
         $this->userId = $userIdBody ?: $this->userId;
 
-        $productsArray = $body[Common::CUSTOM_FIELDS][Common::PRODUCTS];
+        $productsArray = $body[Common::PRODUCTS];
+
+
+        $this->products = [];
         if ((count($productsArray) !== 0) && (is_array($productsArray))) {
-            $this->products = collect($productsArray)->map(function ($item) {
-                return (new ProductItem())->fromBodySet($item);
-            })->toArray();
+            foreach ($productsArray as $productItem) {
+                $this->products[] = (new ProductItem())->fromBodySet($productItem);
+            }
         }
+
 
         return $this;
     }
@@ -130,14 +138,12 @@ class OrderBody
         return [
             Common::BILL_ID => $this->billId,
             Common::AMOUNT => $this->totalPrice,
-            Common::CURRENCY => 'RUB',
-            Common::COMMENT => '',
-            Common::EXPIRATION_DATE => $this->bill->getBillPayment()->getLifetimeByDay(1),
-            Common::EMAIL => '',
-            Common::CUSTOM_FIELDS => [
-                Common::PRODUCTS => $this->products,
-                Common::USER_ID => $this->userId,
-            ]
+            Common::TOTAL_PRICE => $this->totalPrice,
+            Common::PRODUCTS => $this->products,
+            Common::USER_ID => $this->userId,
+            Common::COMMENT => $this->comment,
+            Common::EMAIL => $this->email,
         ];
     }
+
 }
