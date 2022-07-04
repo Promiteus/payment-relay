@@ -75,8 +75,6 @@ class OrderBody
         return $this->email;
     }
 
-
-
     /**
      * @return string
      */
@@ -109,19 +107,19 @@ class OrderBody
         return $this->userId;
     }
 
+    /**
+     * @param array $body
+     * @return $this
+     */
     public function fromBodySet(array $body): OrderBody {
         $this->init();
 
-        $this->billId = $body[Common::BILL_ID] ?: $this->billId;
-        $this->totalPrice = $body[Common::TOTAL_PRICE] ?: $this->totalPrice;
-        $this->comment = $body[Common::COMMENT] ?: $this->comment;
-        $this->email = $body[Common::EMAIL] ?: $this->email;
-
-        $userIdBody = $body[Common::USER_ID];
-        $this->userId = $userIdBody ?: $this->userId;
-
-        $productsArray = $body[Common::PRODUCTS];
-
+        $this->billId = array_key_exists(Common::BILL_ID, $body) ? $body[Common::BILL_ID] : $this->billId;
+        $this->totalPrice = array_key_exists(Common::TOTAL_PRICE, $body) ? $body[Common::TOTAL_PRICE] : $this->totalPrice;
+        $this->comment = array_key_exists(Common::COMMENT, $body) ? $body[Common::COMMENT] : $this->comment;
+        $this->email = array_key_exists(Common::EMAIL, $body) ? $body[Common::EMAIL] : $this->email;
+        $this->userId = array_key_exists(Common::USER_ID, $body) ? $body[Common::USER_ID] : $this->userId;
+        $productsArray = array_key_exists(Common::PRODUCTS, $body) ? $body[Common::PRODUCTS] : $this->products;
 
         $this->products = [];
         if ((count($productsArray) !== 0) && (is_array($productsArray))) {
@@ -129,7 +127,6 @@ class OrderBody
                 $this->products[] = (new ProductItem())->fromBodySet($productItem);
             }
         }
-
 
         return $this;
     }
