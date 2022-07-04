@@ -106,6 +106,8 @@ class ProductInvoiceServiceTest extends TestCase
             Common::PRODUCTS => $productsBody,
             Common::BILL_ID => $billId,
             Common::TOTAL_PRICE => 100.0,
+            Common::COMMENT => '',
+            Common::EMAIL => 'dr.romanm@yandex.ru'
         ];
 
 
@@ -212,8 +214,10 @@ class ProductInvoiceServiceTest extends TestCase
         $order = [
             Common::USER_ID => UsersTableSeeder::TEST_USER_ID,
             Common::PRODUCTS => $productsBody,
-            Common::BILL_ID => $this->billId,
+            Common::BILL_ID =>  $this->billId,
             Common::TOTAL_PRICE => 100.0,
+            Common::COMMENT => '',
+            Common::EMAIL => 'dr.romanm@yandex.ru'
         ];
 
         /*Создать запись в таблицах invoice и product_invoice*/

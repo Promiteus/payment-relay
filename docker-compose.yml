@@ -44,17 +44,18 @@ services:
   #db:
   #  image: postgres
   #  container_name: postgresdb_dating
+  #  env_file: .env
  #   environment:
- #       - POSTGRES_USER=sa
-  #      - POSTGRES_PASSWORD=postgres
-  #      - POSTGRES_DB=testdb
+ #       - POSTGRES_USER=${DB_USERNAME}
+  #      - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #      - POSTGRES_DB=${DB_DATABASE}
   #      - PGDATA=/var/lib/postgresql/data/pgdata
  #   ports:
   #      - 5000:5432
  #   volumes:
  #       - pgdata:/var/lib/postgresql/data
  #   healthcheck:
- #       test: [ "CMD-SHELL", "pg_isready -U sa -d testdb" ]
+ #       test: [ "CMD-SHELL", "pg_isready -U sa -d ${DB_DATABASE}" ]
  #       interval: 10s
 #        timeout: 5s
 #        retries: 5

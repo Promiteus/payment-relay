@@ -84,9 +84,13 @@ class PaymentHandler extends PaymentHandlerBase
         if ($response->getError() !== '') {
             throw new \Exception($response->getError());
         }
-        $this->updateInvoice($billId, $response[Invoice::STATUS][Common::VALUE]);
+        $this->updateInvoice($billId, $response->getData()[Invoice::STATUS][Common::VALUE]);
 
-        return (new BillStatusResponse($response[Invoice::STATUS][Common::VALUE], $billId, $response[Common::PAY_URL]))->toArray();
+        return (new BillStatusResponse(
+            $response->getData()[Invoice::STATUS][Common::VALUE],
+            $billId,
+            $response->getData()[Common::PAY_URL])
+        )->toArray();
     }
 
 

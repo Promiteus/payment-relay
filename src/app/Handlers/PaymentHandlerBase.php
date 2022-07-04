@@ -50,6 +50,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                /*Получить последний счет из БД для пользователя user_id*/
                $invoice = $this->findInvoice($order->getUserId(), $order->getBillId());
 
+
                if (!empty($invoice)) {
 
                    /*Запросить у сервиса QIWI статус счета и вернуть
@@ -70,6 +71,8 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
                        return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
                    }
+
+
 
                    return new PayResponse([], Common::MSG_CANT_GET_INVOICE_STATUS_FROM_SERVER);
                }
@@ -96,8 +99,8 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
             try {
 
                 $invoiceBody = InvoiceBody::getInstance($this->expirationDate)->fromBodySet($payResponse->getData());
-                dd($order->toArray());
-                $orderBody = OrderBody::getInstance()->fromBodySet($order->toArray());
+                $orderBody = OrderBody::getInstance();
+                    //OrderBody::getInstance()->fromBodySet($order->toArray());
 
                 $result = $this->createInvoice($invoiceBody, $orderBody);
                 return new PayResponse($result);

@@ -75,10 +75,10 @@ class ProductItem
     }
 
     /**
-     * @param array $body
+     * @param $body
      * @return $this
      */
-    public function fromBodySet(array $body): ProductItem {
+    public function fromBodySet($body): ProductItem {
         $this->count = $body[Common::COUNT] ?: $this->count;
         $this->code = $body[Common::CODE] ?: $this->code;
         $this->name = $body[Common::NAME] ?: $this->name;

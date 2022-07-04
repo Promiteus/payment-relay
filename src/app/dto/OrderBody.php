@@ -118,11 +118,15 @@ class OrderBody
         $this->userId = $userIdBody ?: $this->userId;
 
         $productsArray = $body[Common::PRODUCTS];
+
+
+        $this->products = [];
         if ((count($productsArray) !== 0) && (is_array($productsArray))) {
-            $this->products = collect($productsArray)->map(function ($item) {
-                return (new ProductItem())->fromBodySet($item);
-            })->toArray();
+            foreach ($productsArray as $productItem) {
+                $this->products[] = (new ProductItem())->fromBodySet($productItem);
+            }
         }
+
 
         return $this;
     }
@@ -134,7 +138,8 @@ class OrderBody
         return [
             Common::BILL_ID => $this->billId,
             Common::AMOUNT => $this->totalPrice,
-            Common::PRODUCTS => collect($this->products)->toArray(),
+            Common::TOTAL_PRICE => $this->totalPrice,
+            Common::PRODUCTS => $this->products,
             Common::USER_ID => $this->userId,
             Common::COMMENT => $this->comment,
             Common::EMAIL => $this->email,
