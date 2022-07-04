@@ -84,6 +84,7 @@ class PaymentHandler extends PaymentHandlerBase
         if ($response->getError() !== '') {
             throw new \Exception($response->getError());
         }
+        $this->updateInvoice($billId, $response[Invoice::STATUS][Common::VALUE]);
 
         return (new BillStatusResponse($response[Invoice::STATUS][Common::VALUE], $billId, $response[Common::PAY_URL]))->toArray();
     }
@@ -95,7 +96,7 @@ class PaymentHandler extends PaymentHandlerBase
      */
     final public function requestCreateBill(array $params): PayResponse
     {
-        $params[Common::BILL_ID] = Uuid::uuid4();
+        $params[Common::BILL_ID] = Uuid::uuid4()->toString();
         return $this->requestPaymentService->createBill($params);
     }
 

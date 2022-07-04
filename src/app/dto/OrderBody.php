@@ -26,6 +26,14 @@ class OrderBody
      * @var OrderBody
      */
     private static $instance = null;
+    /**
+     * @var string
+     */
+    private string $comment;
+    /**
+     * @var string
+     */
+    private string $email;
 
     /**
      * OrderBody constructor.
@@ -36,6 +44,7 @@ class OrderBody
         $this->totalPrice = 0;
         $this->userId = '';
         $this->products = [];
+        $this->comment = '';
     }
 
     /**
@@ -48,6 +57,24 @@ class OrderBody
 
         return self::$instance;
     }
+
+    /**
+     * @return string
+     */
+    public function getComment(): string
+    {
+        return $this->comment;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+
 
     /**
      * @return string
@@ -84,6 +111,8 @@ class OrderBody
     public function fromBodySet(array $body): OrderBody {
         $this->billId = $body[Common::BILL_ID] ?: $this->billId;
         $this->totalPrice = $body[Common::TOTAL_PRICE] ?: $this->totalPrice;
+        $this->comment = $body[Common::COMMENT] ?: $this->comment;
+        $this->email = $body[Common::EMAIL] ?: $this->email;
 
         $userIdBody = $body[Common::USER_ID];
         $this->userId = $userIdBody ?: $this->userId;
@@ -107,6 +136,8 @@ class OrderBody
             Common::AMOUNT => $this->totalPrice,
             Common::PRODUCTS => collect($this->products)->toArray(),
             Common::USER_ID => $this->userId,
+            Common::COMMENT => $this->comment,
+            Common::EMAIL => $this->email,
         ];
     }
 
