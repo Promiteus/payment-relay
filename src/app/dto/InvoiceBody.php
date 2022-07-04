@@ -9,43 +9,45 @@ use App\Services\Constants\Common;
 
 class InvoiceBody
 {
-    /**
-     * @var string
-     */
-    private string $billId;
-    /**
-     * @var float
-     */
-    private float $amount;
-    /**
-     * @var string
-     */
-    private string $comment;
-    /**
-     * @var string
-     */
-    private string $currency;
-    /**
-     * @var string
-     */
-    private string $status;
-    /**
-     * @var string
-     */
-    private string $expirationDays;
+     /**
+      * @var string
+      */
+     private string $billId;
+     /**
+      * @var float
+      */
+     private float $amount;
+     /**
+      * @var string
+      */
+     private string $comment;
+     /**
+      * @var string
+      */
+     private string $currency;
+     /**
+      * @var string
+      */
+     private string $status;
+     /**
+      * @var string
+      */
+     private string $expirationDays;
 
-    private static $instance = null;
+     private static $instance = null;
 
-    private function __construct(string $expirationDays = '')
-    {
-        $this->status = '';
-        $this->currency = 'RUB';
-        $this->comment = '';
-        $this->amount = 0;
-        $this->billId = '';
-        $this->expirationDays = $expirationDays;
+     private function __construct(string $expirationDays = '')
+     {
+         $this->expirationDays = $expirationDays;
+     }
 
-    }
+     private function init() {
+         $this->status = '';
+         $this->currency = 'RUB';
+         $this->comment = '';
+         $this->amount = 0;
+         $this->billId = '';
+     }
 
      public static function getInstance(string $expirationDays = ''): InvoiceBody {
          if (is_null(self::$instance)) {
@@ -126,11 +128,13 @@ class InvoiceBody
      * */
 
     public function fromBodySet(array $body): InvoiceBody {
-        $this->comment = $body[Common::COMMENT] ?: $this->comment;
-        $this->billId = $body[Common::BILL_ID] ?: $this->billId;
-        $this->amount = $body[Common::AMOUNT][Common::VALUE] ?: $this->amount;
-        $this->status = $body[Invoice::STATUS][Common::VALUE] ?: $this->status;
-        $this->currency = $body[Common::AMOUNT][Common::CURRENCY] ?: $this->currency;
+        $this->init();
+
+        $this->comment = array_key_exists(Common::COMMENT, $body) ? $body[Common::COMMENT] : $this->comment;
+        $this->billId = array_key_exists(Common::BILL_ID, $body) ?  $body[Common::BILL_ID] : $this->billId;
+        $this->amount = array_key_exists(Common::AMOUNT, $body) ? $body[Common::AMOUNT][Common::VALUE] : $this->amount;
+        $this->status = array_key_exists(Invoice::STATUS, $body) ? $body[Invoice::STATUS][Common::VALUE] : $this->status;
+        $this->currency = array_key_exists(Common::AMOUNT, $body) ? $body[Common::AMOUNT][Common::CURRENCY] : $this->currency;
 
         return $this;
     }

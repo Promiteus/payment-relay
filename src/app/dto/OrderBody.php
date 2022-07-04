@@ -11,7 +11,7 @@ class OrderBody
      */
     private string $billId;
     /**
-     * @var ProductItem[]
+     * @var array
      */
     private array $products;
     /**
@@ -38,12 +38,13 @@ class OrderBody
     /**
      * OrderBody constructor.
      */
-    private function __construct()
-    {
+    private function __construct() {}
+
+    private function init() {
         $this->billId = '';
         $this->totalPrice = 0;
         $this->userId = '';
-        $this->products = [];
+        $this->products = array();
         $this->comment = '';
     }
 
@@ -109,6 +110,8 @@ class OrderBody
     }
 
     public function fromBodySet(array $body): OrderBody {
+        $this->init();
+
         $this->billId = $body[Common::BILL_ID] ?: $this->billId;
         $this->totalPrice = $body[Common::TOTAL_PRICE] ?: $this->totalPrice;
         $this->comment = $body[Common::COMMENT] ?: $this->comment;

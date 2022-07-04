@@ -78,7 +78,7 @@ class ProductInvoiceService
      */
     final public function createInvoice(InvoiceBody $invoice, OrderBody $order): array
     {
-        if (!$invoice) {
+        if ($invoice->getStatus() === '') {
             throw new \Exception(Common::MSG_NOT_ENOUGH_PARAMS);
         }
 
