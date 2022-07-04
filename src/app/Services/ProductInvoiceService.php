@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\dto\BillStatusResponse;
 use App\dto\InvoiceBody;
 use App\dto\OrderBody;
+use App\dto\ProductItem;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
@@ -25,22 +27,16 @@ class ProductInvoiceService
      */
     private InvoiceRepository $invoiceRepository;
     /**
-     * @var ProductInvoiceRepository
-     */
-    private ProductInvoiceRepository $productInvoiceRepository;
-    /**
      * @var ProductRepository
      */
     private ProductRepository $productRepository;
 
     public function __construct(
         InvoiceRepository $invoiceRepository,
-        ProductInvoiceRepository $productInvoiceRepository,
         ProductRepository $productRepository
     ) {
         $this->invoiceRepository = $invoiceRepository;
         $this->productRepository = $productRepository;
-        $this->productInvoiceRepository = $productInvoiceRepository;
     }
 
     /**
@@ -89,16 +85,20 @@ class ProductInvoiceService
         /*Транзакция заполнения таблиц product_invoice и invoice*/
         DB::beginTransaction();
 
+        $totalPrice = collect($order->getProducts())->sum(function (ProductItem $item) {
+            return $item->getPrice();
+        });
+
         $inv = [
             Invoice::ID => $invoice->getBillId(),
             Invoice::STATUS => $invoice->getStatus(),
             Invoice::USER_ID => $order->getUserId(),
-            Invoice::PRICE => $invoice->getAmount(),
+            Invoice::PRICE => $totalPrice,
             Invoice::COMMENT => $invoice->getComment(),
             Invoice::CURRENCY => $invoice->getCurrency(),
         ];
 
-        $products = collect($order->getProducts())->map(function ($item) {
+        $products = collect($order->getProducts())->map(function (ProductItem $item) {
             return $item->getCode();
         })->toArray();
 
@@ -120,8 +120,6 @@ class ProductInvoiceService
             ];
         })->toArray();
 
-
-
         $result = $this->invoiceRepository->createInvoice($inv)->productInvoices()->insert($productInvoiceData);
 
         if (!$result) {
@@ -131,6 +129,12 @@ class ProductInvoiceService
 
         DB::commit();
 
-        return $inv;
+        return BillStatusResponse::getInstance()->fromBodySet([
+            Common::PAY_URL => $invoice->getPayUrl(),
+            Common::BILL_ID => $invoice->getBillId(),
+            Invoice::STATUS => [
+                Common::VALUE => $invoice->getStatus()
+            ],
+        ])->toArray();
     }
 }

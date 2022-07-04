@@ -33,6 +33,10 @@ class InvoiceBody
       * @var string
       */
      private string $expirationDays;
+    /**
+     * @var string
+     */
+     private string $payUrl;
 
      private static $instance = null;
 
@@ -47,6 +51,7 @@ class InvoiceBody
          $this->comment = '';
          $this->amount = 0;
          $this->billId = '';
+         $this->payUrl = '';
      }
 
      public static function getInstance(string $expirationDays = ''): InvoiceBody {
@@ -56,6 +61,14 @@ class InvoiceBody
 
          return self::$instance;
      }
+
+    /**
+     * @return string
+     */
+    public function getPayUrl(): string
+    {
+        return $this->payUrl;
+    }
 
     /**
      * @return string
@@ -135,6 +148,7 @@ class InvoiceBody
         $this->amount = array_key_exists(Common::AMOUNT, $body) ? $body[Common::AMOUNT][Common::VALUE] : $this->amount;
         $this->status = array_key_exists(Invoice::STATUS, $body) ? $body[Invoice::STATUS][Common::VALUE] : $this->status;
         $this->currency = array_key_exists(Common::AMOUNT, $body) ? $body[Common::AMOUNT][Common::CURRENCY] : $this->currency;
+        $this->payUrl = array_key_exists(Common::PAY_URL, $body) ? $body[Common::PAY_URL] : $this->payUrl;
 
         return $this;
     }
@@ -149,6 +163,8 @@ class InvoiceBody
             Common::CURRENCY => $this->currency,
             Common::COMMENT => $this->comment,
             Common::EXPIRATION_DATE => $this->expirationDays,
+            Invoice::STATUS => $this->status,
+            Common::PAY_URL => $this->payUrl,
         ];
     }
 }
