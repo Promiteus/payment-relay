@@ -62,7 +62,6 @@ class ProductItem
         return $this->price;
     }
 
-
     /**
      * ProductItem constructor.
      */
@@ -74,15 +73,16 @@ class ProductItem
         $this->name = '';
     }
 
+
     /**
      * @param $body
      * @return $this
      */
     public function fromBodySet($body): ProductItem {
-        $this->count = $body[Common::COUNT] ?: $this->count;
-        $this->code = $body[Common::CODE] ?: $this->code;
-        $this->name = $body[Common::NAME] ?: $this->name;
-        $this->price = $body[Invoice::PRICE] ?: $this->price;
+        $this->count = array_key_exists(Common::COUNT, $body) ? $body[Common::COUNT] : $this->count;
+        $this->code = array_key_exists(Common::CODE, $body) ? $body[Common::CODE] : $this->code;
+        $this->name = array_key_exists(Common::NAME, $body) ? $body[Common::NAME] : $this->name;
+        $this->price = array_key_exists(Invoice::PRICE, $body) ? $body[Invoice::PRICE] : $this->price;
 
         return $this;
     }

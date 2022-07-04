@@ -2,7 +2,7 @@
 
 use Tests\TestCase;
 
-class PaymentController extends TestCase
+class PaymentControllerTest extends TestCase
 {
     /*Тест отклонения счета*/
     public function testCancelBill() {

@@ -97,7 +97,6 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
         if ($payResponse->getError() === '') {
             /*Создать новый счет в БД*/
             try {
-
                 $invoiceBody = InvoiceBody::getInstance($this->expirationDate)->fromBodySet($payResponse->getData());
                 $orderBody = OrderBody::getInstance();
                     //OrderBody::getInstance()->fromBodySet($order->toArray());
