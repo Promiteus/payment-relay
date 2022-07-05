@@ -48,7 +48,11 @@ class PaymentController extends Controller
      * @return JsonResponse
      */
     final public function cancel(string $billId): JsonResponse {
-        return $this->paymentService->cancelBill($billId);
+        $response = $this->paymentHandler->cancelBill($billId);
+        if ($response->getError() !== '') {
+            return response()->json($response->toArray(), 500);
+        }
+        return response()->json($response->toArray(), 200);
     }
 
     /**
@@ -57,7 +61,11 @@ class PaymentController extends Controller
      * @return JsonResponse
      */
     final public function info(string $billId): JsonResponse {
-        return response()->json( $this->paymentService->getBillInfo($billId)->toArray(), 200);
+        $response = $this->paymentHandler->getBillStatus($billId);
+        if ($response->getError() !== '') {
+            return response()->json($response->toArray(), 500);
+        }
+        return response()->json($response->toArray(), 200);
     }
 
     /**

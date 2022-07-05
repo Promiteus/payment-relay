@@ -55,14 +55,14 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
                    /*Запросить у сервиса QIWI статус счета и вернуть
                    ['status' => 'value', 'billId' => 'billValue', 'payUrl' => 'urlValue']*/
-                   $billStatus = $this->requestBillStatus($order->getBillId());
+                   $billStatus = $this->getBillStatus($order->getBillId());
 
-                   if ($billStatus[Invoice::STATUS] !== '') {
-                       $updatedInvoice = $this->updateInvoice($order->getBillId(), $billStatus[Invoice::STATUS]);
+                   if ($billStatus->getData()[Invoice::STATUS] !== '') {
+                       $updatedInvoice = $this->updateInvoice($order->getBillId(), $billStatus->getData());
 
                        if ($updatedInvoice) {
-                           if ($billStatus[Invoice::STATUS] === Common::WAITING_STATUS) {
-                               return new PayResponse($billStatus, '');
+                           if ($billStatus->getData()[Invoice::STATUS] === Common::WAITING_STATUS) {
+                               return $billStatus;
                            }
 
                            /*Создать полностью новый счет*/
@@ -92,14 +92,13 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      */
     private function createOrder(OrderBody $order): PayResponse {
         /*Создать новый счет на сервере QIWI*/
-        $payResponse = $this->requestCreateBill($order->toArray());
+        $payResponse = $this->createBill($order->toArray());
 
         if ($payResponse->getError() === '') {
             /*Создать новый счет в БД*/
             try {
                 $invoiceBody = InvoiceBody::getInstance($this->expirationDate)->fromBodySet($payResponse->getData());
                 $orderBody = OrderBody::getInstance();
-                    //OrderBody::getInstance()->fromBodySet($order->toArray());
 
                 $result = $this->createInvoice($invoiceBody, $orderBody);
                 return new PayResponse($result);
@@ -115,15 +114,21 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
     /**
      * Запросить статус покупки у платежного сервера
      * @param string $billId
-     * @return array
+     * @return PayResponse
      */
-    abstract public function requestBillStatus(string $billId): array;
+    abstract public function getBillStatus(string $billId): PayResponse;
 
     /**
      * @param array $params
      * @return PayResponse
      */
-    abstract public function requestCreateBill(array $params): PayResponse;
+    abstract public function createBill(array $params): PayResponse;
+
+    /**
+     * @param string $billId
+     * @return PayResponse
+     */
+    abstract public function cancelBill(string $billId): PayResponse;
 
     /**
      * Найти последний выставленный счет по коду заказа
@@ -137,10 +142,10 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
     /**
      * Обновить заказ в базе для текущего пользователя
      * @param string $billId
-     * @param string $status
+     * @param array $data
      * @return bool
      */
-    abstract public function updateInvoice(string $billId, string $status): bool;
+    abstract public function updateInvoice(string $billId, array $data): bool;
 
 
     /**

@@ -73,8 +73,7 @@ class InvoiceRepository
      * @return bool
      */
     final public function updateInvoice(string $id, string $status): bool {
-       return $this->invoice->newQuery()
-            ->where(Invoice::ID, '=', $id)
-            ->update([Invoice::STATUS => $status]) > 0;
+        $invoice = $this->invoice->newQuery()->where(Invoice::ID, '=', $id);
+        return $invoice->update([Invoice::STATUS => $status]) > 0;
     }
 }

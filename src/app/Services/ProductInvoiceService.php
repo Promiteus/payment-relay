@@ -10,7 +10,6 @@ use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
 use App\Repositories\InvoiceRepository;
-use App\Repositories\ProductInvoiceRepository;
 use App\Repositories\ProductRepository;
 use App\Services\Constants\Common;
 use Carbon\Carbon;

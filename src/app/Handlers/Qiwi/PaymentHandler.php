@@ -75,18 +75,17 @@ class PaymentHandler extends PaymentHandlerBase
 
     /**
      * @param string $billId
-     * @return array
-     * @throws \Exception
+     * @return PayResponse
      */
-    final public function requestBillStatus(string $billId): array
+    final public function getBillStatus(string $billId): PayResponse
     {
         $response = $this->requestPaymentService->getBillInfo($billId);
         if ($response->getError() !== '') {
-            throw new \Exception($response->getError());
+            return new PayResponse([], $response->getError());
         }
-        $this->updateInvoice($billId, $response->getData()[Invoice::STATUS][Common::VALUE]);
+        $this->updateInvoice($billId, $response->getData());
 
-        return BillStatusResponse::getInstance()->fromBodySet($response->getData())->toArray();
+        return new PayResponse(BillStatusResponse::getInstance()->fromBodySet($response->getData())->toArray());
     }
 
 
@@ -94,16 +93,33 @@ class PaymentHandler extends PaymentHandlerBase
      * @param array $params
      * @return PayResponse
      */
-    final public function requestCreateBill(array $params): PayResponse
+    final public function createBill(array $params): PayResponse
     {
         $params[Common::BILL_ID] = Uuid::uuid4()->toString();
         return $this->requestPaymentService->createBill($params);
     }
 
     /**
+     * @param string $billId
+     * @return PayResponse
+     */
+    public function cancelBill(string $billId): PayResponse
+    {
+        $response = $this->requestPaymentService->cancelBill($billId);
+        if ($response->getError() !== '') {
+            return new PayResponse([], $response->getError());
+        }
+
+        $this->updateInvoice($billId, $response->getData());
+
+        return new PayResponse(BillStatusResponse::getInstance()->fromBodySet($response->getData())->toArray());
+    }
+
+    /**
      * @param string $userId
      * @param string $billId
      * @return array
+     * @throws \Exception
      */
     final public function findInvoice(string $userId, string $billId): array
     {
@@ -112,11 +128,17 @@ class PaymentHandler extends PaymentHandlerBase
 
     /**
      * @param string $billId
-     * @param string $status
+     * @param array $data
      * @return bool
      */
-    final public function updateInvoice(string $billId, string $status): bool
+    final public function updateInvoice(string $billId, array $data): bool
     {
+        $status = Common::EMPTY_STATUS;
+        if (array_key_exists(Invoice::STATUS, $data) && (is_array($data[Invoice::STATUS]))) {
+            $status = $data[Invoice::STATUS][Common::VALUE];
+        } else  {
+            $status = $data[Invoice::STATUS];
+        }
         return $this->productInvoiceService->updateInvoice($billId, $status);
     }
 
@@ -158,4 +180,6 @@ class PaymentHandler extends PaymentHandlerBase
     {
         return $this->productInvoiceService->createInvoice($invoice, $order);
     }
+
+
 }
