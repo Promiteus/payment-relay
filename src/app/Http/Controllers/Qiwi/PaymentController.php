@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Qiwi;
 
 use App\dto\OrderBody;
+use App\dto\PayResponse;
 use App\Handlers\PaymentHandlerBase;
 use App\Handlers\Qiwi\PaymentHandler;
 use App\Http\Controllers\Controller;
@@ -37,10 +38,11 @@ class PaymentController extends Controller
      */
     final public function create(Request $request): JsonResponse {
         $order = $this->getJsonBody($request);
+
         $response = $this->paymentHandler->handleBill(OrderBody::getInstance()->fromBodySet($order));
 
         if ($response->getError() !== '') {
-            response()->json($response->toArray(), 400);
+            return response()->json($response->toArray(), 400);
         }
 
         return response()->json($response->toArray(), 200);
