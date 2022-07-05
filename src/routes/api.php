@@ -21,7 +21,7 @@ use App\Http\Controllers\Qiwi\PaymentController;
 
 
 Route::prefix('qiwi')->group(function() {
-       Route::post('/bill', PaymentController::class.'@create');
+       Route::post('/bill', PaymentController::class.'@create')->name('create.bill');
        Route::post('/cancel/{billId}', PaymentController::class.'@cancel');
        Route::get('/info/{billId}', PaymentController::class.'@info');
 });

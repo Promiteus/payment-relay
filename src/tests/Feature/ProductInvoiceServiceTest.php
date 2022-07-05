@@ -106,7 +106,7 @@ class ProductInvoiceServiceTest extends TestCase
             Common::USER_ID => UsersTableSeeder::TEST_USER_ID,
             Common::PRODUCTS => $productsBody,
             Common::BILL_ID => $billId,
-            Common::TOTAL_PRICE => 100.0,
+            Common::TOTAL_PRICE => $totalPrice,
             Common::COMMENT => '',
             Common::EMAIL => 'dr.romanm@yandex.ru'
         ];
@@ -215,7 +215,7 @@ class ProductInvoiceServiceTest extends TestCase
             Common::USER_ID => UsersTableSeeder::TEST_USER_ID,
             Common::PRODUCTS => $productsBody,
             Common::BILL_ID =>  $this->billId,
-            Common::TOTAL_PRICE => 100.0,
+            Common::TOTAL_PRICE => $totalPrice,
             Common::COMMENT => '',
             Common::EMAIL => 'dr.romanm@yandex.ru'
         ];
