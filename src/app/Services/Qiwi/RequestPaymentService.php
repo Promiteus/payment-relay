@@ -85,7 +85,7 @@ class RequestPaymentService
             if ((!$billId) || ($billId === '')) {
                 throw new \Exception(Common::MSG_EMPTY_BILL_ID);
             }
-            $response = $this->bill->getBillPayment()->cancelBill($billId);
+            $response = $this->bill->cancelBIllCustom($billId);
         } catch (BillPaymentsException | \Exception $e) {
             return new PayResponse([], $e->getMessage());
         }

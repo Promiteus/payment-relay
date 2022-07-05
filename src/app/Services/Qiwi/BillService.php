@@ -54,7 +54,7 @@ class BillService implements BillInterface
     /**
      * Отменить заказ (пользовательский метод)
      * @param string $billId
-     * @return array|mixed
+     * @return array
      */
     final public function cancelBIllCustom(string $billId): array
     {
