@@ -55,7 +55,7 @@ class RequestPaymentService
             return new PayResponse([], $e->getMessage());
         }
 
-        return new PayResponse($response, '');
+        return new PayResponse($response);
     }
 
     /**
@@ -73,24 +73,24 @@ class RequestPaymentService
             return new PayResponse([], $e->getMessage());
         }
 
-        return new PayResponse($response, '');
+        return new PayResponse($response);
     }
 
     /**
      * @param string $billId
-     * @return JsonResponse
+     * @return PayResponse
      */
-    final public function cancelBill(string $billId): JsonResponse {
+    final public function cancelBill(string $billId): PayResponse {
         try {
             if ((!$billId) || ($billId === '')) {
                 throw new \Exception(Common::MSG_EMPTY_BILL_ID);
             }
-            $response = $this->bill->getBillPayment()->cancelBill($billId);
+            $response = $this->bill->cancelBIllCustom($billId);
         } catch (BillPaymentsException | \Exception $e) {
-            return response()->json((new PayResponse([], $e->getMessage()))->toArray(), 400);
+            return new PayResponse([], $e->getMessage());
         }
 
-        return response()->json((new PayResponse($response, ''))->toArray(), 200);
+        return new PayResponse($response);
     }
 
     /**
