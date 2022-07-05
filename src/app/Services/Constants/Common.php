@@ -8,6 +8,7 @@ class Common
     public const PAID_STATUS = 'PAID';
     public const REJECTED_STATUS = 'REJECTED';
     public const EXPIRED_STATUS = 'EXPIRED';
+    public const EMPTY_STATUS = 'NONE';
     public const BILL_ID = 'billId';
     public const PRODUCTS = 'products';
     public const CODE = 'code';

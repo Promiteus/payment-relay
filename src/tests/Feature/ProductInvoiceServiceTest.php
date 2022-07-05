@@ -14,6 +14,10 @@ use Illuminate\Support\Carbon;
 use Ramsey\Uuid\Uuid;
 use Tests\TestCase;
 
+/**
+ * Class ProductInvoiceServiceTest
+ * @package App\Services
+ */
 class ProductInvoiceServiceTest extends TestCase
 {
     /**
@@ -69,9 +73,6 @@ class ProductInvoiceServiceTest extends TestCase
     }
 
 
-
-
-
     public function testCreateInvoiceEmptyInv(): void {
         $this->seed();
 
@@ -120,7 +121,6 @@ class ProductInvoiceServiceTest extends TestCase
             $this->assertTrue($e->getMessage() !== '');
         }
     }
-
 
 
     public function testCreateInvoiceEmptyOrder(): void {

@@ -37,9 +37,13 @@ class PaymentController extends Controller
      */
     final public function create(Request $request): JsonResponse {
         $order = $this->getJsonBody($request);
-        return response()
-            ->json($this->paymentHandler->handleBill(OrderBody::getInstance()->fromBodySet($order))
-            ->toArray(), 200);
+        $response = $this->paymentHandler->handleBill(OrderBody::getInstance()->fromBodySet($order));
+
+        if ($response->getError() !== '') {
+            response()->json($response->toArray(), 400);
+        }
+
+        return response()->json($response->toArray(), 200);
     }
 
     /**
@@ -48,7 +52,11 @@ class PaymentController extends Controller
      * @return JsonResponse
      */
     final public function cancel(string $billId): JsonResponse {
-        return $this->paymentService->cancelBill($billId);
+        $response = $this->paymentHandler->cancelBill($billId);
+        if ($response->getError() !== '') {
+            return response()->json($response->toArray(), 400);
+        }
+        return response()->json($response->toArray(), 200);
     }
 
     /**
@@ -57,7 +65,11 @@ class PaymentController extends Controller
      * @return JsonResponse
      */
     final public function info(string $billId): JsonResponse {
-        return response()->json( $this->paymentService->getBillInfo($billId)->toArray(), 200);
+        $response = $this->paymentHandler->getBillStatus($billId);
+        if ($response->getError() !== '') {
+            return response()->json($response->toArray(), 400);
+        }
+        return response()->json($response->toArray(), 200);
     }
 
     /**
