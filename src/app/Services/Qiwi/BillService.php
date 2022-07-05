@@ -3,6 +3,7 @@
 namespace App\Services\Qiwi;
 
 use App\Services\Qiwi\Contracts\BillInterface;
+use Illuminate\Support\Facades\Http;
 use Qiwi\Api\BillPayments;
 
 
@@ -12,8 +13,16 @@ use Qiwi\Api\BillPayments;
  */
 class BillService implements BillInterface
 {
-
+    /**
+     * @var BillPayments
+     */
     protected BillPayments $billPayments;
+    /**
+     * @var string
+     */
+    private string $url;
+
+    private string $apiKey;
 
     /**
      * BillService constructor.
@@ -22,8 +31,9 @@ class BillService implements BillInterface
      */
     public function __construct(string $testKey = '')
     {
-        $apiKey = $testKey !== '' ? $testKey : config('services.qiwi.secret');
-        $this->billPayments = new BillPayments($apiKey);
+        $this->apiKey = $testKey !== '' ? $testKey : config('services.qiwi.secret');
+        $this->url = config('services.qiwi.url');
+        $this->billPayments = new BillPayments($this->apiKey);
     }
 
     /**
@@ -39,5 +49,15 @@ class BillService implements BillInterface
      */
     final public function getPublicKey(): string {
         return config('services.qiwi.public');
+    }
+
+    /**
+     * Отменить заказ (пользовательский метод)
+     * @param string $billId
+     * @return array|mixed
+     */
+    final public function cancelBIllCustom(string $billId): array
+    {
+        return Http::withToken($this->apiKey)->post($this->url."bills/$billId/reject")->json();
     }
 }

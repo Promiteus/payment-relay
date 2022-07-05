@@ -31,6 +31,7 @@ return [
     ],
 
     'qiwi' => [
+        'url' => env('QIWI_URL'),
         'secret' => env('QIWI_SECRET_KEY'),
         'public' => env('QIWI_PUBLIC_KEY'),
     ],
