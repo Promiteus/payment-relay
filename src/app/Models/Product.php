@@ -32,6 +32,11 @@ class Product extends Model
         self::ID
     ];
 
+    protected $hidden = [
+        self::ID,
+        self::CREATED_AT,
+        self::UPDATED_AT
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
