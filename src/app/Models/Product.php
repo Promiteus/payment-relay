@@ -19,6 +19,8 @@ class Product extends Model
     public const NAME = 'name';
     public const CODE = 'code';
     public const DESCRIPTION = 'description';
+    public const DISABLED = 'disabled';
+    public const CATEGORY_ID = 'category_id';
 
     protected $table = self::TABLE_NAME;
 
@@ -32,6 +34,11 @@ class Product extends Model
         self::ID
     ];
 
+    protected $hidden = [
+        self::ID,
+        self::CREATED_AT,
+        self::UPDATED_AT
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
