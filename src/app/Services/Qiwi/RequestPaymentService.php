@@ -14,6 +14,9 @@ use Qiwi\Api\BillPaymentsException;
  */
 class RequestPaymentService
 {
+    /**
+     * @var BillInterface
+     */
     private BillInterface $bill;
 
     /**

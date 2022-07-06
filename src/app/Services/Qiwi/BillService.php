@@ -32,7 +32,7 @@ class BillService implements BillInterface
     public function __construct(string $testKey = '')
     {
         $this->apiKey = $testKey !== '' ? $testKey : config('services.qiwi.secret');
-        $this->url = config('services.qiwi.url');
+        $this->url = env('QIWI_URL');
         $this->billPayments = new BillPayments($this->apiKey);
     }
 
