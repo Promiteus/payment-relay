@@ -34,7 +34,7 @@ class PaymentServiceProvider extends ServiceProvider
         $this->app->singleton(ProductInvoiceService::class, ProductInvoiceService::class);
 
         $this->app->singleton(RequestPaymentService::class, function() {
-            return new RequestPaymentService(app()->make(BillInterface::class));
+            return new RequestPaymentService(app()->make(BillService::class));
         });
 
         $this->app->singleton(PaymentHandler::class, function () {
