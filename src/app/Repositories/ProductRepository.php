@@ -27,6 +27,13 @@ class ProductRepository
      * @return array
      */
     final public function getProductsByCodes(array $codes): array {
-       return $this->product->newQuery()->whereIn(Product::CODE, $codes)->get()->toArray();
+        return $this->product->newQuery()->whereIn(Product::CODE, $codes)->get()->toArray();
+    }
+
+    /**
+     * @return array
+     */
+    final public function getPageableProducts(): array {
+        return $this->product->newQuery()->paginate(20)->items();
     }
 }

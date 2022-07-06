@@ -1,9 +1,9 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Repositories\ProductRepository;
+use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,8 +13,22 @@ use Illuminate\Http\Request;
  */
 class ProductController extends Controller
 {
-    //TODO -- просто тест
-     final public function getAll(Request $request): JsonResponse {
-         return response()->json(Product::all(), 200);
+     /**
+     * @var ProductService
+     */
+     private ProductService $productRepository;
+
+     public function __construct(ProductService $productRepository)
+     {
+         $this->productRepository = $productRepository;
+     }
+
+    /**
+     * Постраничная выдача списка товаров
+     * @param Request $request
+     * @return JsonResponse
+     */
+     final public function getPageable(Request $request): JsonResponse {
+         return response()->json($this->productRepository->getProductsPageable(), 200);
      }
 }
