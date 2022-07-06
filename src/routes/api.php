@@ -22,11 +22,12 @@ use App\Http\Controllers\Qiwi\PaymentController;
 
 Route::prefix('qiwi')->group(function() {
        Route::post('/bill', PaymentController::class.'@create')->name('create.bill');
-       Route::post('/cancel/{billId}', PaymentController::class.'@cancel');
-       Route::get('/info/{billId}', PaymentController::class.'@info');
+       Route::post('/cancel/{billId}', PaymentController::class.'@cancel')->name('cancel.bill');
+       Route::get('/info/{billId}', PaymentController::class.'@info')->name('status.bill');
+       Route::post('bill/status', PaymentController::class.'@notify')->name('notify.bill');
 });
 
-Route::post('bill/status', PaymentController::class.'@notify');
+
 
 Route::get('products', ProductController::class.'@getAll');
 
