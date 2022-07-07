@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Services;
-
 use App\dto\InvoiceBody;
 use App\dto\OrderBody;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
 use App\Services\Constants\Common;
+use App\Services\ProductInvoiceService;
 use App\Services\Qiwi\BillService;
 use Database\Seeders\UsersTableSeeder;
 use Illuminate\Support\Carbon;
