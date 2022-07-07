@@ -23,7 +23,8 @@ class AlterProductTableForCategoryId extends Migration
                 $table
                     ->foreign(Product::CATEGORY_ID)
                     ->on(Category::TABLE_NAME)
-                    ->references(Category::ID);
+                    ->references(Category::ID)
+                    ->onDelete('cascade');
             });
         }
 
