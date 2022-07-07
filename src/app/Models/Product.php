@@ -35,7 +35,6 @@ class Product extends Model
     ];
 
     protected $hidden = [
-        self::ID,
         self::CREATED_AT,
         self::UPDATED_AT
     ];
