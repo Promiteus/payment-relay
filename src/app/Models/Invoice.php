@@ -18,7 +18,7 @@ class Invoice extends Model
     public const COMMENT = 'comment';
 
 
-    public const TABLE_NAME = 'invoice';
+    public const TABLE_NAME = 'invoices';
 
     /**
      * @var array<int, string>
