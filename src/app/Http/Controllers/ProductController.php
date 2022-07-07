@@ -31,4 +31,8 @@ class ProductController extends Controller
      final public function getPageable(Request $request): JsonResponse {
          return response()->json($this->productRepository->getProductsPageable(), 200);
      }
+
+    final public function getPageableByCategory(Request $request, string $category): JsonResponse {
+       // return response()->json($this->productRepository->getProductsPageable($category), 200);
+    }
 }

@@ -4,6 +4,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Category
@@ -22,4 +23,11 @@ class Category extends Model
    protected $keyType = 'string';
 
    protected $table = self::TABLE_NAME;
+
+    /**
+     * @return HasMany
+     */
+   final public function products(): HasMany {
+       return $this->hasMany(Product::TABLE_NAME, Product::CATEGORY_ID);
+   }
 }

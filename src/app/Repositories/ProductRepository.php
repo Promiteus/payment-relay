@@ -3,6 +3,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Category;
 use App\Models\Product;
 
 /**
@@ -11,18 +12,27 @@ use App\Models\Product;
  */
 class ProductRepository
 {
+    /**
+     * @var Product
+     */
     private Product $product;
+    /**
+     * @var Category
+     */
+    private Category $category;
 
     /**
      * ProductRepository constructor.
      * @param Product $product
      */
-    public function __construct(Product $product)
+    public function __construct(Product $product, Category $category)
     {
         $this->product = $product;
+        $this->category = $category;
     }
 
     /**
+     * Получить товары по кодам товаров
      * @param array $codes
      * @return array
      */
@@ -31,13 +41,24 @@ class ProductRepository
     }
 
     /**
+     * Получить список товаров постарнично
      * @return array
      */
     final public function getPageableProducts(): array {
         return $this->product->newQuery()->paginate(20)->items();
     }
 
-    final public function getPageableProductsByCategory(string $name) {
-        return [];
+    /**
+     * Получить список товаров по имени категории постранично
+     * @param string $name
+     * @return array
+     */
+    final public function getPageableProductsByCategory(string $name): array {
+        return $this->category
+            ->newModelQuery()
+            ->where(Category::NAME, '=', $name)
+            ->products()
+            ->get()
+            ->toArray();
     }
 }
