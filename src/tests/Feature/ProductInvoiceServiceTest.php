@@ -52,8 +52,6 @@ class ProductInvoiceServiceTest extends TestCase
 
     public function testEmptyFindInvoice()
     {
-        $this->seed();
-
         $this->console("\nПоиск несуществующего счета ...");
 
         $result =  $this->productInvoiceService->findInvoice('5', '5');
@@ -75,8 +73,6 @@ class ProductInvoiceServiceTest extends TestCase
 
 
     public function testCreateInvoiceEmptyInv(): void {
-        $this->seed();
-
         $this->clearTodayRecords();
 
         $billId = Uuid::uuid4()->toString();
@@ -125,8 +121,6 @@ class ProductInvoiceServiceTest extends TestCase
 
 
     public function testCreateInvoiceEmptyOrder(): void {
-        $this->seed();
-
         $this->clearTodayRecords();
 
         $billId = Uuid::uuid4()->toString();
@@ -177,8 +171,6 @@ class ProductInvoiceServiceTest extends TestCase
     }
 
     public function testCreateInvoice(): void {
-        $this->seed();
-
         $this->clearTodayRecords();
 
         $this->console("\nСозданеи нового счета...");

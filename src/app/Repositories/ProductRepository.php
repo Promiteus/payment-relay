@@ -36,4 +36,8 @@ class ProductRepository
     final public function getPageableProducts(): array {
         return $this->product->newQuery()->paginate(20)->items();
     }
+
+    final public function getPageableProductsByCategory(string $name) {
+        return [];
+    }
 }

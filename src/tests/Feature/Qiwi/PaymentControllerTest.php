@@ -41,8 +41,6 @@ class PaymentControllerTest extends TestCase
     public function testCreateBill() {
         $this->description();
 
-        $this->seed();
-
         $this->billId = Uuid::uuid4()->toString();
 
         $this->console("\nСозданеи нового счета.");
