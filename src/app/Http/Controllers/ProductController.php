@@ -16,11 +16,15 @@ class ProductController extends Controller
      /**
      * @var ProductService
      */
-     private ProductService $productRepository;
+     private ProductService $productService;
 
-     public function __construct(ProductService $productRepository)
+    /**
+     * ProductController constructor.
+     * @param ProductService $productService
+     */
+     public function __construct(ProductService $productService)
      {
-         $this->productRepository = $productRepository;
+         $this->productService = $productService;
      }
 
     /**
@@ -29,10 +33,15 @@ class ProductController extends Controller
      * @return JsonResponse
      */
      final public function getPageable(Request $request): JsonResponse {
-         return response()->json($this->productRepository->getProductsPageable(), 200);
+         return response()->json($this->productService->getProductsPageable(), 200);
      }
 
-    final public function getPageableByCategory(Request $request, string $category): JsonResponse {
-       // return response()->json($this->productRepository->getProductsPageable($category), 200);
+    /**
+     * Постраничная выдача списка товаров по категории
+     * @param string $category
+     * @return JsonResponse
+     */
+    final public function getPageableByCategory(string $category): JsonResponse {
+        return response()->json($this->productService->getProductsPageableByCategory($category), 200);
     }
 }

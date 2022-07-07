@@ -28,6 +28,6 @@ class Category extends Model
      * @return HasMany
      */
    final public function products(): HasMany {
-       return $this->hasMany(Product::TABLE_NAME, Product::CATEGORY_ID);
+       return $this->hasMany(Product::class, Product::CATEGORY_ID);
    }
 }

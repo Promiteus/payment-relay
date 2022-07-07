@@ -37,7 +37,11 @@ class ProductRepository
      * @return array
      */
     final public function getProductsByCodes(array $codes): array {
-        return $this->product->newQuery()->whereIn(Product::CODE, $codes)->get()->toArray();
+        return $this->product
+            ->newQuery()
+            ->whereIn(Product::CODE, $codes)
+            ->get()
+            ->toArray();
     }
 
     /**
@@ -45,7 +49,10 @@ class ProductRepository
      * @return array
      */
     final public function getPageableProducts(): array {
-        return $this->product->newQuery()->paginate(20)->items();
+        return $this->product
+            ->newQuery()
+            ->paginate(20)
+            ->items();
     }
 
     /**
@@ -55,10 +62,10 @@ class ProductRepository
      */
     final public function getPageableProductsByCategory(string $name): array {
         return $this->category
-            ->newModelQuery()
+            ->newQuery()
+            ->with(Product::TABLE_NAME)
             ->where(Category::NAME, '=', $name)
-            ->products()
-            ->get()
-            ->toArray();
+            ->paginate(20)
+            ->items();
     }
 }

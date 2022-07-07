@@ -5,6 +5,10 @@ namespace App\Services;
 
 use App\Repositories\ProductRepository;
 
+/**
+ * Class ProductService
+ * @package App\Services
+ */
 class ProductService
 {
     /**
@@ -12,6 +16,10 @@ class ProductService
      */
     private ProductRepository $productRepository;
 
+    /**
+     * ProductService constructor.
+     * @param ProductRepository $productRepository
+     */
     public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
@@ -19,10 +27,10 @@ class ProductService
 
     /**
      * Получить товары по кодам товаров
-     * @param string $code
+     * @param array $code
      * @return array
      */
-    public function getProductsByCodes(array $code): array {
+    final public function getProductsByCodes(array $code): array {
         if ($code === '') {
             return [];
         }
@@ -33,7 +41,7 @@ class ProductService
      * Получить список товаров постарнично
      * @return array
      */
-    public function getProductsPageable(): array {
+    final public function getProductsPageable(): array {
         return $this->productRepository->getPageableProducts();
     }
 
@@ -42,7 +50,7 @@ class ProductService
      * @param string $category
      * @return array
      */
-    public function getProductsPageableByCategory(string $category): array {
+    final public function getProductsPageableByCategory(string $category): array {
         if ($category === '') {
             return [];
         }
