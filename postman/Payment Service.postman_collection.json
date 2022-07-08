@@ -26,7 +26,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n   \"billId\": \"34456-554434\",\n   \"amount\": \"1.00\",    \n   \"currency\": \"RUB\",        \n   \"comment\": \"Text comment\",  \n   \"expirationDateTime\": \"2020-06-21T09:02:00+03:00\",  \n   \"email\": \"rom3889@yandex.ru\" \n}",
+							"raw": "{\n   \"userId\": \"300\",\n   \"billId\": \"f5887d76-9ef1-45dd-b361-0edd0d702510\",\n   \"totalPrice\": 100.0,\n   \"products\": [\n       {\"code\": \"10-00\", \"count\": 1, \"name\": \"Товар 1\", \"price\": 100.0},\n       {\"code\": \"10-01\", \"count\": 1, \"name\": \"Товар 2\", \"price\": 300.0}\n   ],\n   \"comment\": \"Товар 2 - за 100 руб\",\n   \"email\": \"dr.romanm@yandex.ru\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -156,6 +156,59 @@
 								"api",
 								"bill",
 								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Товары",
+			"item": [
+				{
+					"name": "GET products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1010/api/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1010",
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET products by category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1010/api/products/category/option?page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1010",
+							"path": [
+								"api",
+								"products",
+								"category",
+								"option"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
 							]
 						}
 					},
