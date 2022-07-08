@@ -10,7 +10,6 @@ use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
 use App\Repositories\InvoiceRepository;
-use App\Repositories\ProductRepository;
 use App\Services\Constants\Common;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -26,16 +25,16 @@ class ProductInvoiceService
      */
     private InvoiceRepository $invoiceRepository;
     /**
-     * @var ProductRepository
+     * @var ProductService
      */
-    private ProductRepository $productRepository;
+    private ProductService $productService;
 
     public function __construct(
         InvoiceRepository $invoiceRepository,
-        ProductRepository $productRepository
+        ProductService $productService
     ) {
         $this->invoiceRepository = $invoiceRepository;
-        $this->productRepository = $productRepository;
+        $this->productService = $productService;
     }
 
     /**
@@ -97,12 +96,12 @@ class ProductInvoiceService
             Invoice::CURRENCY => $invoice->getCurrency(),
         ];
 
-        $products = collect($order->getProducts())->map(function (ProductItem $item) {
+        $codes = collect($order->getProducts())->map(function (ProductItem $item) {
             return $item->getCode();
         })->toArray();
 
 
-        $productIds = $this->productRepository->getProductsByCodes($products);
+        $productIds = $this->productService->getProductsByCodes($codes);
 
         if (empty($productIds)) {
             DB::rollBack();
