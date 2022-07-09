@@ -44,16 +44,6 @@ class ProductRepository
             ->toArray();
     }
 
-    /**
-     * Получить список товаров постарнично
-     * @return array
-     */
-    final public function getPageableProducts(): array {
-        return $this->product
-            ->newQuery()
-            ->paginate(20)
-            ->items();
-    }
 
     /**
      * Получить список товаров по имени категории постранично

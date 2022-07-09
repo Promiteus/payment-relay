@@ -29,6 +29,5 @@ Route::prefix('qiwi')->group(function() {
 
 
 
-Route::get('products', ProductController::class.'@getPageable')->name('get.products.page');
 Route::get('products/category/{category}', ProductController::class.'@getPageableByCategory')->name('get.products.category.page');
 

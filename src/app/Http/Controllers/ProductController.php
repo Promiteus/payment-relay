@@ -27,14 +27,6 @@ class ProductController extends Controller
          $this->productService = $productService;
      }
 
-    /**
-     * Постраничная выдача списка товаров
-     * @param Request $request
-     * @return JsonResponse
-     */
-     final public function getPageable(Request $request): JsonResponse {
-         return response()->json($this->productService->getProductsPageable(), 200);
-     }
 
     /**
      * Постраничная выдача списка товаров по категории

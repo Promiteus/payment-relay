@@ -146,7 +146,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:1010/api/bill/status",
+							"raw": "http://localhost:1010/api/qiwi/bill/status",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -154,6 +154,7 @@
 							"port": "1010",
 							"path": [
 								"api",
+								"qiwi",
 								"bill",
 								"status"
 							]
@@ -166,26 +167,6 @@
 		{
 			"name": "Товары",
 			"item": [
-				{
-					"name": "GET products",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:1010/api/products",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "1010",
-							"path": [
-								"api",
-								"products"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "GET products by category",
 					"request": {
