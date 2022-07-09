@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\dto;
-
 
 use App\Models\Invoice;
 use App\Services\Constants\Common;

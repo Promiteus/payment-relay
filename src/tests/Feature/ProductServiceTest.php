@@ -4,6 +4,7 @@
 use App\Services\ProductService;
 use Database\Seeders\CategoriesTableSeeder;
 use Tests\TestCase;
+use App\Models\Product;
 
 /**
  * Class ProductServiceTest
@@ -34,7 +35,10 @@ class ProductServiceTest extends TestCase
     public function testGetProductsPageableByCategory()
     {
         $products = $this->productService->getProductsPageableByCategory(CategoriesTableSeeder::OPTION_CATEGORY);
-        dd($products);
-        $this->assertTrue(true);
+
+        $this->assertIsArray($products);
+        $this->assertArrayHasKey(Product::NAME, $products[0]);
+        $this->assertArrayHasKey(Product::PRICE, $products[0]);
+        $this->assertArrayHasKey(Product::CODE, $products[0]);
     }
 }
