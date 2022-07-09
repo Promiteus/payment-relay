@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Models\Category;
 use App\Repositories\ProductRepository;
 
 /**
@@ -54,6 +55,13 @@ class ProductService
         if ($category === '') {
             return [];
         }
-        return $this->productRepository->getPageableProductsByCategory($category);
+
+        $result = $this->productRepository->getPageableProductsByCategory($category);
+
+        if (!empty($result) && ($result[0] instanceof Category)) {
+            return $result[0]->products->toArray();
+        }
+
+        return [];
     }
 }
