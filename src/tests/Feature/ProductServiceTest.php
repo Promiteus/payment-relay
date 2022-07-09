@@ -40,5 +40,9 @@ class ProductServiceTest extends TestCase
         $this->assertArrayHasKey(Product::NAME, $products[0]);
         $this->assertArrayHasKey(Product::PRICE, $products[0]);
         $this->assertArrayHasKey(Product::CODE, $products[0]);
+        $this->assertArrayNotHasKey(Product::ID, $products[0]);
+        $this->assertArrayNotHasKey(Product::DESCRIPTION, $products[0]);
+        $this->assertArrayNotHasKey(Product::CREATED_AT, $products[0]);
+        $this->assertArrayNotHasKey(Product::UPDATED_AT, $products[0]);
     }
 }
