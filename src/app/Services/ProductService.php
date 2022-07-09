@@ -39,13 +39,6 @@ class ProductService
         return $this->productRepository->getProductsByCodes($code);
     }
 
-    /**
-     * Получить список товаров постарнично
-     * @return array
-     */
-    final public function getProductsPageable(): array {
-        return $this->productRepository->getPageableProducts();
-    }
 
     /**
      * Получить список товаров по имени категории постранично

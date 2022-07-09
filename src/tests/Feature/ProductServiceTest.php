@@ -26,11 +26,6 @@ class ProductServiceTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function testGetProductsPageable()
-    {
-
-        $this->assertTrue(true);
-    }
 
     public function testGetProductsPageableByCategory()
     {
