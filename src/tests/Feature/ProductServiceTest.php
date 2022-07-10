@@ -22,22 +22,85 @@ class ProductServiceTest extends TestCase
 
     public function testGetProductsByCodes()
     {
+        $this->console('Получить список товаров по списку кодов товаров...');
 
-        $this->assertTrue(true);
+        $codes = Product::query()->take(3)->get(Product::CODE)->toArray();
+        $codes = array_map(function ($item) {
+            return $item[Product::CODE];
+        }, $codes);
+
+        $products = $this->productService->getProductsByCodes($codes);
+
+        $this->assertIsArray($products);
+        $this->assertCount(3, $products);
+
+        foreach ($products as $product) {
+            $this->assertArrayHasKey(Product::NAME, $product);
+            $this->assertArrayHasKey(Product::PRICE, $product);
+            $this->assertArrayHasKey(Product::CODE, $product);
+            $this->assertArrayHasKey(Product::ID, $product);
+            $this->assertArrayHasKey(Product::DESCRIPTION, $product);
+            $this->assertArrayNotHasKey(Product::CREATED_AT, $product);
+            $this->assertArrayNotHasKey(Product::UPDATED_AT, $product);
+        }
+
+        $this->okMsg('Получаемый список верен! Размер списка: '.count($products));
     }
 
+    public function testGetProductsByCodesIfNotExists() {
+        $this->console("\nПолучить список товаров по несуществующему коду/кодам...");
+
+        $products = $this->productService->getProductsByCodes([]);
+
+        $this->assertCount(0, $products);
+
+        $products = $this->productService->getProductsByCodes(['']);
+
+        $this->assertCount(0, $products);
+
+        $products = $this->productService->getProductsByCodes(['', '']);
+
+        $this->assertCount(0, $products);
+
+        $this->assertIsArray($products);
+
+        $this->okMsg('Получаемый список верен (пуст)!');
+    }
 
     public function testGetProductsPageableByCategory()
     {
+        $this->console("\nПолучить список товаров по назваию категории...");
+
         $products = $this->productService->getProductsPageableByCategory(CategoriesTableSeeder::OPTION_CATEGORY);
 
         $this->assertIsArray($products);
-        $this->assertArrayHasKey(Product::NAME, $products[0]);
-        $this->assertArrayHasKey(Product::PRICE, $products[0]);
-        $this->assertArrayHasKey(Product::CODE, $products[0]);
-        $this->assertArrayNotHasKey(Product::ID, $products[0]);
-        $this->assertArrayNotHasKey(Product::DESCRIPTION, $products[0]);
-        $this->assertArrayNotHasKey(Product::CREATED_AT, $products[0]);
-        $this->assertArrayNotHasKey(Product::UPDATED_AT, $products[0]);
+        foreach ($products as $product) {
+            $this->assertArrayHasKey(Product::NAME, $product);
+            $this->assertArrayHasKey(Product::PRICE, $product);
+            $this->assertArrayHasKey(Product::CODE, $product);
+            $this->assertArrayNotHasKey(Product::ID, $product);
+            $this->assertArrayNotHasKey(Product::DESCRIPTION, $product);
+            $this->assertArrayNotHasKey(Product::CREATED_AT, $product);
+            $this->assertArrayNotHasKey(Product::UPDATED_AT, $product);
+        }
+
+        $this->okMsg('Получаемый список верен! Размер списка: '.count($products));
+    }
+
+    public function testGetProductsPageableByUnknownCategory()
+    {
+        $this->console("\nПолучить список товаров по пустой или неизвестной категории...");
+
+        $products = $this->productService->getProductsPageableByCategory('');
+
+        $this->assertIsArray($products);
+        $this->assertCount(0, $products);
+
+        $products = $this->productService->getProductsPageableByCategory('test-000');
+
+        $this->assertIsArray($products);
+        $this->assertCount(0, $products);
+
+        $this->okMsg('Получаемый список верен (пуст)!');
     }
 }
