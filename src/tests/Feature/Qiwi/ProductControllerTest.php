@@ -7,7 +7,7 @@ use Database\Seeders\CategoriesTableSeeder;
 class ProductControllerTest extends TestCase
 {
     private function description() {
-        $this->console("Тестирование конечных точек ProductController: ");
+        $this->console("\nТестирование конечных точек ProductController: ");
         $this->console("- Получить список товаров по категории: ".route('get.products.category.page', ['category' => CategoriesTableSeeder::OPTION_CATEGORY]));
         $this->console("- Получить список товаров по несуществующей категории: ".route('get.products.category.page', ['category' => '0000']));
     }
