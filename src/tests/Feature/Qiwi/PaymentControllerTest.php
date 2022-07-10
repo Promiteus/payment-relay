@@ -29,7 +29,7 @@ class PaymentControllerTest extends TestCase
 
     }
 
-    private function description() {
+    private function description(): void {
         $this->console("Тестирование конечных точек: ");
         $this->console("- Создать новый счет: ".route('create.bill'));
         $this->console("- Проверить статус счета: ".route('status.bill', [Common::BILL_ID => '000']));
@@ -38,7 +38,7 @@ class PaymentControllerTest extends TestCase
     }
 
     /*Тест создания счета*/
-    public function testCreateBill() {
+    public function testCreateBill(): void {
         $this->description();
 
         $this->billId = Uuid::uuid4()->toString();
@@ -95,7 +95,7 @@ class PaymentControllerTest extends TestCase
     }
 
     /*Тест получения статуса счета*/
-    private function testGetBillInfo(string $billId) {
+    private function testGetBillInfo(string $billId): void {
         $this->console("\nПроверить статус счета: $this->billId");
         $response = $this->json('GET', route('status.bill', [Common::BILL_ID => $billId]))->assertStatus(200)->json();
 
@@ -134,7 +134,7 @@ class PaymentControllerTest extends TestCase
 
 
     /*Тест на изменение статуса счета счета*/
-    public function testNotify() {
+    public function testNotify(): void {
         $this->console("\nОтвет (код 200) на уведомление от QIWI о смене статуса счета.");
         $response = $this->json('POST', route('notify.bill'), [])->assertStatus(200);
 
