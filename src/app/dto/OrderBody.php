@@ -4,6 +4,10 @@ namespace App\dto;
 
 use App\Services\Constants\Common;
 
+/**
+ * Class OrderBody
+ * @package App\dto
+ */
 class OrderBody
 {
     /**
@@ -46,6 +50,7 @@ class OrderBody
         $this->userId = '';
         $this->products = array();
         $this->comment = '';
+        $this->email = '';
     }
 
     /**
@@ -119,7 +124,7 @@ class OrderBody
         $this->comment = array_key_exists(Common::COMMENT, $body) && $body[Common::COMMENT] ? $body[Common::COMMENT] : $this->comment;
         $this->email = array_key_exists(Common::EMAIL, $body) && $body[Common::EMAIL] ? $body[Common::EMAIL] : $this->email;
         $this->userId = array_key_exists(Common::USER_ID, $body) && $body[Common::USER_ID] ? $body[Common::USER_ID] : $this->userId;
-        $productsArray = array_key_exists(Common::PRODUCTS, $body) && $body[Common::PRODUCTS] ? $body[Common::PRODUCTS] : $this->products;
+        $productsArray = array_key_exists(Common::PRODUCTS, $body) && is_array($body[Common::PRODUCTS]) && $body[Common::PRODUCTS] ? $body[Common::PRODUCTS] : $this->products;
 
         $this->products = [];
         if ((count($productsArray) !== 0) && (is_array($productsArray))) {
