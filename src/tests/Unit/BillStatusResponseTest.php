@@ -8,24 +8,10 @@ use Tests\TestCase;
 
 class BillStatusResponseTest extends TestCase
 {
-    private BillStatusResponse $billStatus;
-
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-
-        $this->billStatus = BillStatusResponse::getInstance();
-    }
-
-    public function testInstanseOfBillStatusResponse() {
-        $this->console("\nТестирование BillStatusResponse::getInstance() на предмет возврата экземпляра BillStatusResponse....");
-
-        self::assertInstanceOf(BillStatusResponse::class, $this->billStatus);
-        $this->okMsg();
-    }
 
     public function testToArray()
     {
+        $billStatus = app(BillStatusResponse::class);
         $this->console("\nТестирование метода toArray() с нормальными аргументами....");
         $arg = [
             Common::PAY_URL => 'http://...',
@@ -35,7 +21,7 @@ class BillStatusResponseTest extends TestCase
             ],
         ];
 
-        $result = $this->billStatus->fromBodySet($arg);
+        $result = $billStatus->fromBodySet($arg);
 
         $expected = [
             Common::PAY_URL => 'http://...',
@@ -49,6 +35,8 @@ class BillStatusResponseTest extends TestCase
 
     public function testToArrayEmptyArg()
     {
+        $billStatus = app(BillStatusResponse::class);
+
         $this->console("\nТестирование метода toArray() с пустыми аргументами....");
         $arg = [
             Common::PAY_URL => '',
@@ -58,7 +46,7 @@ class BillStatusResponseTest extends TestCase
             ],
         ];
 
-        $result = $this->billStatus->fromBodySet($arg);
+        $result = $billStatus->fromBodySet($arg);
 
         $expected = [
             Common::PAY_URL => '',
@@ -71,9 +59,10 @@ class BillStatusResponseTest extends TestCase
     }
 
     public function testInstanceOf() {
+        $billStatus = app(BillStatusResponse::class);
         $this->console("\nТестирование fromBodySet() на предмет возврата экземпляра BillStatusResponse....");
 
-        $result = $this->billStatus->fromBodySet([]);
+        $result = $billStatus->fromBodySet([]);
         $this->assertInstanceOf(BillStatusResponse::class, $result);
 
         $this->okMsg();
@@ -81,9 +70,10 @@ class BillStatusResponseTest extends TestCase
 
     public function testFromBodySetOfEmptyArg()
     {
+        $billStatus = app(BillStatusResponse::class);
         $this->console("\nТестирование fromBodySet() с пустым аргументом....");
 
-        $result = $this->billStatus->fromBodySet([]);
+        $result = $billStatus->fromBodySet([]);
 
         $this->assertSame($result->getStatus(), '');
         $this->assertSame($result->getBillId(), '');
@@ -94,6 +84,7 @@ class BillStatusResponseTest extends TestCase
 
     public function testFromBodySet()
     {
+        $billStatus = app(BillStatusResponse::class);
         $this->console("\nТестирование fromBodySet() с нормальным аргументом....");
 
         $arg = [
@@ -104,7 +95,7 @@ class BillStatusResponseTest extends TestCase
             ],
         ];
 
-        $result = $this->billStatus->fromBodySet($arg);
+        $result = $billStatus->fromBodySet($arg);
 
         $this->assertSame($result->getStatus(), Common::WAITING_STATUS);
         $this->assertSame($result->getBillId(), '000');
@@ -115,6 +106,7 @@ class BillStatusResponseTest extends TestCase
 
     public function testFromBodySetWrongStatusFormat()
     {
+        $billStatus = app(BillStatusResponse::class);
         $this->console("\nТестирование fromBodySet() с искаженным форматом статуса....");
 
         $arg = [
@@ -123,7 +115,7 @@ class BillStatusResponseTest extends TestCase
             Common::STATUS => Common::WAITING_STATUS,
         ];
 
-        $result = $this->billStatus->fromBodySet($arg);
+        $result = $billStatus->fromBodySet($arg);
 
         $this->assertSame($result->getStatus(), '');
         $this->assertSame($result->getBillId(), '000');
