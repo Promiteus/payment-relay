@@ -30,7 +30,7 @@ class PaymentControllerTest extends TestCase
     }
 
     private function description(): void {
-        $this->console("Тестирование конечных точек: ");
+        $this->console("\nТестирование конечных точек: ");
         $this->console("- Создать новый счет: ".route('create.bill'));
         $this->console("- Проверить статус счета: ".route('status.bill', [Common::BILL_ID => '000']));
         $this->console("- Отмена выставленного счета: ".route('cancel.bill', [Common::BILL_ID => '000']));

@@ -108,13 +108,6 @@ class InvoiceBody
         return $this->currency;
     }
 
-    /**
-     * @return string
-     */
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
 
     /**
      * @return string
@@ -143,9 +136,9 @@ class InvoiceBody
 
         $this->comment = array_key_exists(Common::COMMENT, $body) ? $body[Common::COMMENT] : $this->comment;
         $this->billId = array_key_exists(Common::BILL_ID, $body) ?  $body[Common::BILL_ID] : $this->billId;
-        $this->amount = array_key_exists(Common::AMOUNT, $body) ? $body[Common::AMOUNT][Common::VALUE] : $this->amount;
-        $this->status = array_key_exists(Invoice::STATUS, $body) ? $body[Invoice::STATUS][Common::VALUE] : $this->status;
-        $this->currency = array_key_exists(Common::AMOUNT, $body) ? $body[Common::AMOUNT][Common::CURRENCY] : $this->currency;
+        $this->amount = array_key_exists(Common::AMOUNT, $body) && is_array($body[Common::AMOUNT]) && $body[Common::AMOUNT][Common::VALUE] ? $body[Common::AMOUNT][Common::VALUE] : $this->amount;
+        $this->status = array_key_exists(Invoice::STATUS, $body) && is_array($body[Invoice::STATUS]) && $body[Invoice::STATUS][Common::VALUE] ? $body[Invoice::STATUS][Common::VALUE] : $this->status;
+        $this->currency = array_key_exists(Common::AMOUNT, $body) && is_array($body[Common::AMOUNT]) && $body[Common::AMOUNT][Common::CURRENCY] ? $body[Common::AMOUNT][Common::CURRENCY] : $this->currency;
         $this->payUrl = array_key_exists(Common::PAY_URL, $body) ? $body[Common::PAY_URL] : $this->payUrl;
 
         return $this;

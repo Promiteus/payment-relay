@@ -27,6 +27,7 @@ class Common
     public const TOTAL_PRICE = 'totalPrice';
     public const CUSTOM_FIELDS = 'customFields';
     public const DATA = 'data';
+    public const STATUS = 'status';
 
     public const MSG_EMPTY_BILL_ID = 'BillId is empty!';
 
