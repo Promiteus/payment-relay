@@ -28,6 +28,7 @@ class Common
     public const CUSTOM_FIELDS = 'customFields';
     public const DATA = 'data';
     public const STATUS = 'status';
+    public const ERROR = 'error';
 
     public const MSG_EMPTY_BILL_ID = 'BillId is empty!';
 
