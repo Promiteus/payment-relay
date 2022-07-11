@@ -19,6 +19,7 @@ class BillStatusResponseTest extends TestCase
 
     public function testInstanseOfBillStatusResponse() {
         $this->console("\nТестирование BillStatusResponse::getInstance() на предмет возврата экземпляра BillStatusResponse....");
+
         self::assertInstanceOf(BillStatusResponse::class, $this->billStatus);
         $this->okMsg();
     }
