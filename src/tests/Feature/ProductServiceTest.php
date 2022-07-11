@@ -22,7 +22,7 @@ class ProductServiceTest extends TestCase
 
     public function testGetProductsByCodes()
     {
-        $this->console('Получить список товаров по списку кодов товаров...');
+        $this->console("\nПолучить список товаров по списку кодов товаров...");
 
         $codes = Product::query()->take(3)->get(Product::CODE)->toArray();
         $codes = array_map(function ($item) {
