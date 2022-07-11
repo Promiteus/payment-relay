@@ -39,7 +39,7 @@ class PaymentController extends Controller
     final public function create(Request $request): JsonResponse {
         $order = $this->getJsonBody($request);
 
-        $response = $this->paymentHandler->handleBill(OrderBody::getInstance()->fromBodySet($order));
+        $response = $this->paymentHandler->handleBill(app(OrderBody::class)->fromBodySet($order));
 
         if ($response->getError() !== '') {
             return response()->json($response->toArray(), 400);

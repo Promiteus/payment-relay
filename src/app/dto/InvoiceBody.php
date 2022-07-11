@@ -36,14 +36,10 @@ class InvoiceBody
      */
      private string $payUrl;
 
-     private static $instance = null;
 
-     private function __construct(string $expirationDays = '')
+     public function __construct(string $expirationDays = '')
      {
          $this->expirationDays = $expirationDays;
-     }
-
-     private function init() {
          $this->status = '';
          $this->currency = 'RUB';
          $this->comment = '';
@@ -52,13 +48,6 @@ class InvoiceBody
          $this->payUrl = '';
      }
 
-     public static function getInstance(string $expirationDays = ''): InvoiceBody {
-         if (is_null(self::$instance)) {
-             self::$instance = new InvoiceBody($expirationDays);
-         }
-
-         return self::$instance;
-     }
 
     /**
      * @return string
@@ -132,8 +121,6 @@ class InvoiceBody
      * */
 
     public function fromBodySet(array $body): InvoiceBody {
-        $this->init();
-
         $this->comment = array_key_exists(Common::COMMENT, $body) ? $body[Common::COMMENT] : $this->comment;
         $this->billId = array_key_exists(Common::BILL_ID, $body) ?  $body[Common::BILL_ID] : $this->billId;
         $this->amount = array_key_exists(Common::AMOUNT, $body) && is_array($body[Common::AMOUNT]) && $body[Common::AMOUNT][Common::VALUE] ? $body[Common::AMOUNT][Common::VALUE] : $this->amount;

@@ -7,20 +7,10 @@ use Tests\TestCase;
 
 class InvoiceBodyTest extends TestCase
 {
-    /**
-     * @var InvoiceBody
-     */
-    private InvoiceBody $invoiceBody;
-
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-
-        $this->invoiceBody = InvoiceBody::getInstance();
-    }
 
     public function testToArray()
     {
+        $invoiceBody = app(InvoiceBody::class);
         $this->console("\nТестирование метода InvoiceBody toArray() с нормальными аргументами....");
 
         $invoice = [
@@ -36,7 +26,7 @@ class InvoiceBodyTest extends TestCase
             Common::PAY_URL => 'http://...',
         ];
 
-        $result = $this->invoiceBody->fromBodySet($invoice);
+        $result = $invoiceBody->fromBodySet($invoice);
 
         $expected = [
             Common::BILL_ID => $invoice[Common::BILL_ID],
@@ -55,6 +45,7 @@ class InvoiceBodyTest extends TestCase
 
     public function testToArrayBadArgs()
     {
+        $invoiceBody = app(InvoiceBody::class);
         $this->console("\nТестирование метода InvoiceBody toArray() с плохими аргументами валюты, суммы и статуса....");
 
         $invoice = [
@@ -66,7 +57,7 @@ class InvoiceBodyTest extends TestCase
             Common::PAY_URL => 'http://...',
         ];
 
-        $result = $this->invoiceBody->fromBodySet($invoice);
+        $result = $invoiceBody->fromBodySet($invoice);
 
         $expected = [
             Common::BILL_ID => $invoice[Common::BILL_ID],
@@ -85,6 +76,7 @@ class InvoiceBodyTest extends TestCase
 
     public function testFromBodySet()
     {
+        $invoiceBody = app(InvoiceBody::class);
         $this->console("\nТестирование метода InvoiceBody fromBodySet() с нормальными аргументами....");
 
         $invoice = [
@@ -100,7 +92,7 @@ class InvoiceBodyTest extends TestCase
             Common::PAY_URL => 'http://...',
         ];
 
-        $result = $this->invoiceBody->fromBodySet($invoice);
+        $result = $invoiceBody->fromBodySet($invoice);
 
         $this->assertSame($result->getBillId(), '000');
         $this->assertSame($result->getPayUrl(), 'http://...');
@@ -114,6 +106,7 @@ class InvoiceBodyTest extends TestCase
 
     public function testFromBodySetBadArgs()
     {
+        $invoiceBody = app(InvoiceBody::class);
         $this->console("\nТестирование метода InvoiceBody fromBodySet() с плохими аргументами....");
 
         $invoice = [
@@ -123,7 +116,7 @@ class InvoiceBodyTest extends TestCase
             Common::COMMENT => 'any comment',
         ];
 
-        $result = $this->invoiceBody->fromBodySet($invoice);
+        $result = $invoiceBody->fromBodySet($invoice);
 
         $this->assertSame($result->getBillId(), '000');
         $this->assertSame($result->getPayUrl(), '');
@@ -135,12 +128,4 @@ class InvoiceBodyTest extends TestCase
         $this->okMsg();
     }
 
-    public function testGetInstance()
-    {
-        $this->console("\nТестирование InvoiceBody::getInstance() на предмет возврата экземпляра InvoiceBody....");
-
-        $this->assertInstanceOf(InvoiceBody::class,  $this->invoiceBody);
-
-        $this->okMsg();
-    }
 }
