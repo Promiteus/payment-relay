@@ -16,6 +16,7 @@ class Invoice extends Model
     public const CURRENCY = 'currency';
     public const PRICE = 'price';
     public const COMMENT = 'comment';
+    public const EXPIRATION_DATETIME = 'expired_at';
 
 
     public const TABLE_NAME = 'invoices';
@@ -24,7 +25,7 @@ class Invoice extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        self::ID, self::USER_ID, self::STATUS, self::CURRENCY, self::PRICE, self::COMMENT,
+        self::ID, self::USER_ID, self::STATUS, self::CURRENCY, self::PRICE, self::COMMENT, self::EXPIRATION_DATETIME,
     ];
 
     /**
