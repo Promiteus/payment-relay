@@ -85,7 +85,7 @@ class PaymentHandler extends PaymentHandlerBase
         }
         $this->updateInvoice($billId, $response->getData());
 
-        return new PayResponse(BillStatusResponse::getInstance()->fromBodySet($response->getData())->toArray());
+        return new PayResponse((app()->make(BillStatusResponse::class))->fromBodySet($response->getData())->toArray());
     }
 
 
@@ -112,7 +112,7 @@ class PaymentHandler extends PaymentHandlerBase
 
         $this->updateInvoice($billId, $response->getData());
 
-        return new PayResponse(BillStatusResponse::getInstance()->fromBodySet($response->getData())->toArray());
+        return new PayResponse(app(BillStatusResponse::class)->fromBodySet($response->getData())->toArray());
     }
 
     /**
