@@ -94,6 +94,7 @@ class ProductInvoiceService
             Invoice::PRICE => $totalPrice,
             Invoice::COMMENT => $invoice->getComment(),
             Invoice::CURRENCY => $invoice->getCurrency(),
+            Invoice::EXPIRATION_DATETIME => $invoice->getExpirationDays(),
         ];
 
         $codes = collect($order->getProducts())->map(function (ProductItem $item) {
