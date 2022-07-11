@@ -27,10 +27,6 @@ class OrderBody
      */
     private string $userId;
     /**
-     * @var OrderBody
-     */
-    private static $instance = null;
-    /**
      * @var string
      */
     private string $comment;
@@ -42,9 +38,7 @@ class OrderBody
     /**
      * OrderBody constructor.
      */
-    private function __construct() {}
-
-    private function init() {
+    public function __construct() {
         $this->billId = '';
         $this->totalPrice = 0;
         $this->userId = '';
@@ -53,16 +47,7 @@ class OrderBody
         $this->email = '';
     }
 
-    /**
-     * @return OrderBody
-     */
-    public static function getInstance(): OrderBody {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
 
-        return self::$instance;
-    }
 
     /**
      * @return string
@@ -117,8 +102,6 @@ class OrderBody
      * @return $this
      */
     public function fromBodySet(array $body): OrderBody {
-        $this->init();
-
         $this->billId = array_key_exists(Common::BILL_ID, $body) && $body[Common::BILL_ID] ? $body[Common::BILL_ID] : $this->billId;
         $this->totalPrice = array_key_exists(Common::TOTAL_PRICE, $body) && $body[Common::TOTAL_PRICE] ? $body[Common::TOTAL_PRICE] : $this->totalPrice;
         $this->comment = array_key_exists(Common::COMMENT, $body) && $body[Common::COMMENT] ? $body[Common::COMMENT] : $this->comment;

@@ -28,6 +28,9 @@ class ProductInvoiceServiceTest extends TestCase
      * @var ProductInvoiceService
      */
     private ProductInvoiceService $productInvoiceService;
+    /**
+     * @var BillService|mixed
+     */
     private BillService $billService;
 
 
@@ -48,7 +51,9 @@ class ProductInvoiceServiceTest extends TestCase
     }
 
 
-
+    /**
+     * @throws Exception
+     */
     public function testEmptyFindInvoice()
     {
         $this->console("\nПоиск несуществующего счета ...");
@@ -65,12 +70,18 @@ class ProductInvoiceServiceTest extends TestCase
 
 
     /*Очистить все сегодншние записи*/
+    /**
+     *
+     */
     private function clearTodayRecords() {
         Invoice::query()->where('created_at', 'LIKE', '%'.Carbon::now()->toDateString().'%')->delete();
         ProductInvoice::query()->where('created_at', 'LIKE', '%'.Carbon::now()->toDateString().'%')->delete();
     }
 
 
+    /**
+     *
+     */
     public function testCreateInvoiceEmptyInv(): void {
         $this->clearTodayRecords();
 
@@ -111,7 +122,7 @@ class ProductInvoiceServiceTest extends TestCase
         /*Создать запись в таблицах invoice и product_invoice*/
         try {
             $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
-            $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
+            $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), app(OrderBody::class)->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
@@ -119,6 +130,9 @@ class ProductInvoiceServiceTest extends TestCase
     }
 
 
+    /**
+     *
+     */
     public function testCreateInvoiceEmptyOrder(): void {
         $this->clearTodayRecords();
 
@@ -162,13 +176,16 @@ class ProductInvoiceServiceTest extends TestCase
 
         try {
             $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
-            $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
+            $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), app(OrderBody::class)->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateInvoice(): void {
         $this->clearTodayRecords();
 
@@ -214,7 +231,7 @@ class ProductInvoiceServiceTest extends TestCase
 
         /*Создать запись в таблицах invoice и product_invoice*/
         $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
-        $result = $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
+        $result = $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), app(OrderBody::class)->fromBodySet($order));
 
         $this->assertTrue(count($result) > 0);
 
@@ -239,6 +256,10 @@ class ProductInvoiceServiceTest extends TestCase
         $this->testUpdateInvoice($this->billId);
     }
 
+    /**
+     * @param string $billId
+     * @throws Exception
+     */
     private function testFindInvoice(string $billId): void {
         $this->console("\nПоиск действующего счета ...");
 
@@ -252,6 +273,9 @@ class ProductInvoiceServiceTest extends TestCase
     }
 
 
+    /**
+     * @param string $billId
+     */
     private function testUpdateInvoice(string $billId): void {
         $this->console("\nОбновление статуса действующего счета ...");
 

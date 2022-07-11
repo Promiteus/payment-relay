@@ -15,28 +15,11 @@ use Tests\TestCase;
 class OrderBodyTest extends TestCase
 {
     /**
-     * @var OrderBody
-     */
-    private OrderBody $orderBody;
-
-    /**
-     * OrderBodyTest constructor.
-     * @param string|null $name
-     * @param array $data
-     * @param string $dataName
-     */
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-
-        $this->orderBody = OrderBody::getInstance();
-    }
-
-    /**
      *
      */
     public function testFromBodySet(): void
     {
+        $orderBody = app(OrderBody::class);
         $this->console("\nТестирование метода OrderBody fromBodySet() с нормальными аргументами....");
 
         $products = [
@@ -63,7 +46,7 @@ class OrderBodyTest extends TestCase
             Common::EMAIL => "dr.romanm@yandex.ru",
         ];
 
-        $result = $this->orderBody->fromBodySet($order);
+        $result = $orderBody->fromBodySet($order);
 
         $this->assertInstanceOf(OrderBody::class, $result);
 
@@ -80,6 +63,7 @@ class OrderBodyTest extends TestCase
 
     public function testFromBodySetBadArgs(): void
     {
+        $orderBody = app(OrderBody::class);
         $this->console("\nТестирование метода OrderBody fromBodySet() с плохими аргументами....");
 
         $products = [];
@@ -90,7 +74,7 @@ class OrderBodyTest extends TestCase
             Common::PRODUCTS => $products,
         ];
 
-        $result = $this->orderBody->fromBodySet($order);
+        $result = $orderBody->fromBodySet($order);
 
         $this->assertInstanceOf(OrderBody::class, $result);
 
@@ -110,6 +94,7 @@ class OrderBodyTest extends TestCase
      */
     public function testToArray(): void
     {
+        $orderBody = app(OrderBody::class);
         $this->console("\nТестирование метода OrderBody toArray() с нормальными аргументами....");
 
         $products = [
@@ -136,7 +121,7 @@ class OrderBodyTest extends TestCase
          Common::EMAIL => "dr.romanm@yandex.ru",
        ];
 
-        $result = $this->orderBody->fromBodySet($order);
+        $result = $orderBody->fromBodySet($order);
 
         $this->assertInstanceOf(OrderBody::class, $result);
 
@@ -162,6 +147,7 @@ class OrderBodyTest extends TestCase
 
     public function testToArrayBadArgs(): void
     {
+        $orderBody = app(OrderBody::class);
         $this->console("\nТестирование метода OrderBody toArray() с плохими аргументами....");
 
         $order = [
@@ -171,7 +157,7 @@ class OrderBodyTest extends TestCase
             Common::PRODUCTS => [],
         ];
 
-        $result = $this->orderBody->fromBodySet($order);
+        $result = $orderBody->fromBodySet($order);
 
         $this->assertInstanceOf(OrderBody::class, $result);
 
@@ -192,13 +178,5 @@ class OrderBodyTest extends TestCase
         $this->okMsg();
     }
 
-    /**
-     *
-     */
-    public function testGetInstance(): void
-    {
-        $this->console("\nТестирование метода getInstance класса OrderBody....");
-        $this->assertInstanceOf(OrderBody::class, $this->orderBody);
-        $this->okMsg();
-    }
+
 }
