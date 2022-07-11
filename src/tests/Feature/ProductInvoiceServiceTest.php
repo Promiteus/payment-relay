@@ -111,7 +111,7 @@ class ProductInvoiceServiceTest extends TestCase
         /*Создать запись в таблицах invoice и product_invoice*/
         try {
             $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
-            $this->productInvoiceService->createInvoice(InvoiceBody::getInstance($expDate)->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
+            $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
@@ -162,7 +162,7 @@ class ProductInvoiceServiceTest extends TestCase
 
         try {
             $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
-            $this->productInvoiceService->createInvoice(InvoiceBody::getInstance($expDate)->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
+            $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
@@ -214,7 +214,7 @@ class ProductInvoiceServiceTest extends TestCase
 
         /*Создать запись в таблицах invoice и product_invoice*/
         $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
-        $result = $this->productInvoiceService->createInvoice(InvoiceBody::getInstance($expDate)->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
+        $result = $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), OrderBody::getInstance()->fromBodySet($order));
 
         $this->assertTrue(count($result) > 0);
 
