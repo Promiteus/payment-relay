@@ -83,9 +83,11 @@ class PaymentHandler extends PaymentHandlerBase
         if ($response->getError() !== '') {
             return new PayResponse([], $response->getError());
         }
-        $this->updateInvoice($billId, $response->getData());
+        if (!$this->updateInvoice($billId, $response->getData())) {
+            return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
+        }
 
-        return new PayResponse((app()->make(BillStatusResponse::class))->fromBodySet($response->getData())->toArray());
+        return new PayResponse((new BillStatusResponse())->fromBodySet($response->getData())->toArray());
     }
 
 
@@ -103,14 +105,16 @@ class PaymentHandler extends PaymentHandlerBase
      * @param string $billId
      * @return PayResponse
      */
-    public function cancelBill(string $billId): PayResponse
+    final public function cancelBill(string $billId): PayResponse
     {
         $response = $this->requestPaymentService->cancelBill($billId);
         if ($response->getError() !== '') {
             return new PayResponse([], $response->getError());
         }
 
-        $this->updateInvoice($billId, $response->getData());
+        if (!$this->updateInvoice($billId, $response->getData())) {
+            return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
+        }
 
         return new PayResponse(app(BillStatusResponse::class)->fromBodySet($response->getData())->toArray());
     }
