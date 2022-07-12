@@ -11,17 +11,19 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProductInvoice extends Model
 {
+    public const ID = 'id';
     public const TABLE_NAME = 'product_invoice';
     public const PRODUCT_ID = 'product_id';
     public const INVOICE_ID = 'invoice_id';
-    public const ID = 'id';
+    public const EXPIRED_OPT_AT = 'expired_opt_at'; //Дата и время истечения услуги/опции. Для товаров null.
 
     protected $table = self::TABLE_NAME;
 
     protected $fillable = [
+        self::ID,
         self::INVOICE_ID,
         self::PRODUCT_ID,
-        self::ID
+        self::EXPIRED_OPT_AT,
     ];
 
     protected $keyType = 'string';
