@@ -16,7 +16,7 @@ class Invoice extends Model
     public const CURRENCY = 'currency';
     public const PRICE = 'price';
     public const COMMENT = 'comment';
-    public const EXPIRATION_DATETIME = 'expired_at';
+    public const EXPIRATION_DATETIME = 'expired_at'; //срок истечения выставленного счета
 
 
     public const TABLE_NAME = 'invoices';

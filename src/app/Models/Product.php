@@ -21,6 +21,7 @@ class Product extends Model
     public const DESCRIPTION = 'description';
     public const DISABLED = 'disabled';
     public const CATEGORY_ID = 'category_id';
+    public const EXPIRATION_DAYS = 'expiration_days'; //Срок истечения услуги/опции. Для товаров null.
 
     protected $table = self::TABLE_NAME;
 
@@ -31,7 +32,8 @@ class Product extends Model
         self::NAME,
         self::CODE,
         self::DESCRIPTION,
-        self::ID
+        self::ID,
+        self::EXPIRATION_DAYS,
     ];
 
     protected $hidden = [

@@ -35,7 +35,8 @@ class ProductsTableSeeder extends Seeder
                Product::NAME => 'Product 1',
                Product::CATEGORY_ID => $category[0]->id,
                Product::CREATED_AT => Carbon::now()->toString(),
-               Product::UPDATED_AT => Carbon::now()->toString()
+               Product::UPDATED_AT => Carbon::now()->toString(),
+               Product::EXPIRATION_DAYS => 3,
            ],
            [
                Product::ID => Uuid::uuid4()->toString(),
@@ -44,7 +45,8 @@ class ProductsTableSeeder extends Seeder
                Product::NAME => 'Product 2',
                Product::CATEGORY_ID => $category[0]->id,
                Product::CREATED_AT => Carbon::now()->toString(),
-               Product::UPDATED_AT => Carbon::now()->toString()
+               Product::UPDATED_AT => Carbon::now()->toString(),
+               Product::EXPIRATION_DAYS => 7,
            ],
            [
                Product::ID => Uuid::uuid4()->toString(),
@@ -53,7 +55,8 @@ class ProductsTableSeeder extends Seeder
                Product::NAME => 'Product 3',
                Product::CATEGORY_ID => $category[0]->id,
                Product::CREATED_AT => Carbon::now()->toString(),
-               Product::UPDATED_AT => Carbon::now()->toString()
+               Product::UPDATED_AT => Carbon::now()->toString(),
+               Product::EXPIRATION_DAYS => 30,
            ],
        ]);
     }
