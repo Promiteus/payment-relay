@@ -4,7 +4,6 @@
 namespace App\Http\Controllers\Qiwi;
 
 use App\dto\OrderBody;
-use App\dto\PayResponse;
 use App\Handlers\PaymentHandlerBase;
 use App\Handlers\Qiwi\PaymentHandler;
 use App\Http\Controllers\Controller;
