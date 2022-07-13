@@ -48,7 +48,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
            try {
                /*Получить последний счет из БД для пользователя user_id*/
-               $invoice = $this->findInvoice($order->getUserId(), $order->getBillId());
+               $invoice = $this->findInvoice($order->getBillId());
 
 
                if (!empty($invoice)) {
