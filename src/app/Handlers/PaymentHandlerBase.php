@@ -109,9 +109,6 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
         return new PayResponse([], $payResponse->getError());
     }
 
-    public function handleBillStatus(string $billId) {
-
-    }
 
     /**
      * Запросить статус покупки у платежного сервера

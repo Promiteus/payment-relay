@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Invoice;
+use App\Models\User;
+use App\Services\Constants\Common;
 
 
 /**
@@ -44,6 +46,20 @@ class InvoiceRepository
         } catch (\Exception $e) {
            return [];
         }
+    }
+
+    /**
+     * @param string $status
+     * @param string $userId
+     * @return Invoice[]
+     */
+    final public function getInvoicesByStatus(string $status, string $userId) {
+        $this->invoice
+            ->newModelQuery()
+            ->with(Common::PRODUCTS)
+            ->where(Invoice::STATUS, '=', $status)
+           // ->user()->newQuery()->where(User::ID, '=', $userId)
+            ->getModels();
     }
 
     /**

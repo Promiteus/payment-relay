@@ -51,6 +51,17 @@ class ProductInvoiceService
     }
 
     /**
+     * @param string $userId
+     * @return Invoice[]
+     */
+    final public function getOpenedInvoices(string $userId) {
+        $invoices = $this->invoiceRepository->getInvoicesByStatus(Common::WAITING_STATUS, $userId);
+
+
+        return $invoices;
+    }
+
+    /**
      * @param string $billId
      * @param string $status
      * @return bool

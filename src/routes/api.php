@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Qiwi\PaymentController;
+use App\Http\Controllers\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,4 @@ Route::prefix('qiwi')->group(function() {
 
 
 Route::get('products/category/{category}', ProductController::class.'@getPageableByCategory')->name('get.products.category.page');
-
+Route::get('invoices/opened', InvoiceController::class.'@getInvoicesByStatus')->name('get.opened.invoices');
