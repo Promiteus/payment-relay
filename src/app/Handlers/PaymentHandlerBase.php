@@ -109,6 +109,9 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
         return new PayResponse([], $payResponse->getError());
     }
 
+    public function handleBillStatus(string $billId) {
+
+    }
 
     /**
      * Запросить статус покупки у платежного сервера
@@ -131,11 +134,10 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
     /**
      * Найти последний выставленный счет по коду заказа
-     * @param string $userId
      * @param string $billId
      * @return array
      */
-    abstract public function findInvoice(string $userId, string $billId): array;
+    abstract public function findInvoice(string $billId): array;
 
 
     /**

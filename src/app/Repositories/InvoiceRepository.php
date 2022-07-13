@@ -32,14 +32,12 @@ class InvoiceRepository
     }
 
     /**
-     * @param string $userId
      * @param string $billId
      * @return array
      */
-    final public function getUserInvoiceByBillId(string $userId, string $billId): array {
+    final public function getUserInvoiceByBillId(string $billId): array {
         try {
            $invoice = $this->invoice->newQuery()
-                ->where(Invoice::USER_ID, '=', $userId)
                 ->where(Invoice::ID, '=', $billId)
                 ->firstOrFail();
            return $invoice->toArray();

@@ -90,7 +90,6 @@ class PaymentHandler extends PaymentHandlerBase
         return new PayResponse((new BillStatusResponse())->fromBodySet($response->getData())->toArray());
     }
 
-
     /**
      * @param array $params
      * @return PayResponse
@@ -120,14 +119,13 @@ class PaymentHandler extends PaymentHandlerBase
     }
 
     /**
-     * @param string $userId
      * @param string $billId
      * @return array
      * @throws \Exception
      */
-    final public function findInvoice(string $userId, string $billId): array
+    final public function findInvoice(string $billId): array
     {
-        return $this->productInvoiceService->findInvoice($userId, $billId);
+        return $this->productInvoiceService->findInvoice($billId);
     }
 
     /**
