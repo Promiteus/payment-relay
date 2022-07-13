@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Invoice;
+use App\Models\Product;
+use App\Models\ProductInvoice;
 use App\Models\User;
 use App\Services\Constants\Common;
 
@@ -13,6 +15,7 @@ use App\Services\Constants\Common;
 class InvoiceRepository
 {
     private Invoice $invoice;
+
 
     /**
      * InvoiceRepository constructor.
@@ -51,15 +54,16 @@ class InvoiceRepository
     /**
      * @param string $status
      * @param string $userId
-     * @return Invoice[]
+     * @return array
      */
     final public function getInvoicesByStatus(string $status, string $userId) {
-        $this->invoice
+       return $this->invoice
             ->newModelQuery()
-            ->with(Common::PRODUCTS)
             ->where(Invoice::STATUS, '=', $status)
-           // ->user()->newQuery()->where(User::ID, '=', $userId)
-            ->getModels();
+            ->where(Invoice::USER_ID, '=', $userId)
+            ->leftJoin(ProductInvoice::TABLE_NAME, function($join) {
+                $join->on(Invoice::TABLE_NAME.'.'.Invoice::ID, '=', ProductInvoice::TABLE_NAME.'.'.ProductInvoice::INVOICE_ID);
+            })->get()->toArray();
     }
 
     /**
