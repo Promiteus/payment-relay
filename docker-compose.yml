@@ -40,6 +40,27 @@ services:
     networks:
       - dating-net
 
+  horizon:
+    build: ./docker/php_fpm
+    container_name: dating_horizon
+    env_file: .env #Файл, где находятся настройки в виде переменных среды
+    restart: on-failure # Перезапустить автоматически, если сервис упал
+    #depends_on:
+    #  - db
+    #  - redis
+    environment:
+      #APP_DEBUG: ${APP_DEBUG}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT} #Порт подключения к базе данных
+      DB_DATABASE: ${DB_DATABASE} #Имя базы данных
+      DB_USERNAME: ${DB_USERNAME} #Имя пользователя для подключения к базе данных
+      DB_PASSWORD: ${DB_PASSWORD} #Пароль для подключения к базе данных
+    command: php artisan horizon
+    volumes:
+      - ./src:/var/www
+    networks:
+      - dating-net
+
   #Раскомментировать, если проект используется независимо!
   #db:
   #  image: postgres
@@ -61,3 +82,21 @@ services:
   #      retries: 5
   #  networks:
   #      - dating-net
+
+  #Раскомментировать, если проект используется независимо!
+  #redis:
+  #  image: redis
+  #  container_name: redis_auth_dating
+  #  command: redis-server --requirepass 12qwsa@@
+  #  volumes:
+  #     - ./redis/storage:/data
+  #     - ./redis/config:/usr/local/etc/redis
+  #  ports:
+  #     - 6379:6379
+  #  networks:
+  #     - dating-net
+
+  #Раскомментировать, если проект используется независимо!
+  #volumes:
+  #  pgdata:
+  #  mongodb:
