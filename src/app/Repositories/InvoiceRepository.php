@@ -58,12 +58,11 @@ class InvoiceRepository
      */
     final public function getInvoicesByStatus(string $status, string $userId) {
        return $this->invoice
-            ->newModelQuery()
+            ->newQuery()
             ->where(Invoice::STATUS, '=', $status)
             ->where(Invoice::USER_ID, '=', $userId)
-            ->leftJoin(ProductInvoice::TABLE_NAME, function($join) {
-                $join->on(Invoice::TABLE_NAME.'.'.Invoice::ID, '=', ProductInvoice::TABLE_NAME.'.'.ProductInvoice::INVOICE_ID);
-            })->get()->toArray();
+            ->with(ProductInvoice::TABLE_NAME)
+            ->get()->toArray();
     }
 
     /**
