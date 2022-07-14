@@ -32,13 +32,13 @@ class ProductInvoice extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function product() {
-        return $this->belongsTo(Product::class, self::PRODUCT_ID);
+        return $this->belongsTo(Product::class);
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function invoice() {
-        return $this->belongsTo(Invoice::class, self::INVOICE_ID);
+        return $this->belongsTo(Invoice::class);
     }
 }

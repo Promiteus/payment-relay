@@ -263,7 +263,7 @@ class ProductInvoiceServiceTest extends TestCase
     private function testFindInvoice(string $billId): void {
         $this->console("\nПоиск действующего счета ...");
 
-        $result =  $this->productInvoiceService->findInvoice(UsersTableSeeder::TEST_USER_ID, $billId);
+        $result =  $this->productInvoiceService->findInvoice($billId);
 
         $this->assertTrue(count($result) > 0);
 

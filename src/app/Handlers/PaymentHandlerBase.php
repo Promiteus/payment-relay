@@ -48,7 +48,7 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
            try {
                /*Получить последний счет из БД для пользователя user_id*/
-               $invoice = $this->findInvoice($order->getUserId(), $order->getBillId());
+               $invoice = $this->findInvoice($order->getBillId());
 
 
                if (!empty($invoice)) {
@@ -131,11 +131,10 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
     /**
      * Найти последний выставленный счет по коду заказа
-     * @param string $userId
      * @param string $billId
      * @return array
      */
-    abstract public function findInvoice(string $userId, string $billId): array;
+    abstract public function findInvoice(string $billId): array;
 
 
     /**

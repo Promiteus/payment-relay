@@ -3,6 +3,10 @@
 namespace App\Repositories;
 
 use App\Models\Invoice;
+use App\Models\Product;
+use App\Models\ProductInvoice;
+use App\Models\User;
+use App\Services\Constants\Common;
 
 
 /**
@@ -11,6 +15,7 @@ use App\Models\Invoice;
 class InvoiceRepository
 {
     private Invoice $invoice;
+
 
     /**
      * InvoiceRepository constructor.
@@ -32,20 +37,32 @@ class InvoiceRepository
     }
 
     /**
-     * @param string $userId
      * @param string $billId
      * @return array
      */
-    final public function getUserInvoiceByBillId(string $userId, string $billId): array {
+    final public function getUserInvoiceByBillId(string $billId): array {
         try {
            $invoice = $this->invoice->newQuery()
-                ->where(Invoice::USER_ID, '=', $userId)
                 ->where(Invoice::ID, '=', $billId)
                 ->firstOrFail();
            return $invoice->toArray();
         } catch (\Exception $e) {
            return [];
         }
+    }
+
+    /**
+     * @param string $status
+     * @param string $userId
+     * @return array
+     */
+    final public function getInvoicesByStatus(string $status, string $userId) {
+       return $this->invoice
+            ->newQuery()
+            ->where(Invoice::STATUS, '=', $status)
+            ->where(Invoice::USER_ID, '=', $userId)
+            ->with(ProductInvoice::TABLE_NAME)
+            ->get()->toArray();
     }
 
     /**

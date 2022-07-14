@@ -83,11 +83,12 @@ class PaymentHandler extends PaymentHandlerBase
         if ($response->getError() !== '') {
             return new PayResponse([], $response->getError());
         }
-        $this->updateInvoice($billId, $response->getData());
+        if (!$this->updateInvoice($billId, $response->getData())) {
+            return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
+        }
 
-        return new PayResponse((app()->make(BillStatusResponse::class))->fromBodySet($response->getData())->toArray());
+        return new PayResponse((new BillStatusResponse())->fromBodySet($response->getData())->toArray());
     }
-
 
     /**
      * @param array $params
@@ -103,27 +104,28 @@ class PaymentHandler extends PaymentHandlerBase
      * @param string $billId
      * @return PayResponse
      */
-    public function cancelBill(string $billId): PayResponse
+    final public function cancelBill(string $billId): PayResponse
     {
         $response = $this->requestPaymentService->cancelBill($billId);
         if ($response->getError() !== '') {
             return new PayResponse([], $response->getError());
         }
 
-        $this->updateInvoice($billId, $response->getData());
+        if (!$this->updateInvoice($billId, $response->getData())) {
+            return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
+        }
 
         return new PayResponse(app(BillStatusResponse::class)->fromBodySet($response->getData())->toArray());
     }
 
     /**
-     * @param string $userId
      * @param string $billId
      * @return array
      * @throws \Exception
      */
-    final public function findInvoice(string $userId, string $billId): array
+    final public function findInvoice(string $billId): array
     {
-        return $this->productInvoiceService->findInvoice($userId, $billId);
+        return $this->productInvoiceService->findInvoice($billId);
     }
 
     /**
