@@ -38,17 +38,27 @@ class ProductInvoiceService
     }
 
     /**
-     * @param string $userId
      * @param string $billId
      * @return array
      * @throws \Exception
      */
-    final public function findInvoice(string $userId, string $billId): array {
-        if (!$userId || ($userId === '') || !$billId || ($billId === '')) {
+    final public function findInvoice(string $billId): array {
+        if (!$billId || ($billId === '')) {
             throw new \Exception(sprintf(Common::MSG_NOT_ALL_PARAMETERS_FOR_METHOD, __METHOD__));
         }
 
-        return $this->invoiceRepository->getUserInvoiceByBillId($userId, $billId);
+        return $this->invoiceRepository->getUserInvoiceByBillId($billId);
+    }
+
+    /**
+     * @param string $userId
+     * @return array
+     */
+    final public function getOpenedInvoices(string $userId) {
+        $invoices = $this->invoiceRepository->getInvoicesByStatus(Common::WAITING_STATUS, $userId);
+
+
+        return $invoices;
     }
 
     /**
