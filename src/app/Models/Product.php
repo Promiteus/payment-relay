@@ -41,9 +41,7 @@ class Product extends Model
         self::UPDATED_AT
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
+
     final public function invoices() {
         return $this->belongsToMany(Invoice::class);
     }

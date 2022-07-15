@@ -34,7 +34,6 @@ class InvoiceController extends Controller
         $userId = 300; //TODO - userId получать из авторизации. 300 - тестовый userId
         $result = $this->productInvoiceService->getOpenedInvoices($userId);
 
-        dd($result);
         return response()->json($result, 200);
     }
 }

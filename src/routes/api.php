@@ -31,4 +31,6 @@ Route::prefix('qiwi')->group(function() {
 
 
 Route::get('products/category/{category}', ProductController::class.'@getPageableByCategory')->name('get.products.category.page');
+
 Route::get('invoices/opened', InvoiceController::class.'@getInvoicesByStatus')->name('get.opened.invoices');
+

@@ -42,16 +42,13 @@ class Invoice extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     final public function products() {
-        return $this->hasMany(Product::class);
+        return $this->belongsToMany(Product::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
+
     final public function productInvoices() {
         return $this->hasMany(ProductInvoice::class);
     }

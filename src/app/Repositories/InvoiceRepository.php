@@ -4,9 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Invoice;
 use App\Models\Product;
-use App\Models\ProductInvoice;
-use App\Models\User;
-use App\Services\Constants\Common;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Query\Builder;
 
 
 /**
@@ -61,8 +60,11 @@ class InvoiceRepository
             ->newQuery()
             ->where(Invoice::STATUS, '=', $status)
             ->where(Invoice::USER_ID, '=', $userId)
-            ->with(ProductInvoice::TABLE_NAME)
-            ->get()->toArray();
+            ->with(Product::TABLE_NAME, function (BelongsToMany $item) {
+                $item->get([Product::PRICE, Product::NAME, Product::CODE]);
+            })
+            ->orderBy(Product::CREATED_AT, 'DESC')
+            ->get([Invoice::ID, Invoice::STATUS, Invoice::PRICE, Invoice::EXPIRATION_DATETIME])->toArray();
     }
 
     /**
