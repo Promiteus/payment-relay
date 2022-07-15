@@ -54,7 +54,6 @@ class RequestAndUpdateInvoiceStatus implements ShouldQueue, ShouldBeUnique
      */
     final public function handle(PaymentHandler $paymentHandler): void
     {
-       // Log::info("test: ".$this->billId);
          $result = $paymentHandler->getBillStatus($this->billId);
          if ($result->getError() !== '') {
              Log::error(__CLASS__.': '.$result->getError());

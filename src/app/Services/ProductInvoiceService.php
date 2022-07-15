@@ -59,7 +59,7 @@ class ProductInvoiceService
         $invoices = $this->invoiceRepository->getInvoicesByStatus(Common::WAITING_STATUS, $userId);
         /*Отправить в очередь запрос на получение статуса счета и обновления его состояния в БД*/
         foreach ($invoices as $invoice) {
-             RequestAndUpdateInvoiceStatus::dispatch($invoice[Invoice::ID]);
+             RequestAndUpdateInvoiceStatus::dispatch($invoice[Invoice::ID])->onConnection('redis');
         }
         return $invoices;
     }
