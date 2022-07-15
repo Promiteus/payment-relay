@@ -141,12 +141,10 @@ class ProductInvoiceService
 
         DB::commit();
 
-        return app(BillStatusResponse::class)->fromBodySet([
+        return [
             Common::PAY_URL => $invoice->getPayUrl(),
             Common::BILL_ID => $invoice->getBillId(),
-            Invoice::STATUS => [
-                Common::VALUE => $invoice->getStatus()
-            ],
-        ])->toArray();
+            Common::STATUS =>  $invoice->getStatus(),
+        ];
     }
 }
