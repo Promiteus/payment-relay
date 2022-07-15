@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductInvoice extends Model
 {
     public const ID = 'id';
-    public const TABLE_NAME = 'product_invoice';
+    public const TABLE_NAME = 'invoice_product';
     public const PRODUCT_ID = 'product_id';
     public const INVOICE_ID = 'invoice_id';
     public const EXPIRED_OPT_AT = 'expired_opt_at'; //Дата и время истечения услуги/опции. Для товаров null.
