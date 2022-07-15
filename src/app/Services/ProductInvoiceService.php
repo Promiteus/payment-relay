@@ -6,6 +6,7 @@ use App\dto\BillStatusResponse;
 use App\dto\InvoiceBody;
 use App\dto\OrderBody;
 use App\dto\ProductItem;
+use App\Jobs\RequestAndUpdateInvoiceStatus;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
@@ -56,8 +57,10 @@ class ProductInvoiceService
      */
     final public function getOpenedInvoices(string $userId) {
         $invoices = $this->invoiceRepository->getInvoicesByStatus(Common::WAITING_STATUS, $userId);
-
-
+        /*Отправить в очередь запрос на получение статуса счета и обновления его состояния в БД*/
+        foreach ($invoices as $invoice) {
+             RequestAndUpdateInvoiceStatus::dispatch($invoice[Invoice::ID]);
+        }
         return $invoices;
     }
 
