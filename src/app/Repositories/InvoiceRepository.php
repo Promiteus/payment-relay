@@ -64,7 +64,7 @@ class InvoiceRepository
                 $item->get([Product::PRICE, Product::NAME, Product::CODE]);
             })
             ->orderBy(Product::CREATED_AT, 'DESC')
-            ->get([Invoice::ID, Invoice::STATUS, Invoice::PRICE, Invoice::EXPIRATION_DATETIME])->toArray();
+            ->get([Invoice::ID, Invoice::STATUS, Invoice::PRICE, Invoice::EXPIRATION_DATETIME, Invoice::PAY_URL])->toArray();
     }
 
     /**

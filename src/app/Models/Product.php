@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class Product
@@ -41,8 +42,10 @@ class Product extends Model
         self::UPDATED_AT
     ];
 
-
-    final public function invoices() {
+    /**
+     * @return BelongsToMany
+     */
+    final public function invoices(): BelongsToMany {
         return $this->belongsToMany(Invoice::class);
     }
 

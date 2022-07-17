@@ -27,11 +27,10 @@ class InvoiceController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param string $userId
      * @return JsonResponse
      */
-    public function getInvoicesByStatus(Request $request): JsonResponse {
-        $userId = 300; //TODO - userId получать из авторизации. 300 - тестовый userId
+    final public function getInvoicesByStatus(string $userId): JsonResponse {
         $result = $this->productInvoiceService->getOpenedInvoices($userId);
 
         return response()->json($result, 200);
