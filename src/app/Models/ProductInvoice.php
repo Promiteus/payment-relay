@@ -4,6 +4,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class ProductInvoice
@@ -29,16 +30,16 @@ class ProductInvoice extends Model
     protected $keyType = 'string';
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function product() {
+    public function product(): BelongsTo {
         return $this->belongsTo(Product::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function invoice() {
+    public function invoice(): BelongsTo {
         return $this->belongsTo(Invoice::class);
     }
 }
