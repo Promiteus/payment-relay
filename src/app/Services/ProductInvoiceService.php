@@ -100,16 +100,6 @@ class ProductInvoiceService
             return $item->getPrice();
         });
 
-        $inv = [
-            Invoice::ID => $invoice->getBillId(),
-            Invoice::STATUS => $invoice->getStatus(),
-            Invoice::USER_ID => $order->getUserId(),
-            Invoice::PRICE => $totalPrice,
-            Invoice::COMMENT => $invoice->getComment(),
-            Invoice::CURRENCY => $invoice->getCurrency(),
-            Invoice::EXPIRATION_DATETIME => $invoice->getExpirationDays(),
-            Invoice::PAY_URL => $invoice->getPayUrl(),
-        ];
 
         $codes = collect($order->getProducts())->map(function (ProductItem $item) {
             return $item->getCode();
@@ -133,7 +123,16 @@ class ProductInvoiceService
             ];
         })->toArray();
 
-        $result = $this->invoiceRepository->createInvoice($inv)->productInvoices()->insert($productInvoiceData);
+        $result = $this->invoiceRepository->createInvoice([
+            Invoice::ID => $invoice->getBillId(),
+            Invoice::STATUS => $invoice->getStatus(),
+            Invoice::USER_ID => $order->getUserId(),
+            Invoice::PRICE => $totalPrice,
+            Invoice::COMMENT => $invoice->getComment(),
+            Invoice::CURRENCY => $invoice->getCurrency(),
+            Invoice::EXPIRATION_DATETIME => $invoice->getExpirationDays(),
+            Invoice::PAY_URL => $invoice->getPayUrl(),
+        ])->productInvoices()->insert($productInvoiceData);
 
         if (!$result) {
             DB::rollBack();
