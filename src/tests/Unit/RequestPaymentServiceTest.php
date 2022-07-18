@@ -21,5 +21,7 @@ class RequestPaymentServiceTest extends TestCase
         $requestPaymentService = app(RequestPaymentService::class);
 
         $requestPaymentService->getBillInfo('000');
+
+        self::assertTrue(true);
     }
 }

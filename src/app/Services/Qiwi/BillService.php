@@ -14,10 +14,6 @@ use Qiwi\Api\BillPayments;
 class BillService implements BillInterface
 {
     /**
-     * @var BillPayments
-     */
-    private BillPayments $billPayments;
-    /**
      * @var string
      */
     private string $url;
@@ -30,9 +26,8 @@ class BillService implements BillInterface
      */
     public function __construct(BillPayments $billPayments)
     {
-        $this->apiKey = env('QIWI_SECRET_KEY');
+        //$this->apiKey = env('QIWI_SECRET_KEY');
         $this->url = env('QIWI_URL');
-        $this->billPayments = $billPayments;
     }
 
     /**
@@ -40,7 +35,7 @@ class BillService implements BillInterface
      */
     final public function getBillPayment(): BillPayments
     {
-        return $this->billPayments;
+        return app(BillPayments::class, ['key' => env('QIWI_SECRET_KEY')]);
     }
 
     /**

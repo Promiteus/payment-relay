@@ -19,7 +19,9 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
+        $this->app->singleton(BillPayments::class, function() {
+            return new BillPayments(env('QIWI_SECRET_KEY'));
+        });
     }
 
     /**
@@ -29,9 +31,7 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->singleton(BillPayments::class, function() {
-            return new BillPayments(env('QIWI_SECRET_KEY'));
-        });
+
 
         $this->app->singleton(BillInterface::class, function () {
             return new BillService(app(BillPayments::class));
