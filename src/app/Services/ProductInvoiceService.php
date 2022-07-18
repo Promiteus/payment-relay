@@ -96,11 +96,6 @@ class ProductInvoiceService
         /*Транзакция заполнения таблиц product_invoice и invoice*/
         DB::beginTransaction();
 
-        $totalPrice = collect($order->getProducts())->sum(function (ProductItem $item) {
-            return $item->getPrice();
-        });
-
-
         $codes = collect($order->getProducts())->map(function (ProductItem $item) {
             return $item->getCode();
         })->toArray();
@@ -127,7 +122,7 @@ class ProductInvoiceService
             Invoice::ID => $invoice->getBillId(),
             Invoice::STATUS => $invoice->getStatus(),
             Invoice::USER_ID => $order->getUserId(),
-            Invoice::PRICE => $totalPrice,
+            Invoice::PRICE => $order->getTotalPrice(),
             Invoice::COMMENT => $invoice->getComment(),
             Invoice::CURRENCY => $invoice->getCurrency(),
             Invoice::EXPIRATION_DATETIME => $invoice->getExpirationDays(),

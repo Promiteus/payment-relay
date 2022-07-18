@@ -4,6 +4,7 @@ namespace App\Handlers;
 use App\dto\InvoiceBody;
 use App\dto\OrderBody;
 use App\dto\PayResponse;
+use App\dto\ProductItem;
 use App\Handlers\Contracts\PaymentHandlerInterface;
 use App\Models\Invoice;
 use App\Services\Constants\Common;
@@ -92,6 +93,13 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      */
     private function createOrder(OrderBody $order): PayResponse {
         /*Создать новый счет на сервере QIWI*/
+
+        $totalPrice = collect($order->getProducts())->sum(function (ProductItem $item) {
+            return $item->getPrice();
+        });
+
+        $order->setTotalPrice($totalPrice);
+
         $payResponse = $this->createBill($order->toArray());
 
         if ($payResponse->getError() === '') {

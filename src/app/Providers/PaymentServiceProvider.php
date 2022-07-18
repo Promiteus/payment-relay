@@ -10,6 +10,7 @@ use App\Services\Qiwi\BillService;
 use App\Services\Qiwi\Contracts\BillInterface;
 use App\Services\Qiwi\RequestPaymentService;
 use Illuminate\Support\ServiceProvider;
+use Qiwi\Api\BillPayments;
 
 class PaymentServiceProvider extends ServiceProvider
 {
@@ -28,12 +29,18 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->singleton(BillInterface::class, BillService::class);
+        $this->app->singleton(BillPayments::class, function() {
+            return new BillPayments(env('QIWI_SECRET_KEY'));
+        });
+
+        $this->app->singleton(BillInterface::class, function () {
+            return new BillService(app(BillPayments::class));
+        });
 
         $this->app->singleton(ProductInvoiceService::class, ProductInvoiceService::class);
 
         $this->app->singleton(RequestPaymentService::class, function() {
-            return new RequestPaymentService(app()->make(BillService::class));
+            return new RequestPaymentService(app(BillInterface::class));
         });
 
         $this->app->singleton(PaymentHandler::class, function () {
