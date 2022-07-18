@@ -39,7 +39,7 @@ class PaymentHandler extends PaymentHandlerBase
         RequestPaymentService $requestPaymentService,
         ProductInvoiceService $productInvoiceService
     ) {
-        parent::__construct($requestPaymentService->getBill()->getBillPayment()->getLifetimeByDay(1));
+        parent::__construct(now()->addDay()->toString());
         $this->requestPaymentService = $requestPaymentService;
         $this->productInvoiceService = $productInvoiceService;
     }

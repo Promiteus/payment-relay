@@ -5,7 +5,6 @@ namespace App\Providers;
 
 
 use App\Handlers\Qiwi\PaymentHandler;
-use App\Handlers\Qiwi\PaymentHandlerBase;
 use App\Services\ProductInvoiceService;
 use App\Services\Qiwi\BillService;
 use App\Services\Qiwi\Contracts\BillInterface;

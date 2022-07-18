@@ -102,8 +102,6 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                  */
                 $invoiceBody = app(InvoiceBody::class, ['expirationDays' => $this->expirationDate])->fromBodySet($payResponse->getData());
 
-                //dd($invoiceBody);
-
                 $result = $this->createInvoice($invoiceBody, $order);
                 return new PayResponse($result);
             } catch (\Exception $e) {

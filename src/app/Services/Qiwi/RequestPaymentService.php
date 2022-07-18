@@ -22,7 +22,7 @@ class RequestPaymentService
     /**
      * @return BillInterface
      */
-    public function getBill(): BillInterface
+    final public function getBill(): BillInterface
     {
         return $this->bill;
     }
