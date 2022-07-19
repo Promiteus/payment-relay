@@ -13,7 +13,7 @@ class PaymentHandlerTest extends TestCase
 
     public function testGetBillStatus()
     {
-        /*$mockBillInterface = \Mockery::mock(BillService::class);
+       /* $mockBillInterface = \Mockery::mock(BillInterface::class);
         $mockBillInterface->shouldIgnoreMissing();
 
         $mockRequestPaymentService = \Mockery::mock(RequestPaymentService::class);
@@ -27,7 +27,7 @@ class PaymentHandlerTest extends TestCase
         /**
          * @var PaymentHandler $paymentHandler
          */
-       /*  $paymentHandler = app(PaymentHandler::class);
+         /*$paymentHandler = app(PaymentHandler::class);
          $paymentHandler->getBillStatus('0000');*/
 
         $this->assertTrue(true);
