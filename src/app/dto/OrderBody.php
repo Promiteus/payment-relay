@@ -47,7 +47,13 @@ class OrderBody
         $this->email = '';
     }
 
-
+    /**
+     * @param float $totalPrice
+     */
+    public function setTotalPrice(float $totalPrice): void
+    {
+        $this->totalPrice = $totalPrice;
+    }
 
     /**
      * @return string

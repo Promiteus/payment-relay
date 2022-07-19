@@ -14,26 +14,24 @@ use Qiwi\Api\BillPayments;
 class BillService implements BillInterface
 {
     /**
-     * @var BillPayments
-     */
-    protected BillPayments $billPayments;
-    /**
      * @var string
      */
     private string $url;
 
     private string $apiKey;
+    /**
+     * @var BillPayments
+     */
+    private BillPayments $billPayment;
 
     /**
      * BillService constructor.
-     * @param string $testKey
-     * @throws \ErrorException
      */
-    public function __construct(string $testKey = '')
+    public function __construct()
     {
-        $this->apiKey = $testKey !== '' ? $testKey : config('services.qiwi.secret');
+        $this->apiKey = env('QIWI_SECRET_KEY');
+        $this->billPayment = new BillPayments($this->apiKey);
         $this->url = env('QIWI_URL');
-        $this->billPayments = new BillPayments($this->apiKey);
     }
 
     /**
@@ -41,7 +39,7 @@ class BillService implements BillInterface
      */
     final public function getBillPayment(): BillPayments
     {
-        return $this->billPayments;
+        return $this->billPayment;
     }
 
     /**

@@ -10,8 +10,8 @@ use App\dto\PayResponse;
 use App\Handlers\PaymentHandlerBase;
 use App\Models\Invoice;
 use App\Services\Constants\Common;
-use App\Services\ProductInvoiceService;
-use App\Services\Qiwi\RequestPaymentService;
+use App\Services\Contracts\ProductInvoiceServiceInterface;
+use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -21,25 +21,25 @@ use Ramsey\Uuid\Uuid;
 class PaymentHandler extends PaymentHandlerBase
 {
     /**
-     * @var RequestPaymentService
+     * @var RequestPaymentServiceInterface
      */
-    private RequestPaymentService $requestPaymentService;
+    private RequestPaymentServiceInterface $requestPaymentService;
     /**
-     * @var ProductInvoiceService
+     * @var ProductInvoiceServiceInterface
      */
-    private ProductInvoiceService $productInvoiceService;
+    private ProductInvoiceServiceInterface $productInvoiceService;
 
     /**
      * PaymentHandler constructor.
-     * @param RequestPaymentService $requestPaymentService
-     * @param ProductInvoiceService $productInvoiceService
+     * @param RequestPaymentServiceInterface $requestPaymentService
+     * @param ProductInvoiceServiceInterface $productInvoiceService
      * @throws \Exception
      */
     public function __construct(
-        RequestPaymentService $requestPaymentService,
-        ProductInvoiceService $productInvoiceService
+        RequestPaymentServiceInterface $requestPaymentService,
+        ProductInvoiceServiceInterface $productInvoiceService
     ) {
-        parent::__construct($requestPaymentService->getBill()->getBillPayment()->getLifetimeByDay(1));
+        parent::__construct(now()->addDay()->toString());
         $this->requestPaymentService = $requestPaymentService;
         $this->productInvoiceService = $productInvoiceService;
     }
@@ -80,6 +80,7 @@ class PaymentHandler extends PaymentHandlerBase
     final public function getBillStatus(string $billId): PayResponse
     {
         $response = $this->requestPaymentService->getBillInfo($billId);
+
         if ($response->getError() !== '') {
             return new PayResponse([], $response->getError());
         }

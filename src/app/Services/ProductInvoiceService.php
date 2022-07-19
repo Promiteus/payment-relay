@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\dto\BillStatusResponse;
 use App\dto\InvoiceBody;
 use App\dto\OrderBody;
 use App\dto\ProductItem;
@@ -12,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductInvoice;
 use App\Repositories\InvoiceRepository;
 use App\Services\Constants\Common;
+use App\Services\Contracts\ProductInvoiceServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
@@ -19,7 +19,7 @@ use Ramsey\Uuid\Uuid;
 /**
  * Class ProductInvoiceService
  */
-class ProductInvoiceService
+class ProductInvoiceService implements ProductInvoiceServiceInterface
 {
     /**
      * @var InvoiceRepository
@@ -55,7 +55,7 @@ class ProductInvoiceService
      * @param string $userId
      * @return array
      */
-    final public function getOpenedInvoices(string $userId) {
+    final public function getOpenedInvoices(string $userId): array {
         $invoices = $this->invoiceRepository->getInvoicesByStatus(Common::WAITING_STATUS, $userId);
         /*Отправить в очередь запрос на получение статуса счета и обновления его состояния в БД*/
         foreach ($invoices as $invoice) {
@@ -96,21 +96,6 @@ class ProductInvoiceService
         /*Транзакция заполнения таблиц product_invoice и invoice*/
         DB::beginTransaction();
 
-        $totalPrice = collect($order->getProducts())->sum(function (ProductItem $item) {
-            return $item->getPrice();
-        });
-
-        $inv = [
-            Invoice::ID => $invoice->getBillId(),
-            Invoice::STATUS => $invoice->getStatus(),
-            Invoice::USER_ID => $order->getUserId(),
-            Invoice::PRICE => $totalPrice,
-            Invoice::COMMENT => $invoice->getComment(),
-            Invoice::CURRENCY => $invoice->getCurrency(),
-            Invoice::EXPIRATION_DATETIME => $invoice->getExpirationDays(),
-            Invoice::PAY_URL => $invoice->getPayUrl(),
-        ];
-
         $codes = collect($order->getProducts())->map(function (ProductItem $item) {
             return $item->getCode();
         })->toArray();
@@ -133,7 +118,16 @@ class ProductInvoiceService
             ];
         })->toArray();
 
-        $result = $this->invoiceRepository->createInvoice($inv)->productInvoices()->insert($productInvoiceData);
+        $result = $this->invoiceRepository->createInvoice([
+            Invoice::ID => $invoice->getBillId(),
+            Invoice::STATUS => $invoice->getStatus(),
+            Invoice::USER_ID => $order->getUserId(),
+            Invoice::PRICE => $order->getTotalPrice(),
+            Invoice::COMMENT => $invoice->getComment(),
+            Invoice::CURRENCY => $invoice->getCurrency(),
+            Invoice::EXPIRATION_DATETIME => $invoice->getExpirationDays(),
+            Invoice::PAY_URL => $invoice->getPayUrl(),
+        ])->productInvoices()->insert($productInvoiceData);
 
         if (!$result) {
             DB::rollBack();
