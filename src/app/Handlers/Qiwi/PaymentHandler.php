@@ -80,7 +80,6 @@ class PaymentHandler extends PaymentHandlerBase
     final public function getBillStatus(string $billId): PayResponse
     {
         $response = $this->requestPaymentService->getBillInfo($billId);
-
         if ($response->getError() !== '') {
             return new PayResponse([], $response->getError());
         }

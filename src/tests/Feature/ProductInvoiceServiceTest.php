@@ -254,6 +254,8 @@ class ProductInvoiceServiceTest extends TestCase
 
         /*Попытаться обновить статус счета с указанным billId*/
         $this->testUpdateInvoice($this->billId);
+
+
     }
 
     /**
@@ -264,6 +266,8 @@ class ProductInvoiceServiceTest extends TestCase
         $this->console("\nПоиск действующего счета ...");
 
         $result =  $this->productInvoiceService->findInvoice($billId);
+
+        $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId, Invoice::STATUS => Common::WAITING_STATUS]);
 
         $this->assertTrue(count($result) > 0);
 
@@ -281,8 +285,12 @@ class ProductInvoiceServiceTest extends TestCase
 
         $result =  $this->productInvoiceService->updateInvoice($billId, Common::REJECTED_STATUS);
 
+        $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId, Invoice::STATUS => Common::REJECTED_STATUS]);
+
         $this->assertTrue($result);
 
+        /*Удалит тестовый счет*/
+        Invoice::query()->where(Invoice::ID, '=', $billId)->delete();
         if ($result) {
             $this->okMsg();
         }
