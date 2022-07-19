@@ -4,13 +4,14 @@ namespace App\Services\Qiwi;
 
 use App\Services\Qiwi\Contracts\BillInterface;
 use PHPUnit\Framework\TestCase;
+use Qiwi\Api\BillPayments;
 
 class RequestPaymentServiceTest extends TestCase
 {
 
     public function testGetBillInfo()
     {
-        $mockBillInterface = \Mockery::mock(BillService::class);
+        $mockBillInterface = \Mockery::mock(BillInterface::class);
         $mockBillInterface->shouldIgnoreMissing();
 
         app()->instance(BillInterface::class, $mockBillInterface);

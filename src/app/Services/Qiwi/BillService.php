@@ -19,14 +19,18 @@ class BillService implements BillInterface
     private string $url;
 
     private string $apiKey;
+    /**
+     * @var BillPayments
+     */
+    private BillPayments $billPayment;
 
     /**
      * BillService constructor.
-     * @param BillPayments $billPayments
      */
-    public function __construct(BillPayments $billPayments)
+    public function __construct()
     {
-        //$this->apiKey = env('QIWI_SECRET_KEY');
+        $this->apiKey = env('QIWI_SECRET_KEY');
+        $this->billPayment = new BillPayments($this->apiKey);
         $this->url = env('QIWI_URL');
     }
 
@@ -35,7 +39,7 @@ class BillService implements BillInterface
      */
     final public function getBillPayment(): BillPayments
     {
-        return app(BillPayments::class, ['key' => env('QIWI_SECRET_KEY')]);
+        return $this->billPayment;
     }
 
     /**
