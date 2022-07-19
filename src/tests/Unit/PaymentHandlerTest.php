@@ -2,7 +2,6 @@
 
 namespace App\Handlers\Qiwi;
 
-use App\dto\BillStatusResponse;
 use App\dto\PayResponse;
 use App\Models\Invoice;
 use App\Services\Constants\Common;
@@ -97,7 +96,7 @@ class PaymentHandlerTest extends TestCase
          /*Проверить, что счет с $billId в базе имеет указанный статус*/
          $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId, Invoice::STATUS => Common::REJECTED_STATUS]);
 
-         /*Удалит теовый счет*/
+         /*Удалит тестовый счет*/
          Invoice::query()->where(Invoice::ID, '=', $billId)->delete();
 
          self::assertNotEmpty($response->getData()[Common::BILL_ID]);
@@ -139,7 +138,7 @@ class PaymentHandlerTest extends TestCase
         /*Проверить, что счет с $billId в базе имеет указанный статус*/
         $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId, Invoice::STATUS => Common::WAITING_STATUS]);
 
-        /*Удалит теовый счет*/
+        /*Удалит тестовый счет*/
         Invoice::query()->where(Invoice::ID, '=', $billId)->delete();
 
         self::assertEmpty($response->getData());
