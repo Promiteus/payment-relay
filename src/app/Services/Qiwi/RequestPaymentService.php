@@ -5,6 +5,7 @@ namespace App\Services\Qiwi;
 use App\dto\PayResponse;
 use App\Services\Constants\Common;
 use App\Services\Qiwi\Contracts\BillInterface;
+use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Qiwi\Api\BillPaymentsException;
 
@@ -12,7 +13,7 @@ use Qiwi\Api\BillPaymentsException;
  * Class RequestPaymentService
  * @package App\Services\Qiwi
  */
-class RequestPaymentService
+class RequestPaymentService implements RequestPaymentServiceInterface
 {
     /**
      * @var BillInterface

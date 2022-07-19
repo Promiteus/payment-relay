@@ -8,6 +8,7 @@ use App\Handlers\Qiwi\PaymentHandler;
 use App\Services\ProductInvoiceService;
 use App\Services\Qiwi\BillService;
 use App\Services\Qiwi\Contracts\BillInterface;
+use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
 use App\Services\Qiwi\RequestPaymentService;
 use Illuminate\Support\ServiceProvider;
 use Qiwi\Api\BillPayments;
@@ -34,7 +35,7 @@ class PaymentServiceProvider extends ServiceProvider
 
         $this->app->singleton(ProductInvoiceService::class, ProductInvoiceService::class);
 
-        $this->app->singleton(RequestPaymentService::class, function() {
+        $this->app->singleton(RequestPaymentServiceInterface::class, function() {
             return new RequestPaymentService(app(BillInterface::class));
         });
 
