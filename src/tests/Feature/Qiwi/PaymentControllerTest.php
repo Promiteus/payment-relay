@@ -130,6 +130,9 @@ class PaymentControllerTest extends TestCase
             $this->console("Статус счета: ".$response[Common::DATA][Invoice::STATUS]);
             $this->okMsg();
         }
+
+        /*Удалит тестовый счет*/
+        Invoice::query()->where(Invoice::ID, '=', $billId)->delete();
     }
 
 
