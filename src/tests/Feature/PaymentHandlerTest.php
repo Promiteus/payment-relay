@@ -47,7 +47,7 @@ class PaymentHandlerTest extends TestCase
      * @param string $method
      * @param bool $isError
      */
-    private function mockRequestPaymentServiceMethod(string $billId, string $method, bool $isError = false): void {
+    private function mockRequestPaymentServiceMethod(string $billId,  string $method, bool $isError = false): void {
         $mockRequestPaymentService = \Mockery::mock(RequestPaymentServiceInterface::class);
         $mockRequestPaymentService
             ->allows($method)
@@ -62,7 +62,7 @@ class PaymentHandlerTest extends TestCase
     }
 
     /**Получить статус счета от QIWI сервера и обновить статус счета в таблице invoices*/
-    public function testGetBillStatus()
+    public function testGetBillStatus(): void
     {
         $this->console("\nПолучить статус счета от QIWI сервера и обновить статус счета в таблице invoices");
         $billId = Uuid::uuid4()->toString();
@@ -106,7 +106,7 @@ class PaymentHandlerTest extends TestCase
     }
 
     /**Получить ошибку от QIWI сервера, статус в таблице invoices не обновится*/
-    public function testGetBillStatusWithQiwiError()
+    public function testGetBillStatusWithQiwiError(): void
     {
         $this->console("\nПолучить ошибку от QIWI сервера, статус в таблице invoices не обновится");
         $billId = Uuid::uuid4()->toString();
@@ -134,6 +134,100 @@ class PaymentHandlerTest extends TestCase
         $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId]);
 
         $response = $paymentHandler->getBillStatus($billId);
+        /*Проверить, что счет с $billId в базе имеет указанный статус*/
+        $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId, Invoice::STATUS => Common::WAITING_STATUS]);
+
+        /*Удалит тестовый счет*/
+        Invoice::query()->where(Invoice::ID, '=', $billId)->delete();
+
+        self::assertEmpty($response->getData());
+        self::assertNotEmpty($response->getError());
+
+        $this->okMsg();
+    }
+
+    /**
+     * Отменить заказ по QIWI и обновить статус счета в таблице invoices
+     */
+    public function testCancelBill(): void {
+        $this->console("\nОтменить заказ по QIWI и обновить статус счета в таблице invoices");
+        $billId = Uuid::uuid4()->toString();
+
+        $this->mockRequestPaymentServiceMethod($billId, 'cancelBill');
+
+
+        /**
+         * @var PaymentHandler $paymentHandler
+         */
+        $paymentHandler = app(PaymentHandler::class);
+
+        /*Созжать ложный счет*/
+        Invoice::query()->create([
+            Invoice::ID => $billId,
+            Invoice::USER_ID => UsersTableSeeder::TEST_USER_ID,
+            Invoice::PAY_URL => 'https://...',
+            Invoice::CURRENCY => 'RUB',
+            Invoice::EXPIRATION_DATETIME => now()->addDay()->toString(),
+            Invoice::CREATED_AT => now()->toString(),
+            Invoice::UPDATED_AT => now()->toString(),
+            Invoice::PRICE => self::AMOUNT,
+            Invoice::COMMENT => 'test update status',
+            Invoice::STATUS => Common::WAITING_STATUS,
+        ]);
+        /*Проверить, что счет с $billId в базе появился*/
+        $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId]);
+
+
+        $response = $paymentHandler->cancelBill($billId);
+
+        /*Проверить, что счет с $billId в базе имеет указанный статус*/
+        $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId, Invoice::STATUS => Common::REJECTED_STATUS]);
+
+        /*Удалит тестовый счет*/
+        Invoice::query()->where(Invoice::ID, '=', $billId)->delete();
+
+        self::assertNotEmpty($response->getData()[Common::BILL_ID]);
+        self::assertNotEmpty($response->getData()[Common::PAY_URL]);
+        self::assertNotEmpty($response->getData()[Common::STATUS]);
+        self::assertEquals(Common::REJECTED_STATUS, $response->getData()[Common::STATUS]);
+
+        $this->okMsg();
+    }
+
+    /**
+     * Неудачная отмена заказа по QIWI, статус счета в таблице invoices не обновлен
+     */
+    public function testCancelBillWithQiwiError(): void {
+        $this->console("\nНеудачная отмена заказа по QIWI, статус счета в таблице invoices не обновлен");
+        $billId = Uuid::uuid4()->toString();
+
+        $this->mockRequestPaymentServiceMethod($billId, 'cancelBill', true);
+
+
+        /**
+         * @var PaymentHandler $paymentHandler
+         */
+        $paymentHandler = app(PaymentHandler::class);
+
+        /*Созжать ложный счет*/
+        Invoice::query()->create([
+            Invoice::ID => $billId,
+            Invoice::USER_ID => UsersTableSeeder::TEST_USER_ID,
+            Invoice::PAY_URL => 'https://...',
+            Invoice::CURRENCY => 'RUB',
+            Invoice::EXPIRATION_DATETIME => now()->addDay()->toString(),
+            Invoice::CREATED_AT => now()->toString(),
+            Invoice::UPDATED_AT => now()->toString(),
+            Invoice::PRICE => self::AMOUNT,
+            Invoice::COMMENT => 'test update status',
+            Invoice::STATUS => Common::WAITING_STATUS,
+        ]);
+        /*Проверить, что счет с $billId в базе появился*/
+        $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId]);
+
+
+        $response = $paymentHandler->cancelBill($billId);
+
         /*Проверить, что счет с $billId в базе имеет указанный статус*/
         $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId, Invoice::STATUS => Common::WAITING_STATUS]);
 
