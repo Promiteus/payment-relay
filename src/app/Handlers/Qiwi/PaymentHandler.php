@@ -11,7 +11,7 @@ use App\Handlers\PaymentHandlerBase;
 use App\Models\Invoice;
 use App\Services\Constants\Common;
 use App\Services\ProductInvoiceService;
-use App\Services\Qiwi\RequestPaymentService;
+use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -21,9 +21,9 @@ use Ramsey\Uuid\Uuid;
 class PaymentHandler extends PaymentHandlerBase
 {
     /**
-     * @var RequestPaymentService
+     * @var RequestPaymentServiceInterface
      */
-    private RequestPaymentService $requestPaymentService;
+    private RequestPaymentServiceInterface $requestPaymentService;
     /**
      * @var ProductInvoiceService
      */
@@ -31,12 +31,12 @@ class PaymentHandler extends PaymentHandlerBase
 
     /**
      * PaymentHandler constructor.
-     * @param RequestPaymentService $requestPaymentService
+     * @param RequestPaymentServiceInterface $requestPaymentService
      * @param ProductInvoiceService $productInvoiceService
      * @throws \Exception
      */
     public function __construct(
-        RequestPaymentService $requestPaymentService,
+        RequestPaymentServiceInterface $requestPaymentService,
         ProductInvoiceService $productInvoiceService
     ) {
         parent::__construct(now()->addDay()->toString());
@@ -80,6 +80,7 @@ class PaymentHandler extends PaymentHandlerBase
     final public function getBillStatus(string $billId): PayResponse
     {
         $response = $this->requestPaymentService->getBillInfo($billId);
+
         if ($response->getError() !== '') {
             return new PayResponse([], $response->getError());
         }
