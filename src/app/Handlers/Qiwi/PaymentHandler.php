@@ -10,7 +10,7 @@ use App\dto\PayResponse;
 use App\Handlers\PaymentHandlerBase;
 use App\Models\Invoice;
 use App\Services\Constants\Common;
-use App\Services\ProductInvoiceService;
+use App\Services\Contracts\ProductInvoiceServiceInterface;
 use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -25,19 +25,19 @@ class PaymentHandler extends PaymentHandlerBase
      */
     private RequestPaymentServiceInterface $requestPaymentService;
     /**
-     * @var ProductInvoiceService
+     * @var ProductInvoiceServiceInterface
      */
-    private ProductInvoiceService $productInvoiceService;
+    private ProductInvoiceServiceInterface $productInvoiceService;
 
     /**
      * PaymentHandler constructor.
      * @param RequestPaymentServiceInterface $requestPaymentService
-     * @param ProductInvoiceService $productInvoiceService
+     * @param ProductInvoiceServiceInterface $productInvoiceService
      * @throws \Exception
      */
     public function __construct(
         RequestPaymentServiceInterface $requestPaymentService,
-        ProductInvoiceService $productInvoiceService
+        ProductInvoiceServiceInterface $productInvoiceService
     ) {
         parent::__construct(now()->addDay()->toString());
         $this->requestPaymentService = $requestPaymentService;
