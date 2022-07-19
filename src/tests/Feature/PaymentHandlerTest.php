@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Handlers\Qiwi;
-
 use App\dto\PayResponse;
+use App\Handlers\Qiwi\PaymentHandler;
 use App\Models\Invoice;
 use App\Services\Constants\Common;
 use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
