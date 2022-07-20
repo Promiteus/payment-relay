@@ -3,6 +3,7 @@
 use App\dto\InvoiceBody;
 use App\dto\OrderBody;
 use App\dto\PayResponse;
+use App\Handlers\Qiwi\PaymentHandler;
 use App\Jobs\RequestAndUpdateInvoiceStatus;
 use App\Models\Invoice;
 use App\Models\Product;
@@ -42,7 +43,11 @@ class ProductInvoiceServiceTest extends TestCase
         $this->billId = Uuid::uuid4()->toString();
     }
 
+    /**
+     * Получить список открытых счетов и проверить отправку данных счетов в очередь на проверку статусов
+     */
     public function testGetOpenedInvoices(): void {
+        $this->console("\nПолучить список открытых счетов и проверить отправку данных счетов в очередь на проверку статусов...");
         Bus::fake([RequestAndUpdateInvoiceStatus::class]);
 
         $billId = Uuid::uuid4()->toString();
@@ -71,14 +76,18 @@ class ProductInvoiceServiceTest extends TestCase
         $result = $productInvoiceService->getOpenedInvoices(UsersTableSeeder::TEST_USER_ID);
 
         $this->assertIsArray($result);
+        $map = [];
         foreach ($result as $item) {
             $this->assertEquals(Common::WAITING_STATUS, $item[Common::STATUS]);
+            $map[$item[Invoice::ID]] = $item[Invoice::STATUS];
         }
 
-        Bus::assertDispatchedTimes(RequestAndUpdateInvoiceStatus::class, 1);
+        Bus::assertDispatchedTimes(RequestAndUpdateInvoiceStatus::class, count($map));
 
         /*Удалить тестовый счет*/
-        Invoice::query()->where(Invoice::ID, '=', $billId)->delete();
+        Invoice::query()->whereIn(Invoice::ID, array_keys($map))->delete();
+
+        $this->okMsg();
     }
 
     private function getMockBillStatus(string $status, string $billId): array {
@@ -115,7 +124,7 @@ class ProductInvoiceServiceTest extends TestCase
      * @param string $method
      * @param bool $isError
      */
-    private function mockRequestPaymentServiceMethod(string $billId,  string $method, bool $isError = false): void {
+    private function mockRequestPaymentServiceMethod(string $billId, string $method, bool $isError = false): void {
         $mockRequestPaymentService = \Mockery::mock(RequestPaymentServiceInterface::class);
         $mockRequestPaymentService
             ->allows($method)
@@ -129,12 +138,17 @@ class ProductInvoiceServiceTest extends TestCase
         app()->instance(RequestPaymentServiceInterface::class, $mockRequestPaymentService);
     }
 
+    /**
+     * Получить список открытых счетов и отправить счета в очередь для смены статусов
+     */
     public function testGetOpenedInvoicesWithChangeInvoiceStatus(): void {
+        $this->console("\nПолучить список открытых счетов и отправить счета в очередь для смены статусов...");
 
         $billId = Uuid::uuid4()->toString();
         /**
          * @var ProductInvoiceServiceInterface $productInvoiceService
          */
+
         $productInvoiceService = app(ProductInvoiceServiceInterface::class);
 
         /*Созжать ложный счет*/
@@ -160,17 +174,20 @@ class ProductInvoiceServiceTest extends TestCase
 
         $billIds = [];
         foreach ($result as $item) {
+            //TODO - не маскирует сервис QIWI!!!
             $this->mockRequestPaymentServiceMethod($item[Invoice::ID], 'getBillInfo');
             $this->assertEquals(Common::WAITING_STATUS, $item[Common::STATUS]);
             RequestAndUpdateInvoiceStatus::dispatch($item[Invoice::ID]);
 
-
+            //TODO - проверка не проходит
             //$this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $item[Invoice::ID], Invoice::STATUS => Common::REJECTED_STATUS]);
             $billIds[] = $item[Invoice::ID];
         }
 
         /*Удалить тестовый счет*/
         Invoice::query()->whereIn(Invoice::ID, $billIds)->delete();
+
+        $this->okMsg();
     }
 
     /**

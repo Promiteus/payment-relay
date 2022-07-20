@@ -61,7 +61,6 @@ class RequestPaymentService implements RequestPaymentServiceInterface
     final public function getBillInfo(string $billId): PayResponse {
         $response = [];
         try {
-
             if ((!$billId) || ($billId === '')) {
                 throw new \Exception(Common::MSG_EMPTY_BILL_ID);
             }
