@@ -2,16 +2,17 @@
 
 use App\dto\InvoiceBody;
 use App\dto\OrderBody;
+use App\Jobs\RequestAndUpdateInvoiceStatus;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductInvoice;
 use App\Services\Constants\Common;
-use App\Services\ProductInvoiceService;
-use App\Services\Qiwi\BillService;
 use Database\Seeders\UsersTableSeeder;
-use Illuminate\Support\Carbon;
 use Ramsey\Uuid\Uuid;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Bus;
+use App\Services\Contracts\ProductInvoiceServiceInterface;
+use App\Services\Qiwi\Contracts\BillInterface;
 
 /**
  * Class ProductInvoiceServiceTest
@@ -25,16 +26,6 @@ class ProductInvoiceServiceTest extends TestCase
     private string $billId;
 
     /**
-     * @var ProductInvoiceService
-     */
-    private ProductInvoiceService $productInvoiceService;
-    /**
-     * @var BillService|mixed
-     */
-    private BillService $billService;
-
-
-    /**
      * ProductInvoiceServiceTest constructor.
      * @param string|null $name
      * @param array $data
@@ -44,21 +35,24 @@ class ProductInvoiceServiceTest extends TestCase
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-
-        $this->productInvoiceService = app()->make(ProductInvoiceService::class);
-        $this->billService = app()->make(BillService::class, ['testKey' => 'abcd']);
         $this->billId = Uuid::uuid4()->toString();
     }
 
+    public function testGetOpenedInvoices(): void {
+        Bus::fake([RequestAndUpdateInvoiceStatus::class]);
+
+        $this->assertTrue(true);
+    }
 
     /**
      * @throws Exception
      */
-    public function testEmptyFindInvoice()
+    public function testEmptyFindInvoice(): void
     {
+        $productInvoiceService = app(ProductInvoiceServiceInterface::class);
         $this->console("\nПоиск несуществующего счета ...");
 
-        $result =  $this->productInvoiceService->findInvoice('5', '5');
+        $result = $productInvoiceService->findInvoice('5');
 
         $this->console("invoices: ".count($result));
         $this->assertEquals(0, count($result));
@@ -68,22 +62,11 @@ class ProductInvoiceServiceTest extends TestCase
         }
     }
 
-
-    /*Очистить все сегодншние записи*/
-    /**
-     *
-     */
-    private function clearTodayRecords() {
-        Invoice::query()->where('created_at', 'LIKE', '%'.Carbon::now()->toDateString().'%')->delete();
-        ProductInvoice::query()->where('created_at', 'LIKE', '%'.Carbon::now()->toDateString().'%')->delete();
-    }
-
-
     /**
      *
      */
     public function testCreateInvoiceEmptyInv(): void {
-        $this->clearTodayRecords();
+        $productInvoiceService = app(ProductInvoiceServiceInterface::class);
 
         $billId = Uuid::uuid4()->toString();
 
@@ -100,12 +83,9 @@ class ProductInvoiceServiceTest extends TestCase
             ];
         })->toArray();
 
-
         $totalPrice = $products->map(function($product) {
             return $product[Product::PRICE];
         })->sum();
-
-
 
         $invoice = [];
 
@@ -118,11 +98,11 @@ class ProductInvoiceServiceTest extends TestCase
             Common::EMAIL => 'dr.romanm@yandex.ru'
         ];
 
-
+        $billService = app()->make(BillInterface::class);
         /*Создать запись в таблицах invoice и product_invoice*/
         try {
-            $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
-            $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), app(OrderBody::class)->fromBodySet($order));
+            $expDate = $billService->getBillPayment()->getLifetimeByDay(1);
+            $productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), app(OrderBody::class)->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
@@ -134,7 +114,7 @@ class ProductInvoiceServiceTest extends TestCase
      *
      */
     public function testCreateInvoiceEmptyOrder(): void {
-        $this->clearTodayRecords();
+        $productInvoiceService = app(ProductInvoiceServiceInterface::class);
 
         $billId = Uuid::uuid4()->toString();
 
@@ -173,10 +153,10 @@ class ProductInvoiceServiceTest extends TestCase
 
         $order = [];
 
-
+        $billService = app()->make(BillInterface::class);
         try {
-            $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
-            $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), app(OrderBody::class)->fromBodySet($order));
+            $expDate = $billService->getBillPayment()->getLifetimeByDay(1);
+            $productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), app(OrderBody::class)->fromBodySet($order));
         } catch (\Exception $e) {
             $this->okMsg($e->getMessage());
             $this->assertTrue($e->getMessage() !== '');
@@ -187,7 +167,7 @@ class ProductInvoiceServiceTest extends TestCase
      * @throws Exception
      */
     public function testCreateInvoice(): void {
-        $this->clearTodayRecords();
+        $productInvoiceService = app(ProductInvoiceServiceInterface::class);
 
         $this->console("\nСозданеи нового счета...");
 
@@ -229,9 +209,10 @@ class ProductInvoiceServiceTest extends TestCase
             Common::EMAIL => 'dr.romanm@yandex.ru'
         ];
 
+        $billService = app()->make(BillInterface::class);
         /*Создать запись в таблицах invoice и product_invoice*/
-        $expDate = $this->billService->getBillPayment()->getLifetimeByDay(1);
-        $result = $this->productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), app(OrderBody::class)->fromBodySet($order));
+        $expDate = $billService->getBillPayment()->getLifetimeByDay(1);
+        $result = $productInvoiceService->createInvoice(app(InvoiceBody::class, ['expirationDays' => $expDate])->fromBodySet($invoice), app(OrderBody::class)->fromBodySet($order));
 
         $this->assertTrue(count($result) > 0);
 
@@ -264,8 +245,9 @@ class ProductInvoiceServiceTest extends TestCase
      */
     private function testFindInvoice(string $billId): void {
         $this->console("\nПоиск действующего счета ...");
+        $productInvoiceService = app(ProductInvoiceServiceInterface::class);
 
-        $result =  $this->productInvoiceService->findInvoice($billId);
+        $result =  $productInvoiceService->findInvoice($billId);
 
         $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId, Invoice::STATUS => Common::WAITING_STATUS]);
 
@@ -282,8 +264,9 @@ class ProductInvoiceServiceTest extends TestCase
      */
     private function testUpdateInvoice(string $billId): void {
         $this->console("\nОбновление статуса действующего счета ...");
+        $productInvoiceService = app(ProductInvoiceServiceInterface::class);
 
-        $result =  $this->productInvoiceService->updateInvoice($billId, Common::REJECTED_STATUS);
+        $result =  $productInvoiceService->updateInvoice($billId, Common::REJECTED_STATUS);
 
         $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId, Invoice::STATUS => Common::REJECTED_STATUS]);
 
