@@ -2,7 +2,7 @@
 
 use App\dto\InvoiceBody;
 use App\dto\OrderBody;
-use App\dto\PayResponse;
+use App\dto\BillStatusResponse;
 use App\Handlers\Qiwi\PaymentHandler;
 use App\Jobs\RequestAndUpdateInvoiceStatus;
 use App\Models\Invoice;
@@ -15,7 +15,7 @@ use Tests\TestCase;
 use Illuminate\Support\Facades\Bus;
 use App\Services\Contracts\ProductInvoiceServiceInterface;
 use App\Services\Qiwi\Contracts\BillInterface;
-use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
+
 
 /**
  * Class ProductInvoiceServiceTest
@@ -90,53 +90,7 @@ class ProductInvoiceServiceTest extends TestCase
         $this->okMsg();
     }
 
-    private function getMockBillStatus(string $status, string $billId): array {
-        return [
-            "siteId" => "6w2u7p-00",
-            "billId" => $billId,
-            "amount" => [
-                "currency" => "RUB",
-                "value" => self::AMOUNT
-            ],
-            "status" => [
-                "value" => $status,
-                "changedDateTime" => now()->toString()
-            ],
-            "customer" => [
-                "email" => "rom3889@yandex.ru"
-            ],
-            "customFields" => [
-                "apiClient" => "php_sdk",
-                "apiClientVersion" => "0.2.2",
-            ],
-            "comment" => "Text comment",
-            "creationDateTime" => now()->toString(),
-            "expirationDateTime" => now()->addDay()->toString(),
-            "payUrl" => "https://...",
-            "recipientPhoneNumber" => "7924107****",
-        ];
-    }
 
-
-    /**
-     * Заглушка для метода интерфейса RequestPaymentServiceInterface
-     * @param string $billId
-     * @param string $method
-     * @param bool $isError
-     */
-    private function mockRequestPaymentServiceMethod(string $billId, string $method, bool $isError = false): void {
-        $mockRequestPaymentService = \Mockery::mock(RequestPaymentServiceInterface::class);
-        $mockRequestPaymentService
-            ->allows($method)
-            ->with($billId)
-            ->andReturn(
-                !$isError ? new PayResponse($this->getMockBillStatus(Common::REJECTED_STATUS, $billId), '')
-                    : new PayResponse([], 'Test QIWI error')
-            );
-
-        /*Подменить класс RequestPaymentServiceInterface заглушкой в контейнере*/
-        app()->instance(RequestPaymentServiceInterface::class, $mockRequestPaymentService);
-    }
 
     /**
      * Получить список открытых счетов и отправить счета в очередь для смены статусов
@@ -151,19 +105,45 @@ class ProductInvoiceServiceTest extends TestCase
 
         $productInvoiceService = app(ProductInvoiceServiceInterface::class);
 
-        /*Созжать ложный счет*/
-        Invoice::query()->create([
-            Invoice::ID => $billId,
-            Invoice::USER_ID => UsersTableSeeder::TEST_USER_ID,
-            Invoice::PAY_URL => 'https://...',
-            Invoice::CURRENCY => 'RUB',
-            Invoice::EXPIRATION_DATETIME => now()->addDay()->toString(),
-            Invoice::CREATED_AT => now()->toString(),
-            Invoice::UPDATED_AT => now()->toString(),
-            Invoice::PRICE => 100.0,
-            Invoice::COMMENT => 'test queue push',
-            Invoice::STATUS => Common::WAITING_STATUS,
-        ]);
+        /**
+         * @var PaymentHandler $paymentHandler
+         */
+        $paymentHandler = app(PaymentHandler::class);
+
+        $products = Product::all()->take(3);
+
+        $productsBody = $products->map(function ($item) {
+            return [
+                Product::CODE => $item[Product::CODE],
+                Common::COUNT => 1,
+                Product::NAME => $item[Product::NAME],
+                Product::PRICE => $item[Product::PRICE]
+            ];
+        })->toArray();
+
+
+        $totalPrice = $products->map(function($product) {
+            return $product[Product::PRICE];
+        })->sum();
+
+        $order = [
+            Common::USER_ID => UsersTableSeeder::TEST_USER_ID,
+            Common::PRODUCTS => $productsBody,
+            Common::BILL_ID => $billId,
+            Common::TOTAL_PRICE => $totalPrice,
+            Common::COMMENT => '',
+            Common::EMAIL => 'dr.romanm@yandex.ru'
+        ];
+
+        $billResult = $paymentHandler->handleBill(app(OrderBody::class)->fromBodySet($order));
+
+        $this->assertTrue(count($billResult->getData()) > 0);
+
+        $billStatusResponse = (new BillStatusResponse())->fromBodySet($billResult->getData());
+
+        $this->assertNotEmpty($billStatusResponse->getBillId());
+
+        $billId = $billStatusResponse->getBillId();
 
         /*Проверить, что счет с $billId в базе появился*/
         $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId]);
@@ -174,13 +154,14 @@ class ProductInvoiceServiceTest extends TestCase
 
         $billIds = [];
         foreach ($result as $item) {
-            //TODO - не маскирует сервис QIWI!!!
-            $this->mockRequestPaymentServiceMethod($item[Invoice::ID], 'getBillInfo');
+
             $this->assertEquals(Common::WAITING_STATUS, $item[Common::STATUS]);
+
+            $paymentHandler->cancelBill($item[Invoice::ID]);
+
             RequestAndUpdateInvoiceStatus::dispatch($item[Invoice::ID]);
 
-            //TODO - проверка не проходит
-            //$this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $item[Invoice::ID], Invoice::STATUS => Common::REJECTED_STATUS]);
+            $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $item[Invoice::ID], Invoice::STATUS => Common::REJECTED_STATUS]);
             $billIds[] = $item[Invoice::ID];
         }
 
