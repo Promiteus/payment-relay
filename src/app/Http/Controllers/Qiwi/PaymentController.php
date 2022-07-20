@@ -3,25 +3,31 @@
 
 namespace App\Http\Controllers\Qiwi;
 
+use App\dto\OrderBody;
+use App\Handlers\PaymentHandlerBase;
+use App\Handlers\Qiwi\PaymentHandler;
 use App\Http\Controllers\Controller;
 use App\Services\Qiwi\RequestPaymentService;
-use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Class PaymentController
+ * Class PaymentControllerTest
  * @package App\Http\Controllers
  */
 class PaymentController extends Controller
 {
     private RequestPaymentService $paymentService;
+    private PaymentHandlerBase $paymentHandler;
+
     /**
-     * PaymentController constructor.
+     * PaymentControllerTest constructor.
      * @param RequestPaymentService $paymentService
+     * @param PaymentHandler $paymentHandler
      */
-    public function __construct(RequestPaymentService $paymentService) {
+    public function __construct(RequestPaymentService $paymentService, PaymentHandler $paymentHandler) {
         $this->paymentService = $paymentService;
+        $this->paymentHandler = $paymentHandler;
     }
 
     /**
@@ -30,8 +36,15 @@ class PaymentController extends Controller
      * @return JsonResponse
      */
     final public function create(Request $request): JsonResponse {
-        $body = $this->getJsonBody($request);
-        return response()->json( $this->paymentService->createBill($body)->toArray(), 200);
+        $order = $this->getJsonBody($request);
+
+        $response = $this->paymentHandler->handleBill(app(OrderBody::class)->fromBodySet($order));
+
+        if ($response->getError() !== '') {
+            return response()->json($response->toArray(), 400);
+        }
+
+        return response()->json($response->toArray(), 200);
     }
 
     /**
@@ -40,7 +53,11 @@ class PaymentController extends Controller
      * @return JsonResponse
      */
     final public function cancel(string $billId): JsonResponse {
-        return $this->paymentService->cancelBill($billId);
+        $response = $this->paymentHandler->cancelBill($billId);
+        if ($response->getError() !== '') {
+            return response()->json($response->toArray(), 400);
+        }
+        return response()->json($response->toArray(), 200);
     }
 
     /**
@@ -49,7 +66,11 @@ class PaymentController extends Controller
      * @return JsonResponse
      */
     final public function info(string $billId): JsonResponse {
-        return response()->json( $this->paymentService->getBillInfo($billId)->toArray(), 200);
+        $response = $this->paymentHandler->getBillStatus($billId);
+        if ($response->getError() !== '') {
+            return response()->json($response->toArray(), 400);
+        }
+        return response()->json($response->toArray(), 200);
     }
 
     /**

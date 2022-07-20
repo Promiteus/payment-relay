@@ -5,6 +5,7 @@ namespace App\Services\Qiwi;
 use App\dto\PayResponse;
 use App\Services\Constants\Common;
 use App\Services\Qiwi\Contracts\BillInterface;
+use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Qiwi\Api\BillPaymentsException;
 
@@ -12,17 +13,21 @@ use Qiwi\Api\BillPaymentsException;
  * Class RequestPaymentService
  * @package App\Services\Qiwi
  */
-class RequestPaymentService
+class RequestPaymentService implements RequestPaymentServiceInterface
 {
-    private BillInterface $bill;
+    /**
+     * @var BillInterface
+     */
+    private BillInterface $billService;
 
     /**
      * RequestPaymentService constructor.
-     * @param BillInterface $bill
+     * @param BillInterface $billService
      */
-    public function __construct(BillInterface $bill) {
-        $this->bill = $bill;
+    public function __construct(BillInterface $billService) {
+        $this->billService = $billService;
     }
+
 
     /**
      * @param array $body
@@ -34,16 +39,19 @@ class RequestPaymentService
                 Common::AMOUNT => $body[Common::AMOUNT],
                 Common::CURRENCY => 'RUB',
                 Common::COMMENT => $body[Common::COMMENT],
-                Common::EXPIRATION_DATE => $this->bill->getBillPayment()->getLifetimeByDay(1),
+                Common::EXPIRATION_DATE => $this->billService->getBillPayment()->getLifetimeByDay(1),
                 Common::EMAIL => $body[Common::EMAIL],
+                Common::CUSTOM_FIELDS => [
+                    'test' => 0
+                ]
             ];
 
-            $response = $this->bill->getBillPayment()->createBill($body[Common::BILL_ID], $params);
+            $response = $this->billService->getBillPayment()->createBill($body[Common::BILL_ID], $params);
         } catch (BillPaymentsException | \Exception $e) {
             return new PayResponse([], $e->getMessage());
         }
 
-        return new PayResponse($response, '');
+        return new PayResponse($response);
     }
 
     /**
@@ -56,29 +64,29 @@ class RequestPaymentService
             if ((!$billId) || ($billId === '')) {
                 throw new \Exception(Common::MSG_EMPTY_BILL_ID);
             }
-            $response = $this->bill->getBillPayment()->getBillInfo($billId);
+            $response = $this->billService->getBillPayment()->getBillInfo($billId);
         } catch (BillPaymentsException | \Exception $e) {
             return new PayResponse([], $e->getMessage());
         }
 
-        return new PayResponse($response, '');
+        return new PayResponse($response);
     }
 
     /**
      * @param string $billId
-     * @return JsonResponse
+     * @return PayResponse
      */
-    final public function cancelBill(string $billId): JsonResponse {
+    final public function cancelBill(string $billId): PayResponse {
         try {
             if ((!$billId) || ($billId === '')) {
                 throw new \Exception(Common::MSG_EMPTY_BILL_ID);
             }
-            $response = $this->bill->getBillPayment()->cancelBill($billId);
+            $response = $this->billService->cancelBIllCustom($billId);
         } catch (BillPaymentsException | \Exception $e) {
-            return response()->json((new PayResponse([], $e->getMessage()))->toArray(), 400);
+            return new PayResponse([], $e->getMessage());
         }
 
-        return response()->json((new PayResponse($response, ''))->toArray(), 200);
+        return new PayResponse($response);
     }
 
     /**

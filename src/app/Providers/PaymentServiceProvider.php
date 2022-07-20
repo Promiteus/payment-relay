@@ -5,10 +5,11 @@ namespace App\Providers;
 
 
 use App\Handlers\Qiwi\PaymentHandler;
-use App\Handlers\Qiwi\PaymentHandlerBase;
 use App\Services\ProductInvoiceService;
 use App\Services\Qiwi\BillService;
 use App\Services\Qiwi\Contracts\BillInterface;
+use App\Services\Contracts\ProductInvoiceServiceInterface;
+use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
 use App\Services\Qiwi\RequestPaymentService;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,7 +20,6 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
     }
 
     /**
@@ -29,18 +29,20 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->singleton(BillInterface::class, BillService::class);
+        $this->app->singleton(BillInterface::class, function () {
+            return new BillService();
+        });
 
-        $this->app->singleton(ProductInvoiceService::class, ProductInvoiceService::class);
+        $this->app->singleton(ProductInvoiceServiceInterface::class, ProductInvoiceService::class);
 
-        $this->app->singleton(RequestPaymentService::class, function() {
-            return new RequestPaymentService(app()->make(BillInterface::class));
+        $this->app->singleton(RequestPaymentServiceInterface::class, function() {
+            return new RequestPaymentService(app(BillInterface::class));
         });
 
         $this->app->singleton(PaymentHandler::class, function () {
             return new PaymentHandler(
-                app()->make(RequestPaymentService::class),
-                app()->make(ProductInvoiceService::class));
+                app()->make(RequestPaymentServiceInterface::class),
+                app()->make(ProductInvoiceServiceInterface::class));
         });
     }
 

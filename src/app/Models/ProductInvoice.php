@@ -4,6 +4,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class ProductInvoice
@@ -11,32 +12,34 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProductInvoice extends Model
 {
-    public const TABLE_NAME = 'product_invoice';
+    public const ID = 'id';
+    public const TABLE_NAME = 'invoice_product';
     public const PRODUCT_ID = 'product_id';
     public const INVOICE_ID = 'invoice_id';
-    public const ID = 'id';
+    public const EXPIRED_OPT_AT = 'expired_opt_at'; //Дата и время истечения услуги/опции. Для товаров null.
 
     protected $table = self::TABLE_NAME;
 
     protected $fillable = [
+        self::ID,
         self::INVOICE_ID,
         self::PRODUCT_ID,
-        self::ID
+        self::EXPIRED_OPT_AT,
     ];
 
     protected $keyType = 'string';
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function product() {
-        return $this->belongsTo(Product::class, self::PRODUCT_ID);
+    public function product(): BelongsTo {
+        return $this->belongsTo(Product::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function invoice() {
-        return $this->belongsTo(Invoice::class, self::INVOICE_ID);
+    public function invoice(): BelongsTo {
+        return $this->belongsTo(Invoice::class);
     }
 }

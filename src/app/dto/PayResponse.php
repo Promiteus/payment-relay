@@ -2,6 +2,8 @@
 
 namespace App\dto;
 
+use App\Services\Constants\Common;
+
 /**
  * Выходной формат данных при запросе к платежному провайдеру
  * Class PayResponse
@@ -50,8 +52,8 @@ class PayResponse
      */
     final public function toArray(): array {
         return [
-            'data' => $this->data,
-            'error' => $this->error,
+            Common::DATA => $this->data,
+            Common::ERROR => $this->error,
         ];
     }
 }

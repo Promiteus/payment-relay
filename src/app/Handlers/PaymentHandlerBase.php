@@ -1,7 +1,10 @@
 <?php
 
 namespace App\Handlers;
+use App\dto\InvoiceBody;
+use App\dto\OrderBody;
 use App\dto\PayResponse;
+use App\dto\ProductItem;
 use App\Handlers\Contracts\PaymentHandlerInterface;
 use App\Models\Invoice;
 use App\Services\Constants\Common;
@@ -12,6 +15,13 @@ use App\Services\Constants\Common;
  */
 abstract class PaymentHandlerBase implements PaymentHandlerInterface
 {
+    private string $expirationDate;
+
+    public function __construct(string $expirationDate)
+    {
+        $this->expirationDate = $expirationDate;
+    }
+
     /**
      * $order = [
      *    'userId' => '1',
@@ -23,36 +33,37 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
      * ]
      *
      * Обработать заказ, выставить счет и вернуть данные для перехода на форму оплаты счета
-     * @param array $order
+     * @param OrderBody $order
      * @return PayResponse
      */
-    final public function handleBill(array $order): PayResponse {
-       if ((!$order) || (empty($order))) {
+    final public function handleBill(OrderBody $order): PayResponse {
+       if (!$order) {
            return new PayResponse([], Common::MSG_EMPTY_ORDER_PARAMS);
        }
 
-       if ((($order[Common::BILL_ID] === '') && empty($order[Common::PRODUCTS][Common::ITEMS])) || ($order[Common::USER_ID] === '')) {
+       if ((($order->getBillId() === '') && empty($order->getProducts())) || ($order->getUserId() === '')) {
            return new PayResponse([], Common::MSG_EMPTY_BOTH_ORDER_PARAMS);
        }
 
-       if ($order[Common::BILL_ID] !== '') {
+       if ($order->getBillId() !== '') {
 
            try {
                /*Получить последний счет из БД для пользователя user_id*/
-               $invoice = $this->findInvoice($order[Common::USER_ID], $order[Common::BILL_ID]);
+               $invoice = $this->findInvoice($order->getBillId());
+
 
                if (!empty($invoice)) {
 
                    /*Запросить у сервиса QIWI статус счета и вернуть
                    ['status' => 'value', 'billId' => 'billValue', 'payUrl' => 'urlValue']*/
-                   $billStatus = $this->requestBillStatus($order[Common::BILL_ID]);
+                   $billStatus = $this->getBillStatus($order->getBillId());
 
-                   if ($billStatus[Invoice::STATUS] !== '') {
-                       $updatedInvoice = $this->updateInvoice($order[Common::BILL_ID], $billStatus[Invoice::STATUS]);
+                   if ($billStatus->getData()[Invoice::STATUS] !== '') {
+                       $updatedInvoice = $this->updateInvoice($order->getBillId(), $billStatus->getData());
 
                        if ($updatedInvoice) {
-                           if ($billStatus[Invoice::STATUS] === Common::WAITING_STATUS) {
-                               return new PayResponse($billStatus, '');
+                           if ($billStatus->getData()[Invoice::STATUS] === Common::WAITING_STATUS) {
+                               return $billStatus;
                            }
 
                            /*Создать полностью новый счет*/
@@ -61,6 +72,8 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
                        return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
                    }
+
+
 
                    return new PayResponse([], Common::MSG_CANT_GET_INVOICE_STATUS_FROM_SERVER);
                }
@@ -75,18 +88,29 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
     /**
      * Создать полностью новый счет
-     * @param array $order
+     * @param OrderBody $order
      * @return PayResponse
      */
-    private function createOrder(array $order): PayResponse {
+    private function createOrder(OrderBody $order): PayResponse {
         /*Создать новый счет на сервере QIWI*/
-        $payResponse = $this->requestCreateBill($order);
+
+        $totalPrice = collect($order->getProducts())->sum(function (ProductItem $item) {
+            return $item->getPrice();
+        });
+
+        $order->setTotalPrice($totalPrice);
+
+        $payResponse = $this->createBill($order->toArray());
 
         if ($payResponse->getError() === '') {
             /*Создать новый счет в БД*/
-
             try {
-                $result = $this->createInvoice($payResponse->getData(), $order);
+                /**
+                 * @var InvoiceBody
+                 */
+                $invoiceBody = app(InvoiceBody::class, ['expirationDays' => $this->expirationDate])->fromBodySet($payResponse->getData());
+
+                $result = $this->createInvoice($invoiceBody, $order);
                 return new PayResponse($result);
             } catch (\Exception $e) {
                 return new PayResponse([], $e->getMessage());
@@ -100,39 +124,44 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
     /**
      * Запросить статус покупки у платежного сервера
      * @param string $billId
-     * @return array
+     * @return PayResponse
      */
-    abstract public function requestBillStatus(string $billId): array;
+    abstract public function getBillStatus(string $billId): PayResponse;
 
     /**
      * @param array $params
      * @return PayResponse
      */
-    abstract public function requestCreateBill(array $params): PayResponse;
+    abstract public function createBill(array $params): PayResponse;
+
+    /**
+     * @param string $billId
+     * @return PayResponse
+     */
+    abstract public function cancelBill(string $billId): PayResponse;
 
     /**
      * Найти последний выставленный счет по коду заказа
-     * @param string $userId
      * @param string $billId
      * @return array
      */
-    abstract public function findInvoice(string $userId, string $billId): array;
+    abstract public function findInvoice(string $billId): array;
 
 
     /**
      * Обновить заказ в базе для текущего пользователя
      * @param string $billId
-     * @param string $status
+     * @param array $data
      * @return bool
      */
-    abstract public function updateInvoice(string $billId, string $status): bool;
+    abstract public function updateInvoice(string $billId, array $data): bool;
 
 
     /**
-     * @param array $invoice
-     * @param array $order
+     * @param InvoiceBody $invoice
+     * @param OrderBody $order
      * @return array
      */
-    abstract public function createInvoice(array $invoice, array $order): array;
+    abstract public function createInvoice(InvoiceBody $invoice, OrderBody $order): array;
 
 }

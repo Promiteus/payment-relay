@@ -26,7 +26,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n   \"billId\": \"34456-554434\",\n   \"amount\": \"1.00\",    \n   \"currency\": \"RUB\",        \n   \"comment\": \"Text comment\",  \n   \"expirationDateTime\": \"2020-06-21T09:02:00+03:00\",  \n   \"email\": \"rom3889@yandex.ru\" \n}",
+							"raw": "{\n   \"userId\": \"300\",\n   \"billId\": \"7b73ee36-edb6-4f7c-94dd-f78abaad7a0f\",\n   \"totalPrice\": 700.0,\n   \"products\": [\n       {\"code\": \"10-00\", \"count\": 1, \"name\": \"Товар 1\", \"price\": 100.0},\n       {\"code\": \"10-02\", \"count\": 1, \"name\": \"Товар 2\", \"price\": 600.0}\n   ],\n   \"comment\": \"Товар 1 и 2 - за 700 руб\",\n   \"email\": \"dr.romanm@yandex.ru\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -66,7 +66,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:1010/api/qiwi/info/34456-55443",
+							"raw": "http://localhost:1010/api/qiwi/info/0ccb31e0-1144-434f-90b8-189a458451b7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -76,7 +76,7 @@
 								"api",
 								"qiwi",
 								"info",
-								"34456-55443"
+								"0ccb31e0-1144-434f-90b8-189a458451b7"
 							]
 						}
 					},
@@ -99,7 +99,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:1010/api/qiwi/cancel/34456-55443",
+							"raw": "http://localhost:1010/api/qiwi/cancel/0ccb31e0-1144-434f-90b8-189a458451b7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -109,7 +109,7 @@
 								"api",
 								"qiwi",
 								"cancel",
-								"34456-55443"
+								"0ccb31e0-1144-434f-90b8-189a458451b7"
 							]
 						}
 					},
@@ -146,7 +146,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:1010/api/bill/status",
+							"raw": "http://localhost:1010/api/qiwi/bill/status",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -154,8 +154,68 @@
 							"port": "1010",
 							"path": [
 								"api",
+								"qiwi",
 								"bill",
 								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Товары",
+			"item": [
+				{
+					"name": "GET products by category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1010/api/products/category/option?page=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1010",
+							"path": [
+								"api",
+								"products",
+								"category",
+								"option"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Счета",
+			"item": [
+				{
+					"name": "GET opened invoices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1010/api/invoices/opened",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1010",
+							"path": [
+								"api",
+								"invoices",
+								"opened"
 							]
 						}
 					},

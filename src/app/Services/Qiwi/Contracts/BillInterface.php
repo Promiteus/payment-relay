@@ -12,4 +12,6 @@ interface BillInterface
 {
     public function getBillPayment(): BillPayments;
     public function getPublicKey(): string;
+
+    public function cancelBIllCustom(string $billId): array;
 }

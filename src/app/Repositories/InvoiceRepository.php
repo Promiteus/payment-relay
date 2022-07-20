@@ -3,6 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Invoice;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Query\Builder;
 
 
 /**
@@ -11,6 +14,7 @@ use App\Models\Invoice;
 class InvoiceRepository
 {
     private Invoice $invoice;
+
 
     /**
      * InvoiceRepository constructor.
@@ -32,20 +36,35 @@ class InvoiceRepository
     }
 
     /**
-     * @param string $userId
      * @param string $billId
      * @return array
      */
-    final public function getUserInvoiceByBillId(string $userId, string $billId): array {
+    final public function getUserInvoiceByBillId(string $billId): array {
         try {
            $invoice = $this->invoice->newQuery()
-                ->where(Invoice::USER_ID, '=', $userId)
                 ->where(Invoice::ID, '=', $billId)
                 ->firstOrFail();
            return $invoice->toArray();
         } catch (\Exception $e) {
            return [];
         }
+    }
+
+    /**
+     * @param string $status
+     * @param string $userId
+     * @return array
+     */
+    final public function getInvoicesByStatus(string $status, string $userId) {
+       return $this->invoice
+            ->newQuery()
+            ->where(Invoice::STATUS, '=', $status)
+            ->where(Invoice::USER_ID, '=', $userId)
+            ->with(Product::TABLE_NAME, function (BelongsToMany $item) {
+                $item->get([Product::PRICE, Product::NAME, Product::CODE]);
+            })
+            ->orderBy(Product::CREATED_AT, 'DESC')
+            ->get([Invoice::ID, Invoice::STATUS, Invoice::PRICE, Invoice::EXPIRATION_DATETIME, Invoice::PAY_URL])->toArray();
     }
 
     /**
@@ -73,8 +92,7 @@ class InvoiceRepository
      * @return bool
      */
     final public function updateInvoice(string $id, string $status): bool {
-       return $this->invoice->newQuery()
-            ->where(Invoice::ID, '=', $id)
-            ->update([Invoice::STATUS => $status]) > 0;
+        $invoice = $this->invoice->newQuery()->where(Invoice::ID, '=', $id);
+        return $invoice->update([Invoice::STATUS => $status]) > 0;
     }
 }

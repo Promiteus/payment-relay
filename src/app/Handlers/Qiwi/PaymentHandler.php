@@ -3,13 +3,15 @@
 
 namespace App\Handlers\Qiwi;
 
+use App\dto\BillStatusResponse;
+use App\dto\InvoiceBody;
+use App\dto\OrderBody;
 use App\dto\PayResponse;
 use App\Handlers\PaymentHandlerBase;
 use App\Models\Invoice;
 use App\Services\Constants\Common;
-use App\Services\ProductInvoiceService;
-use App\Services\Qiwi\RequestPaymentService;
-use JetBrains\PhpStorm\ArrayShape;
+use App\Services\Contracts\ProductInvoiceServiceInterface;
+use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -19,23 +21,25 @@ use Ramsey\Uuid\Uuid;
 class PaymentHandler extends PaymentHandlerBase
 {
     /**
-     * @var RequestPaymentService
+     * @var RequestPaymentServiceInterface
      */
-    private RequestPaymentService $requestPaymentService;
+    private RequestPaymentServiceInterface $requestPaymentService;
     /**
-     * @var ProductInvoiceService
+     * @var ProductInvoiceServiceInterface
      */
-    private ProductInvoiceService $productInvoiceService;
+    private ProductInvoiceServiceInterface $productInvoiceService;
 
     /**
      * PaymentHandler constructor.
-     * @param RequestPaymentService $requestPaymentService
-     * @param ProductInvoiceService $productInvoiceService
+     * @param RequestPaymentServiceInterface $requestPaymentService
+     * @param ProductInvoiceServiceInterface $productInvoiceService
+     * @throws \Exception
      */
     public function __construct(
-        RequestPaymentService $requestPaymentService,
-        ProductInvoiceService $productInvoiceService
+        RequestPaymentServiceInterface $requestPaymentService,
+        ProductInvoiceServiceInterface $productInvoiceService
     ) {
+        parent::__construct(now()->addDay()->toString());
         $this->requestPaymentService = $requestPaymentService;
         $this->productInvoiceService = $productInvoiceService;
     }
@@ -71,51 +75,72 @@ class PaymentHandler extends PaymentHandlerBase
 
     /**
      * @param string $billId
-     * @return array
-     * @throws \Exception
+     * @return PayResponse
      */
-    #[ArrayShape([Invoice::STATUS => "mixed", Common::BILL_ID => "string", Common::PAY_URL => "mixed"])]
-    final public function requestBillStatus(string $billId): array
+    final public function getBillStatus(string $billId): PayResponse
     {
         $response = $this->requestPaymentService->getBillInfo($billId);
         if ($response->getError() !== '') {
-            throw new \Exception($response->getError());
+            return new PayResponse([], $response->getError());
         }
-        return [
-            Invoice::STATUS => $response[Invoice::STATUS]->value,
-            Common::BILL_ID => $billId,
-            Common::PAY_URL => $response[Common::PAY_URL],
-        ];
-    }
+        if (!$this->updateInvoice($billId, $response->getData())) {
+            return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
+        }
 
+        return new PayResponse((new BillStatusResponse())->fromBodySet($response->getData())->toArray());
+    }
 
     /**
      * @param array $params
      * @return PayResponse
      */
-    final public function requestCreateBill(array $params): PayResponse
+    final public function createBill(array $params): PayResponse
     {
-        $params[Common::BILL_ID] = Uuid::uuid4();
+        $params[Common::BILL_ID] = Uuid::uuid4()->toString();
         return $this->requestPaymentService->createBill($params);
     }
 
     /**
-     * @param string $userId
      * @param string $billId
-     * @return array
+     * @return PayResponse
      */
-    final public function findInvoice(string $userId, string $billId): array
+    final public function cancelBill(string $billId): PayResponse
     {
-        return $this->productInvoiceService->findInvoice($userId, $billId);
+        $response = $this->requestPaymentService->cancelBill($billId);
+        if ($response->getError() !== '') {
+            return new PayResponse([], $response->getError());
+        }
+
+        if (!$this->updateInvoice($billId, $response->getData())) {
+            return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
+        }
+
+        return new PayResponse(app(BillStatusResponse::class)->fromBodySet($response->getData())->toArray());
     }
 
     /**
      * @param string $billId
-     * @param string $status
+     * @return array
+     * @throws \Exception
+     */
+    final public function findInvoice(string $billId): array
+    {
+        return $this->productInvoiceService->findInvoice($billId);
+    }
+
+    /**
+     * @param string $billId
+     * @param array $data
      * @return bool
      */
-    final public function updateInvoice(string $billId, string $status): bool
+    final public function updateInvoice(string $billId, array $data): bool
     {
+        $status = Common::EMPTY_STATUS;
+        if (array_key_exists(Invoice::STATUS, $data) && (is_array($data[Invoice::STATUS]))) {
+            $status = $data[Invoice::STATUS][Common::VALUE];
+        } else  {
+            $status = $data[Invoice::STATUS];
+        }
         return $this->productInvoiceService->updateInvoice($billId, $status);
     }
 
@@ -148,13 +173,15 @@ class PaymentHandler extends PaymentHandlerBase
    },*/
 
     /**
-     * @param array $invoice
-     * @param array $order
+     * @param InvoiceBody $invoice
+     * @param OrderBody $order
      * @return array
      * @throws \Exception
      */
-    final public function createInvoice(array $invoice, array $order): array
+    final public function createInvoice(InvoiceBody $invoice, OrderBody $order): array
     {
         return $this->productInvoiceService->createInvoice($invoice, $order);
     }
+
+
 }
