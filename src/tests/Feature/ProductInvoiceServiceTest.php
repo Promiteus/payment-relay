@@ -41,7 +41,40 @@ class ProductInvoiceServiceTest extends TestCase
     public function testGetOpenedInvoices(): void {
         Bus::fake([RequestAndUpdateInvoiceStatus::class]);
 
-        $this->assertTrue(true);
+        $billId = Uuid::uuid4()->toString();
+        /**
+         * @var ProductInvoiceServiceInterface $productInvoiceService
+         */
+        $productInvoiceService = app(ProductInvoiceServiceInterface::class);
+
+        /*Созжать ложный счет*/
+        Invoice::query()->create([
+            Invoice::ID => $billId,
+            Invoice::USER_ID => UsersTableSeeder::TEST_USER_ID,
+            Invoice::PAY_URL => 'https://...',
+            Invoice::CURRENCY => 'RUB',
+            Invoice::EXPIRATION_DATETIME => now()->addDay()->toString(),
+            Invoice::CREATED_AT => now()->toString(),
+            Invoice::UPDATED_AT => now()->toString(),
+            Invoice::PRICE => 100.0,
+            Invoice::COMMENT => 'test queue push',
+            Invoice::STATUS => Common::WAITING_STATUS,
+        ]);
+
+        /*Проверить, что счет с $billId в базе появился*/
+        $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $billId]);
+
+        $result = $productInvoiceService->getOpenedInvoices(UsersTableSeeder::TEST_USER_ID);
+
+        $this->assertIsArray($result);
+        foreach ($result as $item) {
+            $this->assertEquals(Common::WAITING_STATUS, $item[Common::STATUS]);
+        }
+
+        Bus::assertDispatchedTimes(RequestAndUpdateInvoiceStatus::class, 1);
+
+        /*Удалить тестовый счет*/
+        Invoice::query()->where(Invoice::ID, '=', $billId)->delete();
     }
 
     /**
