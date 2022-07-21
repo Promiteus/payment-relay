@@ -136,9 +136,10 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
 
     /**
      * @param string $billId
+     * @param bool $isUpdatable
      * @return PayResponse
      */
-    abstract public function cancelBill(string $billId): PayResponse;
+    abstract public function cancelBill(string $billId, bool $isUpdatable): PayResponse;
 
     /**
      * Найти последний выставленный счет по коду заказа

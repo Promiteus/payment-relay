@@ -153,14 +153,16 @@ class ProductInvoiceServiceTest extends TestCase
         $this->assertIsArray($result);
 
         $billIds = [];
+
         foreach ($result as $item) {
 
             $this->assertEquals(Common::WAITING_STATUS, $item[Common::STATUS]);
 
-            $paymentHandler->cancelBill($item[Invoice::ID]);
+            $paymentHandler->cancelBill($item[Invoice::ID], false);
 
             RequestAndUpdateInvoiceStatus::dispatch($item[Invoice::ID]);
 
+            sleep(1);
             $this->assertDatabaseHas(Invoice::TABLE_NAME, [Invoice::ID => $item[Invoice::ID], Invoice::STATUS => Common::REJECTED_STATUS]);
             $billIds[] = $item[Invoice::ID];
         }

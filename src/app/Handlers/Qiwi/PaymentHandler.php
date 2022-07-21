@@ -102,16 +102,17 @@ class PaymentHandler extends PaymentHandlerBase
 
     /**
      * @param string $billId
+     * @param bool $isUpdatable
      * @return PayResponse
      */
-    final public function cancelBill(string $billId): PayResponse
+    final public function cancelBill(string $billId, bool $isUpdatable = true): PayResponse
     {
         $response = $this->requestPaymentService->cancelBill($billId);
         if ($response->getError() !== '') {
             return new PayResponse([], $response->getError());
         }
 
-        if (!$this->updateInvoice($billId, $response->getData())) {
+        if ($isUpdatable && !$this->updateInvoice($billId, $response->getData())) {
             return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
         }
 
