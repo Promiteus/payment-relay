@@ -240,7 +240,7 @@ class ProductInvoiceServiceTest extends TestCase
 
 
     /**
-     *
+     * Поптыка создать счет с пустым блоком $order
      */
     public function testCreateInvoiceEmptyOrder(): void {
         $productInvoiceService = app(ProductInvoiceServiceInterface::class);
@@ -252,21 +252,9 @@ class ProductInvoiceServiceTest extends TestCase
 
         $products = Product::all()->take(3);
 
-        $productsBody = $products->map(function ($item) {
-            return [
-                Product::CODE => $item[Product::CODE],
-                Common::COUNT => 1,
-                Product::NAME => $item[Product::NAME],
-                Product::PRICE => $item[Product::PRICE]
-            ];
-        })->toArray();
-
-
         $totalPrice = $products->map(function($product) {
             return $product[Product::PRICE];
         })->sum();
-
-
 
         $invoice = [
             Common::BILL_ID => $billId,
