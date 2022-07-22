@@ -46,11 +46,9 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
        }
 
        if ($order->getBillId() !== '') {
-
            try {
                /*Получить последний счет из БД для пользователя user_id*/
                $invoice = $this->findInvoice($order->getBillId());
-
 
                if (!empty($invoice)) {
 
@@ -65,16 +63,11 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                            if ($billStatus->getData()[Invoice::STATUS] === Common::WAITING_STATUS) {
                                return $billStatus;
                            }
-
                            /*Создать полностью новый счет*/
                            return $this->createOrder($order);
                        }
-
                        return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
                    }
-
-
-
                    return new PayResponse([], Common::MSG_CANT_GET_INVOICE_STATUS_FROM_SERVER);
                }
 
@@ -116,7 +109,6 @@ abstract class PaymentHandlerBase implements PaymentHandlerInterface
                 return new PayResponse([], $e->getMessage());
             }
         }
-
         return new PayResponse([], $payResponse->getError());
     }
 
