@@ -13,6 +13,7 @@ use App\Services\Constants\Common;
 use App\Services\Contracts\ProductInvoiceServiceInterface;
 use App\Services\Qiwi\Contracts\RequestPaymentServiceInterface;
 use Ramsey\Uuid\Uuid;
+use function PHPUnit\Framework\arrayHasKey;
 
 /**
  * Class PaymentHandler
@@ -112,6 +113,7 @@ class PaymentHandler extends PaymentHandlerBase
             return new PayResponse([], $response->getError());
         }
 
+        //dd($response->getData());
         if ($isUpdatable && !$this->updateInvoice($billId, $response->getData())) {
             return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
         }
@@ -142,7 +144,13 @@ class PaymentHandler extends PaymentHandlerBase
         } else  {
             $status = $data[Invoice::STATUS];
         }
-        return $this->productInvoiceService->updateInvoice($billId, $status);
+        $updated = true;
+        $invoices = $this->productInvoiceService->findInvoice($billId);
+        if (!empty($invoices) && array_key_exists(Invoice::ID, $invoices)) {
+            $updated = $this->productInvoiceService->updateInvoice($billId, $status);
+        }
+
+        return $updated;
     }
 
 
