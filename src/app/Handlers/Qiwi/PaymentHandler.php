@@ -113,7 +113,10 @@ class PaymentHandler extends PaymentHandlerBase
             return new PayResponse([], $response->getError());
         }
 
-        //dd($response->getData());
+        if (!array_key_exists(Invoice::STATUS, $response->getData())) {
+            return new PayResponse( $response->getData());
+        }
+
         if ($isUpdatable && !$this->updateInvoice($billId, $response->getData())) {
             return new PayResponse([], Common::MSG_CANT_UPDATE_INVOICE_STATUS);
         }
